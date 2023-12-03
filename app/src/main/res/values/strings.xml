@@ -1,8 +1,8 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Attendance</string>
     <string name="digital_id_setup">Digital ID Setup</string>
     <string name="enter_register_no">Enter Register No.</string>
-    <string name="eg_reg">eg. 21MIS1XXX</string>
+    <string name="eg_reg" tools:ignore="Typos">eg. 21MIS1XXX</string>
     <string name="enter_name">Enter Name</string>
     <string name="eg_name">eg. Raji S</string>
     <string name="setup_note">NOTE: This is one time set up, you can\'t change the your digital ID on your own.</string>
