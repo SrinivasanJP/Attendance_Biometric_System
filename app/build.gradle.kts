@@ -4,12 +4,13 @@ plugins {
 
 android {
     namespace = "dev.roxs.attendance"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "dev.roxs.attendance"
         minSdk = 26
-        targetSdk = 33
+        //noinspection EditedTargetSdkVersion
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
