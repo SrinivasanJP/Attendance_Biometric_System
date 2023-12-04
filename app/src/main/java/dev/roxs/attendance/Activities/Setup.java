@@ -9,6 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import dev.roxs.attendance.R;
 
 public class Setup extends AppCompatActivity {
@@ -16,6 +18,8 @@ public class Setup extends AppCompatActivity {
     private ProgressBar vSetupProgress;
     private TextView vFinishSetup;
     private RelativeLayout finishSetupBtn;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
