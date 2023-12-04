@@ -17,15 +17,21 @@
         android:textSize="28sp"
         android:fontFamily="@font/neb"
         />
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="30dp"
-        android:layout_below="@+id/setupText"
-        android:orientation="vertical"
-        android:layout_marginVertical="20dp"
         android:paddingHorizontal="30dp"
-        android:background="@drawable/setup_card">
+        android:background="@drawable/setup_card"
+        android:layout_below="@+id/setupText">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="30dp"
+
+        android:orientation="vertical"
+        android:id="@+id/inputContainer"
+        android:layout_marginVertical="20dp"
+        >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,10 +90,13 @@
             android:text="@string/setup_note"
             android:textColor="@color/paleBlack"
             android:layout_marginVertical="30dp"/>
+    </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
+            android:id="@+id/finishSetupBtn"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="50dp"
             android:background="@drawable/round_corner"
             >
             <TextView
@@ -100,15 +109,17 @@
                 android:layout_centerInParent="true"
                 android:textColor="@color/black"
                 android:fontFamily="@font/nb"/>
+
             <ProgressBar
+                android:id="@+id/setupprogressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:visibility="invisible"
-                android:id="@+id/progressBar"/>
+                android:visibility="invisible" />
         </RelativeLayout>
+    </RelativeLayout>
 
-    </LinearLayout>
+
 
 
 </RelativeLayout>
