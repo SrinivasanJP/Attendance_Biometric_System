@@ -1,10 +1,8 @@
 package dev.roxs.attendance.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.annotation.SuppressLint;
 
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -37,10 +35,8 @@ public class Setup extends AppCompatActivity {
 
         finishSetupBtn = findViewById(R.id.finishSetupBtn);
         finishSetupBtn.setOnClickListener(view -> {
-            @SuppressLint("HardwareIds") String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            Log.d("Android ID", "onClick: "+ androidId+"---");
             FingerPrint fp = new FingerPrint(Setup.this);
-            fp.getFingerPrint();
+            Log.d("UT", "fingerprint: "+fp.getFingerPrint());
         });
 
     }

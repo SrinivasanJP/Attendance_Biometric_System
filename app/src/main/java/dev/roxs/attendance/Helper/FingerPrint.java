@@ -1,7 +1,9 @@
 package dev.roxs.attendance.Helper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 
 public class FingerPrint {
@@ -9,7 +11,7 @@ public class FingerPrint {
     public FingerPrint(Context context) {
         mContext = context;
     }
-    public void getFingerPrint(){
+    public String getFingerPrint(){
 
         DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
         int displayWidth = displayMetrics.widthPixels;
@@ -21,7 +23,8 @@ public class FingerPrint {
                 Build.MANUFACTURER + "_" +
                 Build.MODEL + "_" +
                 Build.PRODUCT + "_" +displayWidth+"x"+displayHeight;
-
+        @SuppressLint("HardwareIds") String androidId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+        return androidId+"_"+deviceHardwareConfig;
     }
 
 }
