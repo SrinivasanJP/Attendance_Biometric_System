@@ -1,6 +1,8 @@
 package dev.roxs.attendance.Activities;
 
 
+import static java.lang.Thread.sleep;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -19,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
@@ -38,8 +41,10 @@ public class Setup extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        AtomicBoolean holder = new AtomicBoolean(true);
         sp = new SharedpreferenceHelper(this);
         if(sp.isDataAvailable()){
+            holder.set(false);
             startActivity(new Intent(getApplicationContext(), IDPage.class));
         }else{
             fp = new FingerPrint(Setup.this);
@@ -51,11 +56,16 @@ public class Setup extends AppCompatActivity {
                 } else {
                     Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
                 }
+                holder.set(false);
             });
         }
-
-
-
+        while (holder.get()){
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
