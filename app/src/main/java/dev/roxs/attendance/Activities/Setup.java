@@ -31,9 +31,19 @@ public class Setup extends AppCompatActivity {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference reference;
+    private FingerPrint fp;
     @Override
     protected void onStart() {
         super.onStart();
+        fp = new FingerPrint(Setup.this);
+        fp.isFingerprintAvailable(db,fp.getFingerPrint(), isAvailable -> {
+            if (isAvailable) {
+                Toast.makeText(Setup.this, "Fingerprint available", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(), IDPage.class));
+            } else {
+                Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
     }
@@ -48,9 +58,6 @@ public class Setup extends AppCompatActivity {
         vSetupProgress = findViewById(R.id.setupprogressBar);
         vFinishSetup = findViewById(R.id.finishSetupText);
         RelativeLayout finishSetupBtn = findViewById(R.id.finishSetupBtn);
-        
-       
-        
 
         //Finish setup button click
         finishSetupBtn.setOnClickListener(view -> {
@@ -58,14 +65,16 @@ public class Setup extends AppCompatActivity {
             vSetupProgress.setVisibility(View.VISIBLE);
             String sReg_no = vReg_no.getText().toString();
             String sName = vName.getText().toString();
-            FingerPrint fp = new FingerPrint(Setup.this);
+
+
+
             
             //document reference
-            reference = db.collection("users").document(sReg_no);
+            reference = db.collection("users").document(fp.getFingerPrint());
 
             Map<String, String> user = new HashMap<>();
             user.put("name", sName);
-            user.put("fingerprint",fp.getFingerPrint());
+            user.put("registerNo", sReg_no);
             reference.set(user).addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
                     startActivity(new Intent(getApplicationContext(), IDPage.class));
@@ -80,4 +89,5 @@ public class Setup extends AppCompatActivity {
         });
 
     }
+
 }

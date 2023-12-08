@@ -6,10 +6,34 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class FingerPrint {
+    public interface FingerprintAvailabilityListener {
+        void onFingerprintAvailability(boolean isAvailable);
+    }
+    public void isFingerprintAvailable(FirebaseFirestore db, String fingerprint, FingerprintAvailabilityListener listener) {
+        db.collection("users").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                    if (documentSnapshot.getId().equals(fingerprint)) {
+                        // Fingerprint found
+                        listener.onFingerprintAvailability(true);
+                        return; // Exit the loop and the method
+                    }
+                }
+                // Fingerprint not found
+                listener.onFingerprintAvailability(false);
+            } else {
+                // Handle failure
+                listener.onFingerprintAvailability(false);
+            }
+        });
+    }
     private final Context mContext;
     public FingerPrint(Context context) {
         mContext = context;
