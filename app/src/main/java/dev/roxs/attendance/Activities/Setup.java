@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import dev.roxs.attendance.Helper.Encryption;
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.R;
 
@@ -37,7 +36,7 @@ public class Setup extends AppCompatActivity {
         finishSetupBtn = findViewById(R.id.finishSetupBtn);
         finishSetupBtn.setOnClickListener(view -> {
             FingerPrint fp = new FingerPrint(Setup.this);
-            Log.d("UT", "fingerprint: "+fp.getFingerPrint());
+            Log.d("UT", fp.getFingerPrint());
         });
 
     }

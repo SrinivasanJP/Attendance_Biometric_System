@@ -6,6 +6,9 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class FingerPrint {
     private final Context mContext;
     public FingerPrint(Context context) {
@@ -24,7 +27,28 @@ public class FingerPrint {
                 Build.MODEL + "_" +
                 Build.PRODUCT + "_" +displayWidth+"x"+displayHeight;
         @SuppressLint("HardwareIds") String androidId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        return androidId+"_"+deviceHardwareConfig;
+        return hashString(androidId+"_"+deviceHardwareConfig);
+    }
+    private String hashString(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(input.getBytes());
+
+            // Convert the byte array to a hexadecimal string
+            StringBuilder hexString = new StringBuilder();
+            for (byte hashByte : hashBytes) {
+                String hex = Integer.toHexString(0xff & hashByte);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            // Handle the exception appropriately
+            return null;
+        }
     }
 
 }
