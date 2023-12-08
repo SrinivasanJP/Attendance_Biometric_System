@@ -38,6 +38,7 @@ public class Setup extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        sp = new SharedpreferenceHelper(this);
         if(sp.isDataAvailable()){
             startActivity(new Intent(getApplicationContext(), IDPage.class));
         }else{
@@ -82,7 +83,6 @@ public class Setup extends AppCompatActivity {
             user.put("registerNo", sReg_no);
             reference.set(user).addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
-                    sp = new SharedpreferenceHelper(this);
                     sp.addData(fp.getFingerPrint(),sReg_no, sName);
                     startActivity(new Intent(getApplicationContext(), IDPage.class));
                 }else{
