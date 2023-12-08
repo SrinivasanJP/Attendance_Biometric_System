@@ -18,8 +18,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import dev.roxs.attendance.Helper.FingerPrint;
+import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.R;
 
 
@@ -32,18 +34,25 @@ public class Setup extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference reference;
     private FingerPrint fp;
+    private SharedpreferenceHelper sp;
     @Override
     protected void onStart() {
         super.onStart();
-        fp = new FingerPrint(Setup.this);
-        fp.isFingerprintAvailable(db,fp.getFingerPrint(), isAvailable -> {
-            if (isAvailable) {
-                Toast.makeText(Setup.this, "Fingerprint available", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getApplicationContext(), IDPage.class));
-            } else {
-                Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
-            }
-        });
+        if(sp.isDataAvailable()){
+            startActivity(new Intent(getApplicationContext(), IDPage.class));
+        }else{
+            fp = new FingerPrint(Setup.this);
+            fp.isFingerprintAvailable(db,fp.getFingerPrint(), (isAvailable, documentSnapshot) -> {
+                if (isAvailable) {
+                    sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
+                    Toast.makeText(Setup.this, "Fingerprint available", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), IDPage.class));
+                } else {
+                    Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
 
 
     }
@@ -65,10 +74,6 @@ public class Setup extends AppCompatActivity {
             vSetupProgress.setVisibility(View.VISIBLE);
             String sReg_no = vReg_no.getText().toString();
             String sName = vName.getText().toString();
-
-
-
-            
             //document reference
             reference = db.collection("users").document(fp.getFingerPrint());
 
@@ -77,6 +82,8 @@ public class Setup extends AppCompatActivity {
             user.put("registerNo", sReg_no);
             reference.set(user).addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
+                    sp = new SharedpreferenceHelper(this);
+                    sp.addData(fp.getFingerPrint(),sReg_no, sName);
                     startActivity(new Intent(getApplicationContext(), IDPage.class));
                 }else{
                     Toast.makeText(Setup.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
