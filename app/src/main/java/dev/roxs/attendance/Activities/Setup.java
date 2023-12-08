@@ -38,7 +38,6 @@ public class Setup extends AppCompatActivity {
         finishSetupBtn.setOnClickListener(view -> {
             FingerPrint fp = new FingerPrint(Setup.this);
             Log.d("UT", "fingerprint: "+fp.getFingerPrint());
-            Log.d("UT", "Encrypted Fingerprint "+ Encryption.encrypt(fp.getFingerPrint(),"22112003"));
         });
 
     }
