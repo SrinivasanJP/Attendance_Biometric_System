@@ -29,5 +29,8 @@ public class SharedpreferenceHelper {
     public String getRegNo(){
         return sharedPreferences.getString(REG_NO,"");
     }
+    public boolean isDataAvailable(){
+        return sharedPreferences.contains(FINGERPRINT) && sharedPreferences.contains(NAME) && sharedPreferences.contains(REG_NO);
+    }
 
 }
