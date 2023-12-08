@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class FingerPrint {
     public interface FingerprintAvailabilityListener {
-        void onFingerprintAvailability(boolean isAvailable);
+        void onFingerprintAvailability(boolean isAvailable, QueryDocumentSnapshot documentSnapshot);
     }
     public void isFingerprintAvailable(FirebaseFirestore db, String fingerprint, FingerprintAvailabilityListener listener) {
         db.collection("users").get().addOnCompleteListener(task -> {
@@ -22,15 +22,15 @@ public class FingerPrint {
                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                     if (documentSnapshot.getId().equals(fingerprint)) {
                         // Fingerprint found
-                        listener.onFingerprintAvailability(true);
+                        listener.onFingerprintAvailability(true, documentSnapshot);
                         return; // Exit the loop and the method
                     }
                 }
                 // Fingerprint not found
-                listener.onFingerprintAvailability(false);
+                listener.onFingerprintAvailability(false, null);
             } else {
                 // Handle failure
-                listener.onFingerprintAvailability(false);
+                listener.onFingerprintAvailability(false, null);
             }
         });
     }
