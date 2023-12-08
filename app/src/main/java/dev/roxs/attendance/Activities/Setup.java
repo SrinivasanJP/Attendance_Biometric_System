@@ -3,6 +3,7 @@ package dev.roxs.attendance.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import java.util.Map;
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.R;
 
+
 public class Setup extends AppCompatActivity {
 
     private EditText vReg_no, vName;
@@ -29,6 +31,12 @@ public class Setup extends AppCompatActivity {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference reference;
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +68,11 @@ public class Setup extends AppCompatActivity {
             user.put("fingerprint",fp.getFingerPrint());
             reference.set(user).addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
-                    Toast.makeText(Setup.this, "Data collected", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), IDPage.class));
                 }else{
-                    Toast.makeText(Setup.this, "Problem occurs", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Setup.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                    vSetupProgress.setVisibility(View.INVISIBLE);
+                    vFinishSetup.setVisibility(View.VISIBLE);
                 }
             });
            
