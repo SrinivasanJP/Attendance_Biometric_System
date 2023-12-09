@@ -1,13 +1,11 @@
 package dev.roxs.attendance.Activities;
 
 
-import static java.lang.Thread.sleep;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -21,7 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
@@ -41,11 +38,10 @@ public class Setup extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        AtomicBoolean holder = new AtomicBoolean(true);
         sp = new SharedpreferenceHelper(this);
         if(sp.isDataAvailable()){
-            holder.set(false);
             startActivity(new Intent(getApplicationContext(), IDPage.class));
+            finish();
         }else{
             fp = new FingerPrint(Setup.this);
             fp.isFingerprintAvailable(db,fp.getFingerPrint(), (isAvailable, documentSnapshot) -> {
@@ -53,19 +49,13 @@ public class Setup extends AppCompatActivity {
                     sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
                     Toast.makeText(Setup.this, "Fingerprint available", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(getApplicationContext(), IDPage.class));
+                    finish();
                 } else {
                     Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
                 }
-                holder.set(false);
             });
         }
-        while (holder.get()){
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+
     }
 
     @Override
@@ -95,14 +85,13 @@ public class Setup extends AppCompatActivity {
                 if(task.isSuccessful()){
                     sp.addData(fp.getFingerPrint(),sReg_no, sName);
                     startActivity(new Intent(getApplicationContext(), IDPage.class));
+                    finish();
                 }else{
                     Toast.makeText(Setup.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
                     vSetupProgress.setVisibility(View.INVISIBLE);
                     vFinishSetup.setVisibility(View.VISIBLE);
                 }
             });
-           
-            Log.d("UT", fp.getFingerPrint());
         });
 
     }
