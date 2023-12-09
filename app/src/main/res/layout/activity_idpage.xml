@@ -1,9 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="10dp"
     tools:context=".Activities.IDPage">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/id_background"
+        android:id="@+id/idCard"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="150dp"
+            android:src="@drawable/baseline_person_24"
+            android:layout_height="200dp"
+            android:contentDescription="@string/user_image_description" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/name_placeholder"
+                android:id="@+id/idName"
+                android:fontFamily="@font/neb"
+                android:textSize="28sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/register_no_placeholder"
+                android:id="@+id/idRegNo"
+                android:textSize="20sp"
+                android:fontFamily="@font/nb"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/idCard"
+        android:id="@+id/markAttendanceBtn"
+        android:background="@drawable/id_background"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mark_attendance"
+            android:layout_centerInParent="true"
+            android:padding="20dp"
+            android:textSize="28sp"
+            android:fontFamily="@font/neb"/>
+    </RelativeLayout>
+
+</RelativeLayout>
