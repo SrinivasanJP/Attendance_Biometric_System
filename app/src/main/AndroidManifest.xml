@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Attendance"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.QRReader"
+            android:exported="false" />
+        <activity
             android:name=".Activities.IDPage"
             android:exported="false" />
         <activity
