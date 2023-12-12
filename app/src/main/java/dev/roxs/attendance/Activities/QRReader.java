@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -81,7 +82,7 @@ public class QRReader extends AppCompatActivity {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-                Toast.makeText(getApplicationContext(), "Barcode reader stoped", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Barcode reader stopped", Toast.LENGTH_SHORT).show();
             }
 
             @SuppressLint("ResourceAsColor")
@@ -89,7 +90,13 @@ public class QRReader extends AppCompatActivity {
             public void receiveDetections(@NonNull Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() != 0) {
-                    txtBarcodeValue.post(() -> Toast.makeText(QRReader.this, barcodes.valueAt(0).displayValue, Toast.LENGTH_SHORT).show());
+                    txtBarcodeValue.post(() -> {
+                        Toast.makeText(QRReader.this, barcodes.valueAt(0).displayValue, Toast.LENGTH_SHORT).show();
+                        Intent captureImage = new Intent(getApplicationContext(), CaptureImage.class);
+                        captureImage.putExtra("sessionID", barcodes.valueAt(0).displayValue);
+                        startActivity(captureImage);
+                    }
+                    );
 
                 }
             }
