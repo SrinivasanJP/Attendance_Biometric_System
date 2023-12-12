@@ -8,28 +8,18 @@
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/btnAction"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginVertical="150dp"
         android:layout_centerVertical="true" />
 
     <TextView
         android:id="@+id/txtBarcodeValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
-        android:text="No Barcode Detected"
-        android:textColor="@android:color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="@string/no_barcode_detected"
+        android:textColor="@android:color/black"
         android:textSize="20sp" />
-
-
-    <Button
-        android:id="@+id/btnAction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="ADD CONTENT IN THE MAIL" />
 
 </RelativeLayout>
