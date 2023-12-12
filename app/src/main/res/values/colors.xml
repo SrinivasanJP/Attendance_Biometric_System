@@ -5,4 +5,5 @@
     <color name="paleBlack">#191818</color>
     <color name="gradientGreenEnd">#329254</color>
     <color name="gradientGreenStart">#CFF4D2</color>
+    <color name="red">#FF0000</color>
 </resources>
