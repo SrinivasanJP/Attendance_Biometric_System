@@ -112,7 +112,7 @@ public class CaptureImage extends AppCompatActivity {
                 File imageFile = new File(privateDir, "captured_image.jpg");
 
                 try (FileOutputStream outputStream = new FileOutputStream(imageFile)) {
-                    bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                    bitmapImage.compress(Bitmap.CompressFormat.JPEG, 8, outputStream);
                     startActivity(new Intent(getApplicationContext(), IDPage.class));
                 } catch (IOException e) {
                     e.printStackTrace();
