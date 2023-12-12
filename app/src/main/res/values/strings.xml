@@ -11,4 +11,5 @@
     <string name="register_no_placeholder">Register no</string>
     <string name="name_placeholder">Name</string>
     <string name="user_image_description">user image</string>
+    <string name="no_barcode_detected">No Barcode Detected</string>
 </resources>
