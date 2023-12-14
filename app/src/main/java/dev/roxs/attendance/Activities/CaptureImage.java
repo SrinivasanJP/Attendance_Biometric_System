@@ -117,6 +117,7 @@ public class CaptureImage extends AppCompatActivity {
                     Intent sendData = new Intent(getApplicationContext(), SendAttendanceData.class);
                     sendData.putExtra("sessionID",preIntent.getStringExtra("sessionID"));
                     startActivity(sendData);
+                    finish();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
