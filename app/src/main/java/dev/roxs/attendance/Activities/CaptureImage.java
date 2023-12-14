@@ -12,7 +12,6 @@ import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,12 +33,14 @@ public class CaptureImage extends AppCompatActivity {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
+    private Intent preIntent;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture_image);
+        preIntent = getIntent();
 
 //        camera_open_id = findViewById(R.id.camera_button);
 //        click_image_id = findViewById(R.id.click_image);
@@ -89,7 +90,7 @@ public class CaptureImage extends AppCompatActivity {
                 .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
                 .build();
 
-        cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview, imageCapture);
+        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
 
         // Capture image without displaying shutter UI
         imageCapture.takePicture(ContextCompat.getMainExecutor(this), new ImageCapture.OnImageCapturedCallback() {
@@ -113,7 +114,9 @@ public class CaptureImage extends AppCompatActivity {
 
                 try (FileOutputStream outputStream = new FileOutputStream(imageFile)) {
                     bitmapImage.compress(Bitmap.CompressFormat.JPEG, 8, outputStream);
-                    startActivity(new Intent(getApplicationContext(), IDPage.class));
+                    Intent sendData = new Intent(getApplicationContext(), SendAttendanceData.class);
+                    sendData.putExtra("sessionID",preIntent.getStringExtra("sessionID"));
+                    startActivity(sendData);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
