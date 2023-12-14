@@ -20,6 +20,9 @@
         android:theme="@style/Theme.Attendance"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.SendAttendanceData"
+            android:exported="false" />
+        <activity
             android:name=".Activities.CaptureImage"
             android:exported="false" />
         <activity
