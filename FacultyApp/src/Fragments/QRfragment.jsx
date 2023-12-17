@@ -1,30 +1,36 @@
 import React from 'react'
 import QRCode from 'qrcode.react';
+import { useState, useEffect } from 'react';
 
 
-const generateSessionID = () => {
-  const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const length = 10; // Adjust the length of the session ID as needed
-  let sessionID = '';
+const QRfragment = ({sessionID, setFragment}) => {
+  const [timeLeft, setTimeLeft] = useState(120);
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
 
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * randomChars.length);
-    sessionID += randomChars.charAt(randomIndex);
-  }
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime === 0) {
+          clearInterval(timer);
+          setFragment("viewlist");
+          return 0; 
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
 
-  return sessionID;
-};
-
-
-const QRfragment = () => {
-  const sessionID = generateSessionID();
-
+    return () => clearInterval(timer); 
+  }, []);
     return (
-      <div>
-      <div>QR fragment:</div>
+      <div className=' flex flex-col'>
+        <h1 className=' text-center text-2xl font-semibold'>Timer: <span>{formatTime(timeLeft)}</span></h1>
       <QRCode
-        value={sessionID}
-        size={200} // Adjust the size of the QR code
+        value={"testsession"}
+        size={800} // Adjust the size of the QR code
         fgColor="#000" // Set the foreground color
         bgColor="#fff" // Set the background color
         level="H" // Set the error correction level: 'L', 'M', 'Q', or 'H'
