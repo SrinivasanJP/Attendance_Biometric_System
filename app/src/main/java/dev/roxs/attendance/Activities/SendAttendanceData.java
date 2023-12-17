@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -63,10 +64,9 @@ public class SendAttendanceData extends AppCompatActivity {
                     String downloadUrl = uri.toString();
                     assert sessionID != null;
                     sessionReference = db.collection("Attendance").document(sessionID);
-                    Map<String, String> attendanceData = new HashMap<>();
-                    attendanceData.put("Fingerprint", fingerPrint);
-                    attendanceData.put("ImageUrl", downloadUrl);
-                    sessionReference.set(attendanceData).addOnCompleteListener(task -> {
+                    Map<String, Object> attendanceData = new HashMap<>();
+                    attendanceData.put(fingerPrint, downloadUrl);
+                    sessionReference.update(attendanceData).addOnCompleteListener(task -> {
                         if(task.isSuccessful()){
                             startActivity(new Intent(getApplicationContext(), IDPage.class));
                             finish();
