@@ -2,9 +2,8 @@ import React from 'react'
 import QRCode from 'qrcode.react';
 import { useState, useEffect } from 'react';
 
-
-const QRfragment = ({sessionID, setFragment}) => {
-  const [timeLeft, setTimeLeft] = useState(120);
+const QRfragment = ({setFragment}) => {
+  const [timeLeft, setTimeLeft] = useState(1);
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
@@ -16,7 +15,7 @@ const QRfragment = ({sessionID, setFragment}) => {
       setTimeLeft((prevTime) => {
         if (prevTime === 0) {
           clearInterval(timer);
-          setFragment("viewlist");
+          setFragment("viewList");
           return 0; 
         }
         return prevTime - 1;
