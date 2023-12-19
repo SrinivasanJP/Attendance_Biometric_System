@@ -7,11 +7,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -66,12 +67,13 @@ public class SendAttendanceData extends AppCompatActivity {
                     sessionReference = db.collection("Attendance").document(sessionID);
                     Map<String, Object> attendanceData = new HashMap<>();
                     attendanceData.put(fingerPrint, downloadUrl);
-                    sessionReference.update(attendanceData).addOnCompleteListener(task -> {
+                    sessionReference.set(attendanceData, SetOptions.merge()).addOnCompleteListener(task -> {
                         if(task.isSuccessful()){
                             startActivity(new Intent(getApplicationContext(), IDPage.class));
                             finish();
                         }else{
-                            Toast.makeText(SendAttendanceData.this, "Unexpected error occurs!", Toast.LENGTH_SHORT).show();
+                            Log.d("UT", "onCreate: "+task.getException());
+                            Toast.makeText(SendAttendanceData.this, "Unexpected error occurs!", Toast.LENGTH_LONG).show();
                         }
                     });
 
