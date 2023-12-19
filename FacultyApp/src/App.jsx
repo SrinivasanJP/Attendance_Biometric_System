@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import Secondary from './Components/Secondary'
 import Default from './Fragments/Default'
 import QRfragment from './Fragments/QRfragment'
 import { generateSessionID } from './helpers/generateSessionID'
@@ -7,18 +6,19 @@ import ViewList from './Fragments/ViewList'
 
 var sessionID;
 function App() {
-  const [fragment, setFragment] = useState(<Default />);
+  const [fragment, setFragment] = useState("");
+  const [sessionID, setSessionID] = useState("");
   const sessionCreateHandle = ()=>{
-    sessionID = generateSessionID();
+    setSessionID(generateSessionID());
     setFragment("qr");
   }
 
   const renderFragment = ()=>{
     switch (fragment) {
       case "qr":
-        return <QRfragment setFragment={setFragment}/>
+        return <QRfragment setFragment={setFragment} sessionID={sessionID}/>
       case "viewList":
-        return <ViewList />
+        return <ViewList sessionID={sessionID} />
       default:
         return <Default />
     }

@@ -4,12 +4,12 @@ import {db} from "../config/firebase"
 import { doc, getDoc } from 'firebase/firestore';
 
 
-const ViewList = () => {
+const ViewList = ({sessionID}) => {
   const [attendanceFingerprint, setattendanceFingerprint] = useState([]);
   const [attendies, setAttendies] = useState([]);
 
 const fetchData = async () => {
-  const sessionRef = doc(db, "Attendance", "testsession");
+  const sessionRef = doc(db, "Attendance", sessionID);
   const sessionSnap = await getDoc(sessionRef);
 
   if (sessionSnap.exists()) {

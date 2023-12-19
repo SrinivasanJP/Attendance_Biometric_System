@@ -2,8 +2,8 @@ import React from 'react'
 import QRCode from 'qrcode.react';
 import { useState, useEffect } from 'react';
 
-const QRfragment = ({setFragment}) => {
-  const [timeLeft, setTimeLeft] = useState(1);
+const QRfragment = ({setFragment, sessionID}) => {
+  const [timeLeft, setTimeLeft] = useState(120);
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
@@ -28,7 +28,7 @@ const QRfragment = ({setFragment}) => {
       <div className=' flex flex-col'>
         <h1 className=' text-center text-2xl font-semibold'>Timer: <span>{formatTime(timeLeft)}</span></h1>
       <QRCode
-        value={"testsession"}
+        value={sessionID}
         size={800} // Adjust the size of the QR code
         fgColor="#000" // Set the foreground color
         bgColor="#fff" // Set the background color
