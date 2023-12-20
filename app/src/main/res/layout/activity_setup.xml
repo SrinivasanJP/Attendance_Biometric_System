@@ -8,7 +8,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Activities.Setup"
     android:paddingVertical="50dp"
-    android:paddingHorizontal="40dp">
+    android:paddingHorizontal="20dp">
 
     <TextView
         android:layout_width="wrap_content"
