@@ -3,11 +3,18 @@ package dev.roxs.attendance.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentReference;
@@ -29,18 +36,35 @@ import dev.roxs.attendance.R;
 public class SendAttendanceData extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference sessionReference;
+    private ProgressBar uploadImageBuffer;
+    private ProgressBar markAttendanceBuffer;
+    private ImageView uploadImageDone;
+    private ImageView markAttendanceDone;
 
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_attendance_data);
+
+        //hooks
+        ProgressBar fingerPrintBuffer = findViewById(R.id.fingerPrintBuffer);
+        uploadImageBuffer = findViewById(R.id.imageUploadBuffer);
+        markAttendanceBuffer = findViewById(R.id.markAttendanceBuffer);
+
+        ImageView fingerPrintDone = findViewById(R.id.fingerPrintDone);
+        uploadImageDone = findViewById(R.id.imageUploadDone);
+        markAttendanceDone = findViewById(R.id.markAttendanceDone);
+
         SharedpreferenceHelper sp = new SharedpreferenceHelper(this);
         FingerPrint fp = new FingerPrint(this);
         //get session ID
         String sessionID = getIntent().getStringExtra("sessionID");
         //get fingerprint
         String fingerPrint = fp.getFingerPrint();
+        fingerPrintBuffer.setVisibility(View.GONE);
+        fingerPrintDone.setVisibility(View.VISIBLE);
+
         //get Captured image
         File privateDir = getApplicationContext().getFilesDir();
         File imageFile = new File(privateDir, "captured_image.jpg");
@@ -62,6 +86,8 @@ public class SendAttendanceData extends AppCompatActivity {
                 // Handle successful uploads
                 // Get a URL to the uploaded content
                 imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    uploadImageBuffer.setVisibility(View.GONE);
+                    uploadImageDone.setVisibility(View.VISIBLE);
                     String downloadUrl = uri.toString();
                     assert sessionID != null;
                     sessionReference = db.collection("Attendance").document(sessionID);
@@ -69,8 +95,20 @@ public class SendAttendanceData extends AppCompatActivity {
                     attendanceData.put(fingerPrint, downloadUrl);
                     sessionReference.set(attendanceData, SetOptions.merge()).addOnCompleteListener(task -> {
                         if(task.isSuccessful()){
-                            startActivity(new Intent(getApplicationContext(), IDPage.class));
-                            finish();
+                            markAttendanceBuffer.setVisibility(View.GONE);
+                            markAttendanceDone.setVisibility(View.VISIBLE);
+                            // Vibrate on success
+                            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            if (vibrator != null) {
+                                vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+                            }
+
+                            // Delay before starting activity
+                            new Handler().postDelayed(() -> {
+                                startActivity(new Intent(getApplicationContext(), IDPage.class));
+                                finish();
+                            }, 1000); // Delay of 1 second (1000 milliseconds)
+
                         }else{
                             Log.d("UT", "onCreate: "+task.getException());
                             Toast.makeText(SendAttendanceData.this, "Unexpected error occurs!", Toast.LENGTH_LONG).show();
