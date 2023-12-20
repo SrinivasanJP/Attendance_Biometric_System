@@ -7,10 +7,8 @@
 
     <SurfaceView
         android:id="@+id/surfaceView"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginVertical="150dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerVertical="true" />
 
     <TextView
@@ -20,7 +18,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:text="@string/no_barcode_detected"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:textSize="20sp" />
 
 </RelativeLayout>
