@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentReference;
@@ -40,21 +41,27 @@ public class SendAttendanceData extends AppCompatActivity {
     private ProgressBar markAttendanceBuffer;
     private ImageView uploadImageDone;
     private ImageView markAttendanceDone;
+    private RelativeLayout uploadImageBar;
 
-    @SuppressLint("WrongThread")
+    @SuppressLint({"WrongThread", "UseCompatLoadingForDrawables"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_attendance_data);
 
-        //hooks
+        //hooks progress bars
         ProgressBar fingerPrintBuffer = findViewById(R.id.fingerPrintBuffer);
         uploadImageBuffer = findViewById(R.id.imageUploadBuffer);
         markAttendanceBuffer = findViewById(R.id.markAttendanceBuffer);
 
+        //hooks done symbols
         ImageView fingerPrintDone = findViewById(R.id.fingerPrintDone);
         uploadImageDone = findViewById(R.id.imageUploadDone);
         markAttendanceDone = findViewById(R.id.markAttendanceDone);
+
+        //hooks bar
+        RelativeLayout fingerPrintBar = findViewById(R.id.fingerPrintBar);
+        uploadImageBar = findViewById(R.id.uploadImageBar);
 
         SharedpreferenceHelper sp = new SharedpreferenceHelper(this);
         FingerPrint fp = new FingerPrint(this);
@@ -64,6 +71,7 @@ public class SendAttendanceData extends AppCompatActivity {
         String fingerPrint = fp.getFingerPrint();
         fingerPrintBuffer.setVisibility(View.GONE);
         fingerPrintDone.setVisibility(View.VISIBLE);
+        fingerPrintBar.setBackground(getDrawable(R.drawable.process_done));
 
         //get Captured image
         File privateDir = getApplicationContext().getFilesDir();
@@ -88,6 +96,7 @@ public class SendAttendanceData extends AppCompatActivity {
                 imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     uploadImageBuffer.setVisibility(View.GONE);
                     uploadImageDone.setVisibility(View.VISIBLE);
+                    uploadImageBar.setBackground(getDrawable(R.drawable.process_done));
                     String downloadUrl = uri.toString();
                     assert sessionID != null;
                     sessionReference = db.collection("Attendance").document(sessionID);
