@@ -12,4 +12,7 @@
     <string name="name_placeholder">Name</string>
     <string name="user_image_description">user image</string>
     <string name="no_barcode_detected">No Barcode Detected</string>
+    <string name="getting_device_finger_print">Getting Device Finger Print</string>
+    <string name="uploading_image">Uploading Image</string>
+    <string name="marked_as_present">Marked as Present</string>
 </resources>

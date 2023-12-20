@@ -1,9 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="50dp"
     tools:context=".Activities.SendAttendanceData">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fingerprintContainer"
+        android:orientation="horizontal"
+        >
+        <ProgressBar
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/fingerPrintBuffer"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:text="@string/getting_device_finger_print"
+            android:fontFamily="@font/nb"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="10dp"
+        android:layout_height="150dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="10dp"
+        android:background="@drawable/id_background"
+        android:layout_below="@+id/fingerprintContainer"
+        android:id="@+id/fingerPrintBar">
+
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/uploadImageContainer"
+        android:layout_below="@+id/fingerPrintBar"
+        >
+        <ProgressBar
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/imageUploadBuffer"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:text="@string/uploading_image"
+            android:fontFamily="@font/nb"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="10dp"
+        android:layout_height="150dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="10dp"
+        android:background="@drawable/id_background"
+        android:layout_below="@+id/uploadImageContainer"
+        android:id="@+id/uploadImageBar">
+
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/markAttendance"
+        android:layout_below="@+id/uploadImageBar"
+        >
+        <ProgressBar
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/markAttendanceBuffer"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:text="@string/marked_as_present"
+            android:fontFamily="@font/nb"/>
+    </LinearLayout>
+
+
+</RelativeLayout>
