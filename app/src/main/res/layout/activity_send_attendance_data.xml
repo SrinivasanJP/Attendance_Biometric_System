@@ -17,6 +17,13 @@
             android:layout_height="20dp"
             android:id="@+id/fingerPrintBuffer"
             />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_done_24"
+            android:id="@+id/fingerPrintDone"
+            android:visibility="gone"
+            android:contentDescription="@string/doneSymbol" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,6 +53,13 @@
             android:layout_height="20dp"
             android:id="@+id/imageUploadBuffer"
             />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_done_24"
+            android:id="@+id/imageUploadDone"
+            android:visibility="gone"
+            android:contentDescription="@string/doneSymbol" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,6 +89,13 @@
             android:layout_height="20dp"
             android:id="@+id/markAttendanceBuffer"
             />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_done_24"
+            android:visibility="gone"
+            android:id="@+id/markAttendanceDone"
+            android:contentDescription="@string/doneSymbol" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
