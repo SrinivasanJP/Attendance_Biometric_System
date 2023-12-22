@@ -8,8 +8,8 @@ const ViewList = ({sessionID}) => {
   
   const [attendees, setAttendees] = useState([]);
 
-const fetchData = async () => {
-  const sessionRef = doc(db, "Attendance", "zHbyFHRTcc");
+  const fetchData = async () => {
+  const sessionRef = doc(db, "Attendance", sessionID);
   const sessionSnap = await getDoc(sessionRef);
 
   if (sessionSnap.exists()) {
@@ -42,7 +42,7 @@ const fetchData = async () => {
   } else {
     console.log("No document found.");
   }
-};
+  };
   
   useEffect(()=>{ 
     fetchData();
@@ -58,7 +58,8 @@ const fetchData = async () => {
           </tr>
         </thead>
         <tbody>
-          {attendees.map((attendee, index) => (
+          {attendees.length<=0?(<tr>
+            <td colSpan={3} className='text-center px-6 py-3'>No Attendees</td></tr>):attendees.map((attendee, index) => (
             <tr key={index} className='odd:bg-gray-100 '>
               <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-2 border-gray-200"}>{attendee.userName}</td>
               <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 border-gray-200"}>{attendee.registerNo}</td>
@@ -91,6 +92,9 @@ const fetchData = async () => {
     // Save JSON data to local storage
     localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees));
   };
+
+
+  
   return (
     <div>
       <div className=' flex justify-between mx-10 my-5 items-center'>
