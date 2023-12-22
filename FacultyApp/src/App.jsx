@@ -7,7 +7,7 @@ import ViewList from './Fragments/ViewList'
 var sessionID;
 function App() {
   const [fragment, setFragment] = useState("");
-  const [sessionID, setSessionID] = useState("");
+  const [sessionID, setSessionID] = useState("NA");
   const sessionCreateHandle = ()=>{
     setSessionID(generateSessionID());
     setFragment("qr");
@@ -25,7 +25,16 @@ function App() {
   }
   return (
     <>
-      <button className=' bg-blue-400 rounded-lg px-10 py-5 text-white font-bold text-xl' onClick={sessionCreateHandle}>Create Session</button>
+    <div className='flex justify-between m-4 rounded-2xl bg-gray-200 py-5 px-10 items-center'>
+    
+      <div>
+      <h1 className=' font-semibold  text-2xl'>VAttendance</h1>
+      <h2 className=' font-semibold'>Session ID : <span className=' font-mono'>{sessionID}</span></h2>
+      </div>
+      
+    <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl' onClick={sessionCreateHandle}>Create Session</button>
+    </div>
+      
       {renderFragment()}
     </>
   )
