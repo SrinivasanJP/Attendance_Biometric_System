@@ -3,13 +3,17 @@ import Default from './Fragments/Default'
 import QRfragment from './Fragments/QRfragment'
 import { generateSessionID } from './helpers/generateSessionID'
 import ViewList from './Fragments/ViewList'
+import { doc, deleteDoc } from 'firebase/firestore' 
+import { db } from './config/firebase'
 
-var sessionID;
 function App() {
   const [fragment, setFragment] = useState("");
   const [sessionID, setSessionID] = useState("NA");
   const sessionCreateHandle = ()=>{
     if(confirm("Do you want to create new session?")){
+      if(sessionID!="NA"){
+        deleteSession();
+      }
       setSessionID(generateSessionID());
       setFragment("qr");
     }else{
@@ -28,6 +32,15 @@ function App() {
         return <Default />
     }
   }
+  const deleteSession = async ()=>{
+    const sessionRef = doc(db, "Attendance", sessionID);
+    await deleteDoc(sessionRef).then(()=>{
+      console.log("Document deleted!");
+      setSessionID("NA")
+    }).catch((err)=>{
+      console.error("error removing document: " +err);
+    });
+  }
   return (
     <>
     <div className='flex justify-between m-4 rounded-2xl bg-gray-200 py-5 px-10 items-center'>
@@ -35,7 +48,7 @@ function App() {
       <div>
       <h1 className=' font-semibold  text-2xl cursor-pointer'  onClick={()=>{
         setFragment("default");
-        setSessionID("NA")
+        deleteSession();
         }}>VAttendance</h1>
       <h2 className=' font-semibold'>Session ID : <span className=' font-mono'>{sessionID}</span></h2>
       </div>
