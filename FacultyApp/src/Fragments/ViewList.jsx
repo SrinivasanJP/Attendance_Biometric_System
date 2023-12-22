@@ -5,7 +5,7 @@ import { doc, getDoc } from 'firebase/firestore';
 
 
 const ViewList = ({sessionID}) => {
-  const [attendanceFingerprint, setattendanceFingerprint] = useState([]);
+  
   const [attendees, setAttendees] = useState([]);
 
 const fetchData = async () => {
