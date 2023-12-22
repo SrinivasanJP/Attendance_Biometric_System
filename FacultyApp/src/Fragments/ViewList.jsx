@@ -9,7 +9,7 @@ const ViewList = ({sessionID}) => {
   const [attendees, setAttendees] = useState([]);
 
 const fetchData = async () => {
-  const sessionRef = doc(db, "Attendance", sessionID);
+  const sessionRef = doc(db, "Attendance", "zHbyFHRTcc");
   const sessionSnap = await getDoc(sessionRef);
 
   if (sessionSnap.exists()) {
@@ -44,9 +44,9 @@ const fetchData = async () => {
   }
 };
   
-  // useEffect(()=>{ 
-  //   fetchData();
-  // },[]);
+  useEffect(()=>{ 
+    fetchData();
+  },[]);
   const AttendiesTable = () => {
     return (
       <table className="min-w-full">
@@ -59,10 +59,10 @@ const fetchData = async () => {
         </thead>
         <tbody>
           {attendees.map((attendee, index) => (
-            <tr key={index} className='odd:bg-gray-200'>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200 border-2 border-gray-200">{attendee.userName}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200  border-2 border-gray-200">{attendee.registerNo}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200  border-2 border-gray-200"><img src={attendee.imageURL} alt="attendee image" width={100} /></td>
+            <tr key={index} className='odd:bg-gray-100 '>
+              <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-2 border-gray-200"}>{attendee.userName}</td>
+              <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 border-gray-200"}>{attendee.registerNo}</td>
+              <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200  border-2 border-gray-200"}><img src={attendee.imageURL} alt="attendee image" width={100} /></td>
             </tr>
           ))}
         </tbody>
