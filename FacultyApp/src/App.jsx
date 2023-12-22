@@ -9,15 +9,13 @@ import { db } from './config/firebase'
 function App() {
   const [fragment, setFragment] = useState("");
   const [sessionID, setSessionID] = useState("NA");
-  const sessionCreateHandle = ()=>{
+  const sessionCreateHandle = async()=>{
     if(confirm("Do you want to create new session?")){
       if(sessionID!="NA"){
-        deleteSession();
+       await deleteSession();
       }
       setSessionID(generateSessionID());
       setFragment("qr");
-    }else{
-
     }
     
   }
