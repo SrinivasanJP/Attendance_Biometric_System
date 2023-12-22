@@ -6,7 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 
 const ViewList = ({sessionID}) => {
   const [attendanceFingerprint, setattendanceFingerprint] = useState([]);
-  const [attendies, setAttendies] = useState([]);
+  const [attendees, setAttendees] = useState([]);
 
 const fetchData = async () => {
   const sessionRef = doc(db, "Attendance", sessionID);
@@ -38,15 +38,15 @@ const fetchData = async () => {
     }
 
     // Update state with the combined array of data
-    setAttendies(combinedData);
+    setAttendees(combinedData);
   } else {
     console.log("No document found.");
   }
 };
   
-  useEffect(()=>{ 
-    fetchData();
-  },[]);
+  // useEffect(()=>{ 
+  //   fetchData();
+  // },[]);
   const AttendiesTable = () => {
     return (
       <table>
@@ -58,7 +58,7 @@ const fetchData = async () => {
           </tr>
         </thead>
         <tbody>
-          {attendies.map((attendee, index) => (
+          {attendees.map((attendee, index) => (
             <tr key={index}>
               <td>{attendee.userName}</td>
               <td>{attendee.registerNo}</td>
@@ -69,10 +69,37 @@ const fetchData = async () => {
       </table>
     );
   };
+  const handleExport = () => {
+    // Create CSV content
+    const csvContent = "Name,Register No,Image URL\n" + attendees.map(a =>
+      `${a.userName},${a.registerNo},${a.imageURL}`
+    ).join("\n");
+
+    // Create a Blob with the CSV content
+    const csvBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a URL for the Blob
+    const csvURL = window.URL.createObjectURL(csvBlob);
+
+    // Create a link element and click it to trigger download
+    const link = document.createElement('a');
+    link.href = csvURL;
+    link.setAttribute('download', `attendance_${new Date().toISOString()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+
+    // Save JSON data to local storage
+    localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees));
+  };
   return (
     <div>
-      <h2>Attendies</h2>
+      <div className=' flex justify-between mx-10 my-5 items-center'>
+        <h2 className=' font-bold text-xl'>Attendees</h2>
+        <button onClick={handleExport} className=' rounded-xl bg-blue-400 text-white font-semibold px-10 py-3'>Export Attendance</button>
+      </div>
+      
       <AttendiesTable />
+      
     </div>
   )
 }
