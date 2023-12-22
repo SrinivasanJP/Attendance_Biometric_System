@@ -9,8 +9,13 @@ function App() {
   const [fragment, setFragment] = useState("");
   const [sessionID, setSessionID] = useState("NA");
   const sessionCreateHandle = ()=>{
-    setSessionID(generateSessionID());
-    setFragment("qr");
+    if(confirm("Do you want to create new session?")){
+      setSessionID(generateSessionID());
+      setFragment("qr");
+    }else{
+
+    }
+    
   }
 
   const renderFragment = ()=>{
@@ -32,7 +37,7 @@ function App() {
       <h2 className=' font-semibold'>Session ID : <span className=' font-mono'>{sessionID}</span></h2>
       </div>
       
-    <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl' onClick={sessionCreateHandle}>Create Session</button>
+    <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl' onClick={sessionCreateHandle}>Create New Session</button>
     </div>
       
       {renderFragment()}
