@@ -70,6 +70,10 @@ const ViewList = ({sessionID}) => {
     );
   };
   const handleExport = () => {
+    if(attendees.length<=0){
+      alert("No attendies data to export");
+      return
+    }
     // Create CSV content
     const csvContent = "Name,Register No,Image URL\n" + attendees.map(a =>
       `${a.userName},${a.registerNo},${a.imageURL}`
