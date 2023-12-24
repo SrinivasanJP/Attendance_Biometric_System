@@ -26,14 +26,13 @@ const ViewList = ({sessionID}) => {
       if (userSnap.exists()) {
         // Push combined data into the array
         combinedData.push({
-          key,
+          fingerprint: key,
           imageURL: sessionSnap.data()[key],
           userName: userSnap.data().name,
           registerNo: userSnap.data().registerNo
         });
       } else {
-        // Handle unknown user
-        // TODO: Handle the scenario where the user is unknown
+        console.log("Some unknown user entered security breach");
       }
     }
 
