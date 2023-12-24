@@ -1,5 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
+import { FcDeleteRow } from "react-icons/fc";
+
 const Default = () => {
   const [selectedKey, setSelectedKey] = useState(null);
 
@@ -36,18 +38,21 @@ const Default = () => {
   };
 
   return (
-    <div>
-      <table>
+    <div className=' rounded-xl w-[90%] m-auto'>
+      <table className=' w-full bg-slate-300'>
         <thead>
           <tr>
             <th>Previous Attendance</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {keys.map((key, index) => (
             <tr key={index} onClick={() => handleClick(key)}>
-              <td>{key.slice(11,21)}</td>
+              <td className=' px-10 py-5 font-semibold cursor-pointer'>{key.slice(11,21)}</td>
+              <td className=' text-center p-5 cursor-pointer'><FcDeleteRow size={30} className='inline-block'/></td>
             </tr>
+          
           ))}
         </tbody>
       </table>
