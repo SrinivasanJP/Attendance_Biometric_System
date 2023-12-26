@@ -38,26 +38,26 @@ const Default = () => {
   };
 
   return (
-    <div className=' rounded-xl w-[90%] m-auto'>
-      <table className=' w-full bg-slate-300'>
+    <div className=' rounded-2xl border shadow-2xl m-4'>
+      <table className=' w-full table-fixed'>
         <thead>
           <tr>
-            <th>Previous Attendance</th>
-            <th>Action</th>
+            <th className=' border-b-2 border-r-2  py-5 w-[80%]'>Previous Attendance</th>
+            <th className=' border-b-2 border-l-2  py-5'>Action</th>
           </tr>
         </thead>
         <tbody>
           {keys.map((key, index) => (
-            <tr key={index} onClick={() => handleClick(key)}>
-              <td className=' px-10 py-5 font-semibold cursor-pointer'>{key.slice(11,21)}</td>
-              <td className=' text-center p-5 cursor-pointer'><FcDeleteRow size={30} className='inline-block'/></td>
+            <tr key={index}>
+              <td className=' px-10 py-5 font-semibold cursor-pointer border-b-2 hover:text-xl' onClick={() => handleClick(key)}>{key.slice(11,21)}</td>
+              <td className=' text-center p-5 cursor-pointer border-b-2'><FcDeleteRow size={30} className='inline-block'/></td>
             </tr>
           
           ))}
         </tbody>
       </table>
       {selectedKey && (
-        <div>
+        <div className=' my-10 mx-4'>
           Fragment for {selectedKey}
           <AttendiesTable getAttendees={localStorage.getItem(selectedKey)}/>
         </div>
