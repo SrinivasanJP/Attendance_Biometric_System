@@ -15,8 +15,10 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -78,13 +80,26 @@ public class CaptureImage extends AppCompatActivity {
                     Bitmap imageBitmap = ImageUtils.imageProxyToBitmap(mediaImage);
                     // Release the ImageProxy
                     image.close();
+                    int rotationDegree = getRotationDegreeFromBitmap(imageBitmap);
+                    Log.d("UT rotation", "onCaptureSuccess: "+rotationDegree);
+                    if (rotationDegree != 0) {
+                        // Rotate the image to align with 0 degrees
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(-rotationDegree); // Rotate to align with 0 degrees
 
-                    // Save the Bitmap to internal storage
-                    saveToInternalStorage(imageBitmap);
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+
+                        // Save the rotated image
+                        saveToInternalStorage(rotatedBitmap);
+                    } else {
+                        // If the image is already aligned to 0 degrees, save it without further rotation
+                        saveToInternalStorage(imageBitmap);
+                    }
                 }
             }
 
             private void saveToInternalStorage(Bitmap bitmapImage) {
+                 // Change the angle as needed
                 File privateDir = getApplicationContext().getFilesDir();
                 File imageFile = new File(privateDir, "captured_image.jpg");
 
@@ -104,5 +119,15 @@ public class CaptureImage extends AppCompatActivity {
                 // Handle capture errors
             }
         });
+    }
+    private int getRotationDegreeFromBitmap(Bitmap bitmap) {
+        int rotationDegree = 0;
+        if (bitmap.getWidth() > bitmap.getHeight()) {
+            // Landscape orientation, consider it as 90 or 270 degrees
+            rotationDegree = 90;
+        }
+        // Add more logic here based on specific cases, but without metadata, it's a best-guess scenario
+
+        return rotationDegree;
     }
 }
