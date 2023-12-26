@@ -1,16 +1,23 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FcDeleteRow } from "react-icons/fc";
 
 const Default = () => {
   const [selectedKey, setSelectedKey] = useState(null);
 
-  const keys = Object.keys(localStorage);
+  const [keys, setKeys] = useState(Object.keys(localStorage));
 
   const handleClick = (key) => {
     setSelectedKey(key);
     
   };
+  const handleDelete = (key) =>{
+    if(confirm("Do you want to remove the attendance data")){
+      localStorage.removeItem(key)
+      setKeys(Object.keys(localStorage));
+    }
+    
+  }
   const AttendiesTable = ({getAttendees}) => {
     console.log(getAttendees)
     const attendees = Array.isArray(getAttendees) ? attendees : JSON.parse(getAttendees);
@@ -47,10 +54,10 @@ const Default = () => {
           </tr>
         </thead>
         <tbody>
-          {keys.map((key, index) => (
+          {keys.length<=0?<tr><td colSpan={2} className='text-center py-5'>No attendance data available</td></tr>:keys.map((key, index) => (
             <tr key={index}>
               <td className=' px-10 py-5 font-semibold cursor-pointer border-b-2 hover:text-xl' onClick={() => handleClick(key)}>{key.slice(11,21)}</td>
-              <td className=' text-center p-5 cursor-pointer border-b-2'><FcDeleteRow size={30} className='inline-block'/></td>
+              <td className=' text-center p-5 cursor-pointer border-b-2' onClick={()=> handleDelete(key)}><FcDeleteRow size={30} className='inline-block'/></td>
             </tr>
           
           ))}
