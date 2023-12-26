@@ -64,7 +64,7 @@ const Default = () => {
           ))}
         </tbody>
       </table>
-      {selectedKey && (
+      {selectedKey!=null && (
         <div className=' my-10 mx-4'>
           Fragment for {selectedKey}
           <AttendiesTable getAttendees={localStorage.getItem(selectedKey)}/>
