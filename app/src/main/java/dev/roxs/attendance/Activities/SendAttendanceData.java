@@ -52,11 +52,11 @@ public class SendAttendanceData extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 200;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference sessionReference;
-    private ProgressBar uploadImageBuffer;
+    private ProgressBar uploadImageBuffer, locationBuffer;
     private ProgressBar markAttendanceBuffer;
     private ImageView uploadImageDone;
-    private ImageView markAttendanceDone;
-    private RelativeLayout uploadImageBar;
+    private ImageView markAttendanceDone, locationDone;
+    private RelativeLayout uploadImageBar, locationBar;
     private SharedpreferenceHelper sp;
     private String sessionID, fingerPrint;
     private double latitude, longitude, altitude;
@@ -71,15 +71,18 @@ public class SendAttendanceData extends AppCompatActivity {
         ProgressBar fingerPrintBuffer = findViewById(R.id.fingerPrintBuffer);
         uploadImageBuffer = findViewById(R.id.imageUploadBuffer);
         markAttendanceBuffer = findViewById(R.id.markAttendanceBuffer);
+        locationBuffer = findViewById(R.id.locationBuffer);
 
         //hooks done symbols
         ImageView fingerPrintDone = findViewById(R.id.fingerPrintDone);
         uploadImageDone = findViewById(R.id.imageUploadDone);
         markAttendanceDone = findViewById(R.id.markAttendanceDone);
+        locationDone = findViewById(R.id.locationDone);
 
         //hooks bar
         RelativeLayout fingerPrintBar = findViewById(R.id.fingerPrintBar);
         uploadImageBar = findViewById(R.id.uploadImageBar);
+        locationBar = findViewById(R.id.locationBar);
 
         sp = new SharedpreferenceHelper(this);
         FingerPrint fp = new FingerPrint(this);
@@ -122,6 +125,7 @@ public class SendAttendanceData extends AppCompatActivity {
     private boolean isSent = false;
     private final LocationCallback mLocationCallback = new LocationCallback() {
 
+        @SuppressLint("UseCompatLoadingForDrawables")
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             if(!isSent) {
@@ -131,6 +135,9 @@ public class SendAttendanceData extends AppCompatActivity {
                 longitude = mLastLocation.getLongitude();
                 altitude = mLastLocation.getAltitude();
                 isSent = true;
+                locationDone.setVisibility(View.VISIBLE);
+                locationBuffer.setVisibility(View.GONE);
+                locationBar.setBackground(getDrawable(R.drawable.process_done));
                 sendData();
             }
         }
