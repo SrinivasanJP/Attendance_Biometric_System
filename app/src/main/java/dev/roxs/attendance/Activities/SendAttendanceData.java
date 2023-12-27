@@ -188,7 +188,9 @@ public class SendAttendanceData extends AppCompatActivity {
 
                             // Delay before starting activity
                             new Handler().postDelayed(() -> {
-                                startActivity(new Intent(getApplicationContext(), IDPage.class));
+                                Intent intent = new Intent(getApplicationContext(), IDPage.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
                                 finish();
                             }, 1000); // Delay of 1 second (1000 milliseconds)
 
