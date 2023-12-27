@@ -3,7 +3,6 @@ package dev.roxs.attendance.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -15,8 +14,10 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,6 +30,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -57,7 +59,7 @@ public class SendAttendanceData extends AppCompatActivity {
     private RelativeLayout uploadImageBar;
     private SharedpreferenceHelper sp;
     private String sessionID, fingerPrint;
-    private double latitude, longitude;
+    private double latitude, longitude, altitude;
 
     @SuppressLint({"WrongThread", "UseCompatLoadingForDrawables"})
     @Override
@@ -92,53 +94,52 @@ public class SendAttendanceData extends AppCompatActivity {
 
 
     }
-    private void getLocation(){
 
-        final boolean[] locationDataSent = {false};
-        //get Location
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        }
+    private void getLocation() {
+
         boolean isLocationEnabled = LocationUtils.isLocationEnabled(this);
         if (isLocationEnabled) {
-
-            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-            LocationRequest locationRequest = LocationRequest
-                    .create()
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(10000); // Update interval in milliseconds
-
-            LocationCallback locationCallback = new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    if (locationResult == null) {
-                        // Handle location unavailable scenario
-                        return;
-                    }
-                    for (Location location : locationResult.getLocations()) {
-                        if (!locationDataSent[0]) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                            Log.d("UT location", "onCreate: " + latitude + "----" + longitude);
-                            sendData();
-                            locationDataSent[0] = true;
-                            fusedLocationClient.removeLocationUpdates(this); // Stop further updates
-                        }
-                    }
-                }
-            };
-
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            requestNewLocationData();
         } else {
             Toast.makeText(this, "Turn on Location and Mobile Network", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getApplicationContext(), IDPage.class));
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
         }
     }
 
+    private void requestNewLocationData() {
+
+        LocationRequest.Builder lr = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY);
+
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
+        fusedLocationClient.requestLocationUpdates(lr.setWaitForAccurateLocation(true).build(), mLocationCallback, Looper.myLooper());
+    }
+    private boolean isSent = false;
+    private final LocationCallback mLocationCallback = new LocationCallback() {
+
+        @Override
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            if(!isSent) {
+                Location mLastLocation = locationResult.getLastLocation();
+                assert mLastLocation != null;
+                latitude = mLastLocation.getLatitude();
+                longitude = mLastLocation.getLongitude();
+                altitude = mLastLocation.getAltitude();
+                isSent = true;
+                sendData();
+            }
+        }
+    };
+
     @SuppressLint("UseCompatLoadingForDrawables")
     private void sendData(){
+
+        Log.d("UT testing 3D data", "sendData: "+latitude+longitude+altitude);
         //get Captured image
         File privateDir = getApplicationContext().getFilesDir();
         File imageFile = new File(privateDir, "captured_image.jpg");
