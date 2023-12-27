@@ -13,9 +13,12 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 
 import java.io.File;
 
+import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.R;
 
 public class IDPage extends AppCompatActivity {
@@ -28,6 +31,14 @@ public class IDPage extends AppCompatActivity {
         setContentView(R.layout.activity_idpage);
         //hooks
         ImageView profileImage = findViewById(R.id.profileImage);
+        TextView vName = findViewById(R.id.idName);
+        TextView vReg_no = findViewById(R.id.idRegNo);
+
+        SharedpreferenceHelper sp = new SharedpreferenceHelper(this);
+        vName.setText(sp.getName());
+        vReg_no.setText(sp.getRegNo());
+
+
         File privateDir = getApplicationContext().getFilesDir();
         File imageFile = new File(privateDir, "captured_image.jpg");
 
