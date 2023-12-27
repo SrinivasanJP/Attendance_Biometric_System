@@ -164,7 +164,7 @@ public class SendAttendanceData extends AppCompatActivity {
                     uploadImageBuffer.setVisibility(View.GONE);
                     uploadImageDone.setVisibility(View.VISIBLE);
                     uploadImageBar.setBackground(getDrawable(R.drawable.process_done));
-                    String downloadUrl = uri.toString();
+                    String downloadUrl = uri.toString()+","+latitude+","+longitude+","+altitude;
                     assert sessionID != null;
                     sessionReference = db.collection("Attendance").document(sessionID);
                     Map<String, Object> attendanceData = new HashMap<>();
