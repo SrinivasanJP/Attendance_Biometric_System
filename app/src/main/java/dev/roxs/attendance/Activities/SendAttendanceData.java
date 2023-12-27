@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
@@ -24,6 +25,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -84,31 +88,55 @@ public class SendAttendanceData extends AppCompatActivity {
         fingerPrintBuffer.setVisibility(View.GONE);
         fingerPrintDone.setVisibility(View.VISIBLE);
         fingerPrintBar.setBackground(getDrawable(R.drawable.process_done));
+        getLocation();
 
-        //location Checks
+
+    }
+    private void getLocation(){
+
+        final boolean[] locationDataSent = {false};
+        //get Location
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted, request it
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
         boolean isLocationEnabled = LocationUtils.isLocationEnabled(this);
         if (isLocationEnabled) {
+
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(location -> {
-                        if (location != null) {
+
+            LocationRequest locationRequest = LocationRequest
+                    .create()
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    .setInterval(10000); // Update interval in milliseconds
+
+            LocationCallback locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    if (locationResult == null) {
+                        // Handle location unavailable scenario
+                        return;
+                    }
+                    for (Location location : locationResult.getLocations()) {
+                        if (!locationDataSent[0]) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                            Log.d("UT location", "onCreate: "+latitude+"----"+longitude);
+                            Log.d("UT location", "onCreate: " + latitude + "----" + longitude);
                             sendData();
+                            locationDataSent[0] = true;
+                            fusedLocationClient.removeLocationUpdates(this); // Stop further updates
                         }
-                    })
-                    .addOnFailureListener(e -> Toast.makeText(this, "error while fetching location data", Toast.LENGTH_SHORT).show());
-            
+                    }
+                }
+            };
+
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
         } else {
             Toast.makeText(this, "Turn on Location and Mobile Network", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(getApplicationContext(), IDPage.class));
         }
-
     }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     private void sendData(){
         //get Captured image
@@ -174,7 +202,7 @@ public class SendAttendanceData extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                sendData();
+                getLocation();
             } else {
                 Toast.makeText(this, "Permission is required", Toast.LENGTH_SHORT).show();
             }
