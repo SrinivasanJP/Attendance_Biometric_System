@@ -47,11 +47,13 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // CameraX core library using Camera2 implementation
-    implementation("androidx.camera:camera-camera2:1.3.0")
+    implementation("androidx.camera:camera-camera2:1.3.1")
 
 // CameraX lifecycle library
-    implementation ("androidx.camera:camera-lifecycle:1.3.0")
+    implementation ("androidx.camera:camera-lifecycle:1.3.1")
 
 // CameraX view control library
-    implementation ("androidx.camera:camera-view:1.3.0")
+    implementation ("androidx.camera:camera-view:1.3.1")
+
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 }

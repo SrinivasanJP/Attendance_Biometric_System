@@ -1,10 +1,15 @@
 package dev.roxs.attendance.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -18,6 +23,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -31,10 +38,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dev.roxs.attendance.Helper.FingerPrint;
+import dev.roxs.attendance.Helper.LocationUtils;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.R;
 
 public class SendAttendanceData extends AppCompatActivity {
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 200;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference sessionReference;
     private ProgressBar uploadImageBuffer;
@@ -42,6 +51,9 @@ public class SendAttendanceData extends AppCompatActivity {
     private ImageView uploadImageDone;
     private ImageView markAttendanceDone;
     private RelativeLayout uploadImageBar;
+    private SharedpreferenceHelper sp;
+    private String sessionID, fingerPrint;
+    private double latitude, longitude;
 
     @SuppressLint({"WrongThread", "UseCompatLoadingForDrawables"})
     @Override
@@ -63,16 +75,42 @@ public class SendAttendanceData extends AppCompatActivity {
         RelativeLayout fingerPrintBar = findViewById(R.id.fingerPrintBar);
         uploadImageBar = findViewById(R.id.uploadImageBar);
 
-        SharedpreferenceHelper sp = new SharedpreferenceHelper(this);
+        sp = new SharedpreferenceHelper(this);
         FingerPrint fp = new FingerPrint(this);
         //get session ID
-        String sessionID = getIntent().getStringExtra("sessionID");
+        sessionID = getIntent().getStringExtra("sessionID");
         //get fingerprint
-        String fingerPrint = fp.getFingerPrint();
+        fingerPrint = fp.getFingerPrint();
         fingerPrintBuffer.setVisibility(View.GONE);
         fingerPrintDone.setVisibility(View.VISIBLE);
         fingerPrintBar.setBackground(getDrawable(R.drawable.process_done));
 
+        //location Checks
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted, request it
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+        boolean isLocationEnabled = LocationUtils.isLocationEnabled(this);
+        if (isLocationEnabled) {
+            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
+                            Log.d("UT location", "onCreate: "+latitude+"----"+longitude);
+                            sendData();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "error while fetching location data", Toast.LENGTH_SHORT).show());
+            
+        } else {
+            Toast.makeText(this, "Turn on Location and Mobile Network", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void sendData(){
         //get Captured image
         File privateDir = getApplicationContext().getFilesDir();
         File imageFile = new File(privateDir, "captured_image.jpg");
@@ -131,4 +169,16 @@ public class SendAttendanceData extends AppCompatActivity {
             Toast.makeText(this, "Image capture error try again", Toast.LENGTH_SHORT).show();
         }
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                sendData();
+            } else {
+                Toast.makeText(this, "Permission is required", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
