@@ -46,6 +46,7 @@
                     <ImageView
                         android:id="@+id/profileImage"
                         android:layout_width="220dp"
+                        android:scaleType="centerCrop"
                         android:layout_height="300dp"
                         android:contentDescription="@string/user_image_description"
                         android:src="@drawable/baseline_person_24" />
