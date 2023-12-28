@@ -15,7 +15,7 @@ const Default = () => {
     if(confirm("Do you want to remove the attendance data")){
       localStorage.removeItem(key)
       setKeys(Object.keys(localStorage));
-      selectedKey(null)
+      setSelectedKey(null)
     }
     
   }
