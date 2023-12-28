@@ -24,10 +24,14 @@ const ViewList = ({sessionID}) => {
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
+        var data = sessionSnap.data()[key].split(",");
         // Push combined data into the array
         combinedData.push({
           fingerprint: key,
-          imageURL: sessionSnap.data()[key],
+          imageURL: data[0],
+          latitude: data[1],
+          longitude: data[2],
+          altitude: data[3],
           userName: userSnap.data().name,
           registerNo: userSnap.data().registerNo
         });
@@ -75,8 +79,8 @@ const ViewList = ({sessionID}) => {
       return
     }
     // Create CSV content
-    const csvContent = "Name,Register No,Image URL\n" + attendees.map(a =>
-      `${a.userName},${a.registerNo},${a.imageURL}`
+    const csvContent = "Name,Register No,Image URL,Latitude,Longitude,Altitude\n" + attendees.map(a =>
+      `${a.userName},${a.registerNo},${a.imageURL},${a.latitude},${a.longitude},${a.altitude}`
     ).join("\n");
 
     // Create a Blob with the CSV content
