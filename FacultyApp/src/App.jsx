@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Default from './Fragments/Default'
 import QRfragment from './Fragments/QRfragment'
 import { generateSessionID } from './helpers/generateSessionID'
@@ -39,6 +39,19 @@ function App() {
       console.error("error removing document: " +err);
     });
   }
+  const deleteSessionOnUnload = async () => {
+    if (sessionID !== 'NA') {
+      await deleteSession();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', deleteSessionOnUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', deleteSessionOnUnload);
+    };
+  }, [sessionID]);
   return (
     <>
     <div className='flex justify-between m-4 rounded-2xl bg-gray-200 py-5 px-10 items-center'>
