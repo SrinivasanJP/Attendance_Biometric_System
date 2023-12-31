@@ -38,3 +38,4 @@ export const getLocation = () => {
     const proximityPercentage = ((maxProximity - distance) / maxProximity) * 100;
     return proximityPercentage.toFixed(2)>0? proximityPercentage.toFixed(2)+ '%':"0%";
   };
+  
