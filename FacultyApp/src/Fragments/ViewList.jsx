@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import {db} from "../config/firebase"
 import { doc, getDoc } from 'firebase/firestore';
-import {getLocation ,calculateAttendeeProximity} from '../helpers/locationData';
+import getLocation from '../helpers/locationData';
 
 
 const ViewList = ({sessionID}) => {
@@ -10,7 +10,17 @@ const ViewList = ({sessionID}) => {
   
   const [attendees, setAttendees] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
-  
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in km
+    return distance;
+  };
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -23,7 +33,21 @@ const ViewList = ({sessionID}) => {
     fetchLocation();
   }, []);
 
-  
+  const calculateAttendeeProximity = (attendee) => {
+    console.log(attendee)
+    if(!userLocation){return "0%"}
+    const distance = calculateDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      parseFloat(attendee.latitude),
+      parseFloat(attendee.longitude)
+    );
+    console.log(distance);
+
+    const maxProximity = 1; // Maximum proximity distance (in km)
+    const proximityPercentage = ((maxProximity - distance) / maxProximity) * 100;
+    return proximityPercentage.toFixed(2)>0? proximityPercentage.toFixed(2)+ '%':"0%";
+  };
 
   const fetchData = async () => {
   const sessionRef = doc(db, "Attendance", sessionID);
@@ -78,7 +102,6 @@ const ViewList = ({sessionID}) => {
             <th className='px-6 py-3 uppercase text-start text-sm font-medium'>Name</th>
             <th className='px-6 py-3 uppercase text-start text-sm font-medium'>Register NO</th>
             <th className='px-6 py-3 uppercase text-start text-sm font-medium'>Image</th>
-            <th className='px-6 py-3 uppercase text-start text-sm font-medium'>Proximity</th>
           </tr>
         </thead>
         <tbody>
@@ -86,9 +109,9 @@ const ViewList = ({sessionID}) => {
             <td colSpan={3} className='text-center px-6 py-3'>No Attendees</td></tr>):attendees.map((attendee, index) => (
             <tr key={index} className='odd:bg-gray-100 '>
               <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-2 border-gray-200"}>{attendee.userName}</td>
-              <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200"}>{attendee.registerNo}</td>
-              <td className={"px-6 py-4 text-center"}><img className='inline-block' src={attendee.imageURL} alt="attendee image" width={100} /></td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200">{calculateAttendeeProximity(attendee, userLocation)}</td>
+              <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 border-gray-200"}>{attendee.registerNo}</td>
+              <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200  border-2 border-gray-200"}><img src={attendee.imageURL} alt="attendee image" width={100} /></td>
+              <td>{calculateAttendeeProximity(attendee)}</td>
             </tr>
           ))}
         </tbody>
