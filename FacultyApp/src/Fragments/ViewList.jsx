@@ -35,6 +35,7 @@ const ViewList = ({sessionID}) => {
 
   const calculateAttendeeProximity = (attendee) => {
     console.log(attendee)
+    if(!userLocation){return "0%"}
     const distance = calculateDistance(
       userLocation.latitude,
       userLocation.longitude,
@@ -45,7 +46,7 @@ const ViewList = ({sessionID}) => {
 
     const maxProximity = 1; // Maximum proximity distance (in km)
     const proximityPercentage = ((maxProximity - distance) / maxProximity) * 100;
-    return proximityPercentage.toFixed(2) + '%';
+    return proximityPercentage.toFixed(2)>0? proximityPercentage.toFixed(2)+ '%':"0%";
   };
 
   const fetchData = async () => {
