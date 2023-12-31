@@ -1,4 +1,4 @@
-export const getLocation = () => {
+const getLocation = () => {
     return new Promise((resolve, reject) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -26,7 +26,7 @@ export const getLocation = () => {
     const distance = R * c; // Distance in km
     return distance;
   };
-  export const calculateAttendeeProximity = (attendee, userLocation) => {
+  export const calculateAttendeeProximity = (attendee) => {
     if(!userLocation){return "0%"}
     const distance = calculateDistance(
       userLocation.latitude,
@@ -37,4 +37,13 @@ export const getLocation = () => {
     const maxProximity = 1; // Maximum proximity distance (in km)
     const proximityPercentage = ((maxProximity - distance) / maxProximity) * 100;
     return proximityPercentage.toFixed(2)>0? proximityPercentage.toFixed(2)+ '%':"0%";
+  };
+  const [userLocation, setUserLocation] = useState(null);
+  export const fetchLocation = async () => {
+    try {
+      const locationData = await getLocation(); // Get user's current location
+      setUserLocation(locationData); // Update user's location in state
+    } catch (error) {
+      console.error('Error fetching location:', error);
+    }
   };
