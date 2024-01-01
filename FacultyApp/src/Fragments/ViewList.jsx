@@ -98,7 +98,7 @@ const ViewList = ({sessionID}) => {
       link.click();
   
       // Save JSON data to local storage
-      localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees)+userLocation);
+      localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees));
     })
    
   };
