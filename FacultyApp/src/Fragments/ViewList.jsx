@@ -2,7 +2,7 @@ import { IoMdRefresh } from "react-icons/io"
 import React, { useEffect, useState } from 'react'
 import {db} from "../config/firebase"
 import { doc, getDoc } from 'firebase/firestore';
-import {getLocation ,calculateAttendeeProximity} from '../helpers/locationData';
+import {getLocation} from '../helpers/locationData';
 import AttendeesTable from '../Components/AttendeesTable';
 
 
@@ -11,6 +11,8 @@ const ViewList = ({sessionID}) => {
   
   const [attendees, setAttendees] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
   
   useEffect(() => {
     const fetchLocation = async () => {
@@ -27,6 +29,7 @@ const ViewList = ({sessionID}) => {
   
 
   const fetchData = async () => {
+    setLoading(true);
   const sessionRef = doc(db, "Attendance", sessionID);
   const sessionSnap = await getDoc(sessionRef);
 
@@ -63,6 +66,7 @@ const ViewList = ({sessionID}) => {
   } else {
     console.log("No document found.");
   }
+  setLoading(false);
   };
   
   useEffect(()=>{ 
@@ -94,7 +98,7 @@ const ViewList = ({sessionID}) => {
       link.click();
   
       // Save JSON data to local storage
-      localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees));
+      localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees)+userLocation);
     })
    
   };
@@ -106,7 +110,7 @@ const ViewList = ({sessionID}) => {
       <div className=' flex justify-between mx-10 my-5 items-center'>
         <div className="flex items-center ">
         <h2 className=' font-bold text-xl'>Attendees</h2>
-        <IoMdRefresh size={23} className="inline-block mx-5" onClick={()=>{
+        <IoMdRefresh size={23} className={`inline-block mx-5 ${loading?'animate-spin':''}`} onClick={()=>{
           
           setAttendees([]);
           fetchData()}}/>
