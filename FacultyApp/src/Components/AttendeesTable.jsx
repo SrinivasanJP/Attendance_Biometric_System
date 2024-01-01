@@ -1,7 +1,12 @@
+
 import {calculateAttendeeProximity} from '../helpers/locationData';
 const AttendeesTable = ({attendees, userLocation}) => {
-    if(attendees.length === 0){
-      return <p>Loading...</p>
+    if(attendees.length !== 0){
+      return (
+        <div className='flex items-center justify-center'>
+      <p className=' text-center my-10 mx-5  animate-pulse'>Hold on a sec! I just divided by zero. Let's give the universe a moment to sort itself out.</p>
+      </div>
+      )
     }
     return (
       <table className="min-w-full">
