@@ -1,5 +1,5 @@
 
-import {calculateAttendeeProximity} from '../helpers/locationData';
+import {calculateAttendeeFloorFromElevation, calculateAttendeeProximity} from '../helpers/locationData';
 const AttendeesTable = ({attendees, userLocation}) => {
     if(attendees.length === 0){
       return (
@@ -26,6 +26,7 @@ const AttendeesTable = ({attendees, userLocation}) => {
               <td className={"px-6 py-4 whitespace-nowrap text-lg font-medium text-gray-800  border-2 text-center border-gray-200"}>{attendee.registerNo}</td>
               <td className={"px-6 py-4 text-center w-[30%]"}><img className='inline-block' src={attendee.imageURL} alt="attendee image" width={100} /></td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200 w-[20%]">{calculateAttendeeProximity(attendee, userLocation)}</td>
+              {console.log(calculateAttendeeFloorFromElevation(attendee.altitude))}
             </tr>
           ))}
         </tbody>

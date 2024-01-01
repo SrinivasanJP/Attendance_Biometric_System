@@ -26,6 +26,23 @@ export const getLocation = () => {
     const distance = R * c; // Distance in km
     return distance;
   };
+ 
+
+  
+  export const calculateAttendeeFloorFromElevation = (attendeeAltitudeDegrees) => {
+    const averageElevationPerFloor = 7; // Assumed average elevation change per floor in degrees
+
+    const absoluteAltitude = Math.abs(attendeeAltitudeDegrees);
+    console.log(absoluteAltitude)
+    
+    if (!isNaN(absoluteAltitude)) {
+      const estimatedFloor = Math.floor(absoluteAltitude / averageElevationPerFloor) + 1; // Adding 1 to start counting from 1st floor
+      const direction = attendeeAltitudeDegrees >= 0 ? 'above' : 'below';
+      return `Estimated floor: ${estimatedFloor} (${direction} ground level)`;
+    } else {
+      return "Unable to determine floor";
+    }
+  };
   export const calculateAttendeeProximity = (attendee, userLocation) => {
     if(!userLocation){return "0%"}
     const distance = calculateDistance(
