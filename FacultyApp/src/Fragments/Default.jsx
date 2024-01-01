@@ -21,7 +21,7 @@ const Default = () => {
   }
   const AttendiesTable = ({getAttendees}) => {
     console.log(getAttendees)
-    const attendees = Array.isArray(getAttendees) ? attendees : JSON.parse(getAttendees);
+    var attendees = Array.isArray(getAttendees) ? getAttendees : JSON.parse(getAttendees);
     return (
       <table className="min-w-full">
         <thead className=' bg-gradient-to-r from-blue-300 to-slate-100 rounded-xl '>
