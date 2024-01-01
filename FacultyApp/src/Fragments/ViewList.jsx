@@ -1,8 +1,9 @@
-
+import { IoMdRefresh } from "react-icons/io"
 import React, { useEffect, useState } from 'react'
 import {db} from "../config/firebase"
 import { doc, getDoc } from 'firebase/firestore';
 import {getLocation ,calculateAttendeeProximity} from '../helpers/locationData';
+import AttendeesTable from '../Components/AttendeesTable';
 
 
 const ViewList = ({sessionID}) => {
@@ -67,59 +68,35 @@ const ViewList = ({sessionID}) => {
   useEffect(()=>{ 
     fetchData();
   },[]);
-  const AttendiesTable = () => {
-    if(attendees.length === 0){
-      return <p>Loading...</p>
-    }
-    return (
-      <table className="min-w-full">
-        <thead className=' bg-gradient-to-r from-blue-300 to-slate-100 rounded-xl '>
-          <tr>
-            <th className='px-6 py-3 uppercase text-start text-sm font-medium'>Name</th>
-            <th className='px-6 py-3 uppercase text-start text-sm font-medium'>Register NO</th>
-            <th className='px-6 py-3 uppercase text-start text-sm font-medium'>Image</th>
-            <th className='px-6 py-3 uppercase text-start text-sm font-medium'>Proximity</th>
-          </tr>
-        </thead>
-        <tbody>
-          {attendees.length<=0?(<tr>
-            <td colSpan={3} className='text-center px-6 py-3'>No Attendees</td></tr>):attendees.map((attendee, index) => (
-            <tr key={index} className='odd:bg-gray-100 '>
-              <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-2 border-gray-200"}>{attendee.userName}</td>
-              <td className={"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200"}>{attendee.registerNo}</td>
-              <td className={"px-6 py-4 text-center"}><img className='inline-block' src={attendee.imageURL} alt="attendee image" width={100} /></td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200">{calculateAttendeeProximity(attendee, userLocation)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  };
+  
   const handleExport = () => {
-    if(attendees.length<=0){
-      alert("No attendies data to export");
-      return
-    }
-    // Create CSV content
-    const csvContent = "Name,Register No,Image URL,Latitude,Longitude,Altitude\n" + attendees.map(a =>
-      `${a.userName},${a.registerNo},${a.imageURL},${a.latitude},${a.longitude},${a.altitude}`
-    ).join("\n");
-
-    // Create a Blob with the CSV content
-    const csvBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-
-    // Create a URL for the Blob
-    const csvURL = window.URL.createObjectURL(csvBlob);
-
-    // Create a link element and click it to trigger download
-    const link = document.createElement('a');
-    link.href = csvURL;
-    link.setAttribute('download', `attendance_${new Date().toISOString()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-
-    // Save JSON data to local storage
-    localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees));
+    fetchData().then(()=>{
+      if(attendees.length<=0){
+        alert("No attendies data to export");
+        return
+      }
+      // Create CSV content
+      const csvContent = "Name,Register No,Image URL,Latitude,Longitude,Altitude\n" + attendees.map(a =>
+        `${a.userName},${a.registerNo},${a.imageURL},${a.latitude},${a.longitude},${a.altitude}`
+      ).join("\n");
+  
+      // Create a Blob with the CSV content
+      const csvBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+      // Create a URL for the Blob
+      const csvURL = window.URL.createObjectURL(csvBlob);
+  
+      // Create a link element and click it to trigger download
+      const link = document.createElement('a');
+      link.href = csvURL;
+      link.setAttribute('download', `attendance_${new Date().toISOString()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+  
+      // Save JSON data to local storage
+      localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees));
+    })
+   
   };
 
 
@@ -127,11 +104,18 @@ const ViewList = ({sessionID}) => {
   return (
     <div>
       <div className=' flex justify-between mx-10 my-5 items-center'>
+        <div className="flex items-center ">
         <h2 className=' font-bold text-xl'>Attendees</h2>
+        <IoMdRefresh size={23} className="inline-block mx-5" onClick={()=>{
+          
+          setAttendees([]);
+          fetchData()}}/>
+        </div>
+        
         <button onClick={handleExport} className=' rounded-xl bg-blue-400 text-white font-semibold px-10 py-3'>Export Attendance</button>
       </div>
-      <div className='block rounded-lg border shadow-2xl m-4'>
-      <AttendiesTable />
+      <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
+      <AttendeesTable attendees={attendees} userLocation={userLocation}/>
       </div>
       
       
