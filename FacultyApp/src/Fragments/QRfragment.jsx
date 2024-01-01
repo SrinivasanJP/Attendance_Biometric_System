@@ -3,7 +3,7 @@ import QRCode from 'qrcode.react';
 import { useState, useEffect } from 'react';
 
 const QRfragment = ({setFragment, sessionID}) => {
-  const [timeLeft, setTimeLeft] = useState(120);
+  const [timeLeft, setTimeLeft] = useState(60);
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
