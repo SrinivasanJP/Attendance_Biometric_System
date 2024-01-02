@@ -4,16 +4,15 @@ import {db} from "../config/firebase"
 import { doc, getDoc } from 'firebase/firestore';
 import {getLocation} from '../helpers/locationData';
 import AttendeesTable from '../Components/AttendeesTable';
-
+import AbsenteesTable from "../Components/AbsenteesTable"
 
 const ViewList = ({sessionID, courseDetails}) => {
   sessionID="test"
-  console.log(courseDetails)
   const [attendees, setAttendees] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  
+  const [absenteesList, setAbsenteesList] = useState(courseDetails.studentRegisters.split(","));
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -108,18 +107,27 @@ const ViewList = ({sessionID, courseDetails}) => {
   return (
     <div>
       <div className=' flex justify-between mx-10 my-5 items-center'>
-        <div className="flex items-center ">
-        <h2 className=' font-bold text-xl'>Attendees</h2>
-        <IoMdRefresh size={23} className={`inline-block mx-5 ${loading?'animate-spin':''}`} onClick={()=>{
-          
-          setAttendees([]);
-          fetchData()}}/>
+        <div>
+          <div className="flex items-center ">
+          <h2 className=' font-bold text-xl'>Attendees</h2>
+          <IoMdRefresh size={23} className={`inline-block mx-5 ${loading?'animate-spin':''}`} onClick={()=>{
+            
+            setAttendees([]);
+            fetchData()}}/>
+          </div>
+          <div className="flex">
+            <h1 className=" font-semibold text-lg">{courseDetails.courseName}</h1>
+            <h2 className="mx-4 font-mono text-lg">{`(${courseDetails.courseID})`}</h2>
+            {console.log(courseDetails)}
+          </div>
         </div>
+       
         
         <button onClick={handleExport} className=' rounded-xl bg-blue-400 text-white font-semibold px-10 py-3'>Export Attendance</button>
       </div>
       <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
       <AttendeesTable attendees={attendees} userLocation={userLocation}/>
+      <AbsenteesTable absenteesList={absenteesList}/>
       </div>
       
       
