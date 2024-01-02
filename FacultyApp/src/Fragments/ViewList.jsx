@@ -12,7 +12,15 @@ const ViewList = ({sessionID, courseDetails}) => {
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  const [absenteesList, setAbsenteesList] = useState(courseDetails.studentRegisters.split(","));
+  const [absenteesList, setAbsenteesList] = useState([]);
+  const [registeredStudents, setRegisteredStudents] = useState(courseDetails.studentRegisters.split(","))
+  const getAbsenteesList = (combinedData)=>{
+    const presentStudents = combinedData.map((data) => data.registerNo);
+  const absentees = registeredStudents.filter((student) => !presentStudents.includes(student));
+
+  // Set the list of absentees in state
+  setAbsenteesList(absentees);
+  }
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -62,6 +70,7 @@ const ViewList = ({sessionID, courseDetails}) => {
 
     // Update state with the combined array of data
     setAttendees(combinedData);
+    getAbsenteesList(combinedData);
   } else {
     console.log("No document found.");
   }
@@ -118,7 +127,6 @@ const ViewList = ({sessionID, courseDetails}) => {
           <div className="flex">
             <h1 className=" font-semibold text-lg">{courseDetails.courseName}</h1>
             <h2 className="mx-4 font-mono text-lg">{`(${courseDetails.courseID})`}</h2>
-            {console.log(courseDetails)}
           </div>
         </div>
        
@@ -127,7 +135,12 @@ const ViewList = ({sessionID, courseDetails}) => {
       </div>
       <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
       <AttendeesTable attendees={attendees} userLocation={userLocation}/>
+      
+      </div>
+      <h1 className=" mx-10 text-xl font-bold my-5 ">Absentees List</h1>
+      <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
       <AbsenteesTable absenteesList={absenteesList}/>
+      
       </div>
       
       
