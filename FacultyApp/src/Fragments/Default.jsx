@@ -21,6 +21,12 @@ const Default = () => {
     }
     
   }
+  const handleCourseClick = (key)=>{
+
+  }
+  const handleCourseDelete = (key)=>{
+
+  }
   const AttendiesTable = ({getAttendees}) => {
     console.log(getAttendees)
     var attendees = Array.isArray(getAttendees) ? getAttendees : JSON.parse(getAttendees);
@@ -46,32 +52,60 @@ const Default = () => {
       </table>
     );
   };
-
+const PreviousAttendance = ()=> (
+  <table className=' w-full table-fixed'>
+  <thead>
+    <tr>
+      <th className=' border-b-2 border-r-2  py-5 w-[80%]'>Previous Attendance</th>
+      <th className=' border-b-2 border-l-2  py-5'>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {keys.length<=0?<tr><td colSpan={2} className='text-center py-5'>No attendance data available</td></tr>:keys.map((key, index) => (
+      <tr key={index}>
+        <td className=' px-10 py-5 font-semibold cursor-pointer border-b-2 hover:text-xl transition-all duration-300' onClick={() => handleClick(key)}>{key.slice(11,21)}</td>
+        <td className=' text-center p-5 cursor-pointer border-b-2' onClick={()=> handleDelete(key)}><FcDeleteRow size={30} className='inline-block'/></td>
+      </tr>
+    
+    ))}
+  </tbody>
+</table>
+);
+const CourseTable = ()=>(
+  <table className=' w-full table-fixed mb-10'>
+  <thead>
+    <tr>
+      <th className=' border-b-2 border-r-2  py-5 w-[80%]'>Course Attendance</th>
+      <th className=' border-b-2 border-l-2  py-5'>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {courseKeys.map((key, index) => (
+      <tr key={index}>
+        <td className=' px-10 py-5 font-semibold cursor-pointer border-b-2 hover:text-xl transition-all duration-300' onClick={() => handleCourseClick(key)}>{key}</td>
+        <td className=' text-center p-5 cursor-pointer border-b-2' onClick={()=> handleCourseDelete(key)}><FcDeleteRow size={30} className='inline-block'/></td>
+      </tr>
+    
+    ))}
+  </tbody>
+</table>
+)
   return (
-    <div className=' rounded-2xl border shadow-2xl m-4'>
-      <table className=' w-full table-fixed'>
-        <thead>
-          <tr>
-            <th className=' border-b-2 border-r-2  py-5 w-[80%]'>Previous Attendance</th>
-            <th className=' border-b-2 border-l-2  py-5'>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {keys.length<=0?<tr><td colSpan={2} className='text-center py-5'>No attendance data available</td></tr>:keys.map((key, index) => (
-            <tr key={index}>
-              <td className=' px-10 py-5 font-semibold cursor-pointer border-b-2 hover:text-xl' onClick={() => handleClick(key)}>{key.slice(11,21)}</td>
-              <td className=' text-center p-5 cursor-pointer border-b-2' onClick={()=> handleDelete(key)}><FcDeleteRow size={30} className='inline-block'/></td>
-            </tr>
-          
-          ))}
-        </tbody>
-      </table>
-      {selectedKey!=null && (
+    <div className=' rounded-2xl border shadow-2xl m-4 bg-gray-200'>
+      <div className={` rounded-2xl border hover:shadow-2xl m-4 transition-all duration-300 bg-white`}>
+        <CourseTable/>
+      </div>
+      
+      <div className=' rounded-2xl border hover:shadow-2xl m-4 transition-all duration-300 ease-in-out bg-white'>
+        <PreviousAttendance/>
+        {selectedKey!=null && (
         <div className=' my-10 mx-4'>
           Fragment for {selectedKey}
           <AttendiesTable getAttendees={localStorage.getItem(selectedKey)}/>
         </div>
-      )}
+        )}
+      </div>
+      
     </div>
   );
 };
