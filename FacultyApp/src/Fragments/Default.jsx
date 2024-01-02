@@ -5,7 +5,9 @@ import { FcDeleteRow } from "react-icons/fc";
 const Default = () => {
   const [selectedKey, setSelectedKey] = useState(null);
 
-  const [keys, setKeys] = useState(Object.keys(localStorage));
+  const allKeys = Object.keys(localStorage)
+  const [keys, setKeys] = useState(allKeys.filter((key)=> key.includes("attendance")));
+  const [courseKeys, setCourseKeys] = useState(allKeys.filter((key)=>!key.includes("attendance")))
 
   const handleClick = (key) => {
     setSelectedKey(key);
