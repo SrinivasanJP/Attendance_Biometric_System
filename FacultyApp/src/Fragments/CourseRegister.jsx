@@ -5,7 +5,7 @@ const CourseRegister = ({setFragment}) => {
   const [courseDetails, setcourseDetails] = useState({
     courseName: '',
     courseID: '',
-    studentRegisters:[]
+    studentRegisters:''
   });
   const input_box="border-b-2 w-full pl-8 p-3 mb-6  bg-stone-100 rounded-2xl shadow-sm"
 const handleSubmit = async(e)=>{
@@ -27,11 +27,11 @@ const handleSubmit = async(e)=>{
             <label htmlFor="id" className="absolute pt-4 pl-2"></label>
             <input type="text" name="id" id="id" placeholder="Enter course ID" required title="Course ID" className={input_box} onChange ={(e) => setcourseDetails({...courseDetails, courseID:e.target.value})}/>
             <label htmlFor="regs" className="absolute pt-4 pl-2"></label>
-            <textarea name="" id="" 
+            <textarea name="regs" id="regs" 
             className={input_box} 
             required
             placeholder='Enter Student Register numbers (comma separated)'
-            onChange={(e) => setStudentDetails({...studentDetails, about:e.target.value})}></textarea>
+            onChange={(e) => setcourseDetails({...courseDetails, studentRegisters:e.target.value})}></textarea>
            
             <button className="inline-flex items-center px-4 justify-center py-2 mt-5 font-bold leading-6 text-sm shadow rounded-md text-white bg-blue-400 min-w-[7em] transition ease-in-out duration-150">
             <svg className={pState?"animate-spin -ml-1 mr-3 h-5 w-5 text-white":"hidden"} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
