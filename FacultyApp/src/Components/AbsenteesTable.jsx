@@ -1,6 +1,16 @@
 import React from 'react'
-import { FcDeleteRow } from 'react-icons/fc'
-const AbsenteesTable = ({absenteesList}) => {
+import { IoMdAdd } from "react-icons/io";
+import { getAbsenteesList } from '../helpers/AbsenteesList';
+const AbsenteesTable = ({absenteesList, setAttendees, attendees}) => {
+  const handleAdd = (registerNo)=>{
+    setAttendees([...attendees,{ fingerprint: "",
+      imageURL: "",
+      latitude: "0",
+      longitude: "0",
+      altitude: "0",
+      userName: "Manual Add",
+      registerNo: registerNo}])
+  }
   return (
     <table className="min-w-full">
         <thead className=' bg-gradient-to-r from-blue-300 to-slate-100 rounded-xl '>
@@ -16,7 +26,7 @@ const AbsenteesTable = ({absenteesList}) => {
             <tr key={index} className='odd:bg-gray-100 '>
               
               <td className={"px-6 py-4 whitespace-nowrap text-lg font-medium text-gray-800  border-2 text-center border-gray-200"}>{registerNo}</td>
-              <td className=' text-center p-5 cursor-pointer border-b-2' onClick={()=> handleDelete(key)}><FcDeleteRow size={30} className='inline-block'/></td>
+              <td className=' text-center p-5 cursor-pointer border-b-2' onClick={()=> handleAdd(registerNo)}><IoMdAdd size={25} className='inline-block'/></td>
             </tr>
           ))}
         </tbody>

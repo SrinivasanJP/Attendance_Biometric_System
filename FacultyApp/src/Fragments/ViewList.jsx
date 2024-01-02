@@ -1,10 +1,12 @@
 import { IoMdRefresh } from "react-icons/io"
+import { IoMdAdd } from "react-icons/io";
 import React, { useEffect, useState } from 'react'
 import {db} from "../config/firebase"
 import { doc, getDoc } from 'firebase/firestore';
 import {getLocation} from '../helpers/locationData';
 import AttendeesTable from '../Components/AttendeesTable';
 import AbsenteesTable from "../Components/AbsenteesTable"
+import { getAbsenteesList } from "../helpers/AbsenteesList";
 
 const ViewList = ({sessionID, courseDetails}) => {
   sessionID="test"
@@ -21,6 +23,9 @@ const ViewList = ({sessionID, courseDetails}) => {
   // Set the list of absentees in state
   setAbsenteesList(absentees);
   }
+  useEffect(()=>{
+    getAbsenteesList(attendees)
+  },[attendees]);
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -139,7 +144,7 @@ const ViewList = ({sessionID, courseDetails}) => {
       </div>
       <h1 className=" mx-10 text-xl font-bold my-5 ">Absentees List</h1>
       <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
-      <AbsenteesTable absenteesList={absenteesList}/>
+      <AbsenteesTable absenteesList={absenteesList} setAttendees={setAttendees} attendees={attendees}/>
       
       </div>
       
