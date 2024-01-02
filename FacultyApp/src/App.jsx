@@ -31,7 +31,7 @@ function App() {
       case "viewList":
         return <ViewList sessionID={sessionID} />
       case "register":
-        return <CourseRegister />
+        return <CourseRegister setFragment={setFragment}/>
       default:
         return <Default />
     }
