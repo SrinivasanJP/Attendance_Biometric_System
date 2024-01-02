@@ -1,0 +1,25 @@
+{
+  "hash": "7e6ac5e0",
+  "configHash": "38eb84e8",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "bbb6bd27",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "11d8931e",
+      "needsInterop": true
+    },
+    "react-icons/fc": {
+      "src": "../../node_modules/react-icons/fc/index.esm.js",
+      "file": "react-icons_fc.js",
+      "fileHash": "66d74930",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-XSC2MCPN": {
+      "file": "chunk-XSC2MCPN.js"
+    }
+  }
+}
