@@ -6,9 +6,9 @@ import {getLocation} from '../helpers/locationData';
 import AttendeesTable from '../Components/AttendeesTable';
 
 
-const ViewList = ({sessionID}) => {
+const ViewList = ({sessionID, courseDetails}) => {
   sessionID="test"
-  
+  console.log(courseDetails)
   const [attendees, setAttendees] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(false);

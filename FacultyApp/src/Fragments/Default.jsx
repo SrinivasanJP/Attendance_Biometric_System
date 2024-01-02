@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { FcDeleteRow } from "react-icons/fc";
 
-const Default = () => {
+const Default = ({setCourseDetails, setFragment}) => {
   const [selectedKey, setSelectedKey] = useState(null);
 
   const allKeys = Object.keys(localStorage)
@@ -22,7 +22,8 @@ const Default = () => {
     
   }
   const handleCourseClick = (key)=>{
-
+    setCourseDetails(localStorage.getItem(key));
+    setFragment("qr");
   }
   const handleCourseDelete = (key)=>{
 

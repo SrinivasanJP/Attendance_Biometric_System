@@ -10,6 +10,7 @@ import CourseRegister from './Fragments/CourseRegister'
 function App() {
   const [fragment, setFragment] = useState("");
   const [sessionID, setSessionID] = useState("NA");
+  const [courseDetails, setCourseDetails] = useState("");
   const sessionCreateHandle = async()=>{
     if(confirm("Do you want to create new session?")){
       if(sessionID!="NA"){
@@ -20,7 +21,10 @@ function App() {
     }
     
   }
-  const handleRegister = ()=>{
+  const handleRegister = async ()=>{
+    if (sessionID !== 'NA') {
+      await deleteSession();
+    }
     setFragment("register");
   }
 
@@ -29,11 +33,11 @@ function App() {
       case "qr":
         return <QRfragment setFragment={setFragment} sessionID={sessionID}/>
       case "viewList":
-        return <ViewList sessionID={sessionID} />
+        return <ViewList sessionID={sessionID} courseDetails={courseDetails}/>
       case "register":
         return <CourseRegister setFragment={setFragment}/>
       default:
-        return <Default />
+        return <Default setCourseDetails={setCourseDetails} setFragment={setFragment}/>
     }
   }
   const deleteSession = async ()=>{
