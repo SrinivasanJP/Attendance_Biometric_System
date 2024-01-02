@@ -47,7 +47,7 @@ const QRfragment = ({setFragment, sessionID}) => {
         </div>
         <ol>
           {steps.map((instruct, index)=>(
-            <li className=' m-5 text-xl border-2 border-blue-400 shadow-xl rounded-xl p-5 font-semibold'>{`Step ${index+1}: ${instruct}`}</li>
+            <li key={index} className=' m-5 text-xl border-2 border-blue-400 shadow-xl rounded-xl p-5 font-semibold'>{`Step ${index+1}: ${instruct}`}</li>
           ))}
         </ol>
       </div>
