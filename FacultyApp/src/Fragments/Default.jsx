@@ -1,8 +1,9 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { FcDeleteRow } from "react-icons/fc";
+import { generateSessionID } from '../helpers/generateSessionID';
 
-const Default = ({setCourseDetails, setFragment}) => {
+const Default = ({setCourseDetails, setFragment, setSessionID}) => {
   const [selectedKey, setSelectedKey] = useState(null);
 
   const allKeys = Object.keys(localStorage)
@@ -23,6 +24,7 @@ const Default = ({setCourseDetails, setFragment}) => {
   }
   const handleCourseClick = (key)=>{
     setCourseDetails(localStorage.getItem(key));
+    setSessionID(generateSessionID())
     setFragment("qr");
   }
   const handleCourseDelete = (key)=>{

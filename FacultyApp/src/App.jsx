@@ -37,7 +37,7 @@ function App() {
       case "register":
         return <CourseRegister setFragment={setFragment}/>
       default:
-        return <Default setCourseDetails={setCourseDetails} setFragment={setFragment}/>
+        return <Default setCourseDetails={setCourseDetails} setFragment={setFragment} setSessionID={setSessionID}/>
     }
   }
   const deleteSession = async ()=>{
