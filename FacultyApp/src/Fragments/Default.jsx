@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { FcDeleteRow } from "react-icons/fc";
 import { generateSessionID } from '../helpers/generateSessionID';
@@ -6,18 +6,23 @@ import { generateSessionID } from '../helpers/generateSessionID';
 const Default = ({setCourseDetails, setFragment, setSessionID}) => {
   const [selectedKey, setSelectedKey] = useState(null);
 
-  const allKeys = Object.keys(localStorage)
-  const [keys, setKeys] = useState(allKeys.filter((key)=> key.includes("attendance")));
-  const [courseKeys, setCourseKeys] = useState(allKeys.filter((key)=>!key.includes("attendance")))
+  const [allKeys, setAllKeys] = useState(Object.keys(localStorage));
+  const [keys, setKeys] = useState([]);
+  const [courseKeys, setCourseKeys] = useState([]);
+  useEffect(()=>{
+    setKeys(allKeys.filter((key)=> key.includes("attendance")));
+    setCourseKeys(allKeys.filter((key)=>!key.includes("attendance")))
+  },[allKeys])
+  
 
   const handleClick = (key) => {
     setSelectedKey(key);
     
   };
   const handleDelete = (key) =>{
-    if(confirm("Do you want to remove the attendance data")){
+    if(confirm("Do you want to remove this data?")){
       localStorage.removeItem(key)
-      setKeys(Object.keys(localStorage));
+      setAllKeys(Object.keys(localStorage));
       setSelectedKey(null)
     }
     
@@ -26,9 +31,6 @@ const Default = ({setCourseDetails, setFragment, setSessionID}) => {
     setCourseDetails(JSON.parse(localStorage.getItem(key)));
     setSessionID(generateSessionID())
     setFragment("qr");
-  }
-  const handleCourseDelete = (key)=>{
-
   }
   const AttendiesTable = ({getAttendees}) => {
     console.log(getAttendees)
@@ -86,7 +88,7 @@ const CourseTable = ()=>(
     {courseKeys.map((key, index) => (
       <tr key={index}>
         <td className=' px-10 py-5 font-semibold cursor-pointer border-b-2 hover:text-xl transition-all duration-300' onClick={() => handleCourseClick(key)}>{key}</td>
-        <td className=' text-center p-5 cursor-pointer border-b-2' onClick={()=> handleCourseDelete(key)}><FcDeleteRow size={30} className='inline-block'/></td>
+        <td className=' text-center p-5 cursor-pointer border-b-2' onClick={()=> handleDelete(key)}><FcDeleteRow size={30} className='inline-block'/></td>
       </tr>
     
     ))}
