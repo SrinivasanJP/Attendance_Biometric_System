@@ -5,6 +5,7 @@ import { generateSessionID } from './helpers/generateSessionID'
 import ViewList from './Fragments/ViewList'
 import { doc, deleteDoc } from 'firebase/firestore' 
 import { db } from './config/firebase'
+import CourseRegister from './Fragments/CourseRegister'
 
 function App() {
   const [fragment, setFragment] = useState("");
@@ -19,6 +20,9 @@ function App() {
     }
     
   }
+  const handleRegister = ()=>{
+    setFragment("register");
+  }
 
   const renderFragment = ()=>{
     switch (fragment) {
@@ -26,6 +30,8 @@ function App() {
         return <QRfragment setFragment={setFragment} sessionID={sessionID}/>
       case "viewList":
         return <ViewList sessionID={sessionID} />
+      case "register":
+        return <CourseRegister />
       default:
         return <Default />
     }
@@ -63,8 +69,11 @@ function App() {
         }}>VAttendance</h1>
       <h2 className=' font-semibold'>Session ID : <span className=' font-mono'>{sessionID}</span></h2>
       </div>
-      
-    <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl' onClick={sessionCreateHandle}>Create New Session</button>
+      <div className='flex'>
+      <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl mx-3' onClick={handleRegister}>Register Course</button>
+      <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl' onClick={sessionCreateHandle}>Create New Session</button>
+      </div>
+    
     </div>
       
       {renderFragment()}
