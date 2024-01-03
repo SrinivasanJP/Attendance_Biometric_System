@@ -7,7 +7,6 @@ import AttendeesTable from '../Components/AttendeesTable';
 import AbsenteesTable from "../Components/AbsenteesTable"
 
 const ViewList = ({sessionID, courseDetails}) => {
-  sessionID="test"
   console.log(courseDetails)
   const [attendees, setAttendees] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
