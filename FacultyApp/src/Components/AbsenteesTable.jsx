@@ -1,6 +1,5 @@
 import React from 'react'
 import { IoMdAdd } from "react-icons/io";
-import { getAbsenteesList } from '../helpers/AbsenteesList';
 const AbsenteesTable = ({absenteesList, setAttendees, attendees}) => {
   const handleAdd = (registerNo)=>{
     setAttendees([...attendees,{ fingerprint: "",
