@@ -107,6 +107,7 @@ public class CaptureImage extends AppCompatActivity {
                     bitmapImage.compress(Bitmap.CompressFormat.JPEG, 8, outputStream);
                     Intent sendData = new Intent(getApplicationContext(), SendAttendanceData.class);
                     sendData.putExtra("sessionID",preIntent.getStringExtra("sessionID"));
+                    sendData.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(sendData);
                     finish();
                 } catch (IOException e) {
