@@ -1,21 +1,21 @@
 import { IoMdRefresh } from "react-icons/io"
-import { IoMdAdd } from "react-icons/io";
 import React, { useEffect, useState } from 'react'
 import {db} from "../config/firebase"
 import { doc, getDoc } from 'firebase/firestore';
 import {getLocation} from '../helpers/locationData';
 import AttendeesTable from '../Components/AttendeesTable';
 import AbsenteesTable from "../Components/AbsenteesTable"
-import { getAbsenteesList } from "../helpers/AbsenteesList";
 
 const ViewList = ({sessionID, courseDetails}) => {
   sessionID="test"
+  console.log(courseDetails)
   const [attendees, setAttendees] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   
   const [absenteesList, setAbsenteesList] = useState([]);
-  const [registeredStudents, setRegisteredStudents] = useState(courseDetails.studentRegisters.split(","))
+  const [registeredStudents, setRegisteredStudents] = useState(courseDetails.studentRegisters.length>0?courseDetails.studentRegisters.split(","):[]);
+
   const getAbsenteesList = (combinedData)=>{
     const presentStudents = combinedData.map((data) => data.registerNo);
   const absentees = registeredStudents.filter((student) => !presentStudents.includes(student));
@@ -87,7 +87,7 @@ const ViewList = ({sessionID, courseDetails}) => {
   },[]);
   
   const handleExport = () => {
-    fetchData().then(()=>{
+    
       if(attendees.length<=0){
         alert("No attendies data to export");
         return
@@ -112,7 +112,6 @@ const ViewList = ({sessionID, courseDetails}) => {
   
       // Save JSON data to local storage
       localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees));
-    })
    
   };
 
@@ -131,7 +130,7 @@ const ViewList = ({sessionID, courseDetails}) => {
           </div>
           <div className="flex">
             <h1 className=" font-semibold text-lg">{courseDetails.courseName}</h1>
-            <h2 className="mx-4 font-mono text-lg">{`(${courseDetails.courseID})`}</h2>
+            <h2 className="mx-4 font-mono text-lg">{`${courseDetails.courseID}`}</h2>
           </div>
         </div>
        
@@ -144,6 +143,7 @@ const ViewList = ({sessionID, courseDetails}) => {
       </div>
       <h1 className=" mx-10 text-xl font-bold my-5 ">Absentees List</h1>
       <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
+        {console.log(absenteesList)}
       <AbsenteesTable absenteesList={absenteesList} setAttendees={setAttendees} attendees={attendees}/>
       
       </div>

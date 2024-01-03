@@ -10,12 +10,15 @@ import CourseRegister from './Fragments/CourseRegister'
 function App() {
   const [fragment, setFragment] = useState("");
   const [sessionID, setSessionID] = useState("NA");
-  const [courseDetails, setCourseDetails] = useState("");
+  const [courseDetails, setCourseDetails] = useState({});
   const sessionCreateHandle = async()=>{
     if(confirm("Do you want to create new session?")){
       if(sessionID!="NA"){
        await deleteSession();
       }
+      setCourseDetails({courseName: '',
+      courseID: '',
+      studentRegisters:''})
       setSessionID(generateSessionID());
       setFragment("qr");
     }
