@@ -1,10 +1,12 @@
 package dev.roxs.attendance.Helper;
 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -14,26 +16,32 @@ import java.security.NoSuchAlgorithmException;
 
 public class FingerPrint {
     public interface FingerprintAvailabilityListener {
-        void onFingerprintAvailability(boolean isAvailable, QueryDocumentSnapshot documentSnapshot);
+        void onFingerprintAvailability(boolean networkError,boolean isAvailable, QueryDocumentSnapshot documentSnapshot);
     }
     public void isFingerprintAvailable(FirebaseFirestore db, String fingerprint, FingerprintAvailabilityListener listener) {
-        db.collection("users").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                    if (documentSnapshot.getId().equals(fingerprint)) {
-                        // Fingerprint found
-                        listener.onFingerprintAvailability(true, documentSnapshot);
-                        return; // Exit the loop and the method
-                    }
+
+            db.collection("users").get().addOnCompleteListener(task -> {
+                if(task.getException()==null){
+                    listener.onFingerprintAvailability(true,false, null);
                 }
-                // Fingerprint not found
-                listener.onFingerprintAvailability(false, null);
-            } else {
-                // Handle failure
-                listener.onFingerprintAvailability(false, null);
-            }
-        });
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                        if (documentSnapshot.getId().equals(fingerprint)) {
+                            // Fingerprint found
+                            listener.onFingerprintAvailability(false,true, documentSnapshot);
+                            return; // Exit the loop and the method
+                        }
+                    }
+                    listener.onFingerprintAvailability(false,false, null);
+                } else {
+                    // Handle failure
+                    Toast.makeText(mContext, "Task unsuccessful", Toast.LENGTH_SHORT).show();
+                    listener.onFingerprintAvailability(true,false, null);
+                }
+            });
+
     }
+
     private final Context mContext;
     public FingerPrint(Context context) {
         mContext = context;

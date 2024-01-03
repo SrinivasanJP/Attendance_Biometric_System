@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
+import dev.roxs.attendance.HelperActivities.NoNetwork;
 import dev.roxs.attendance.R;
 
 
@@ -35,19 +36,25 @@ public class Setup extends AppCompatActivity {
     private DocumentReference reference;
     private FingerPrint fp;
     private SharedpreferenceHelper sp;
+    private RelativeLayout vContainer;
     @Override
     protected void onStart() {
         super.onStart();
         sp = new SharedpreferenceHelper(this);
+        vContainer = findViewById(R.id.setup_container);
+        vContainer.setVisibility(View.INVISIBLE);
         if(sp.isDataAvailable()){
             startActivity(new Intent(getApplicationContext(), IDPage.class));
             finish();
         }else{
             fp = new FingerPrint(Setup.this);
-            fp.isFingerprintAvailable(db,fp.getFingerPrint(), (isAvailable, documentSnapshot) -> {
+            fp.isFingerprintAvailable(db,fp.getFingerPrint(), (networkError,isAvailable, documentSnapshot) -> {
+                if(networkError){
+                    startActivity(new Intent(getApplicationContext(), NoNetwork.class));
+                    finish();
+                }
                 if (isAvailable) {
                     sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
-                    Toast.makeText(Setup.this, "Fingerprint available", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(getApplicationContext(), IDPage.class));
                     finish();
                 } else {
@@ -62,6 +69,8 @@ public class Setup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
+        vContainer = findViewById(R.id.setup_container);
+        vContainer.setVisibility(View.VISIBLE);
         //hooks
         vReg_no = findViewById(R.id.reg_no);
         vName = findViewById(R.id.name);

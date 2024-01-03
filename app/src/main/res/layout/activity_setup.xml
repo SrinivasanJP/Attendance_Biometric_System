@@ -9,121 +9,128 @@
     tools:context=".Activities.Setup"
     android:paddingVertical="50dp"
     android:paddingHorizontal="20dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/digital_id_setup"
-        android:id="@+id/setupText"
-        android:layout_marginBottom="20dp"
-        android:textColor="@color/black"
-        android:textSize="28sp"
-        android:fontFamily="@font/neb"
-        />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="30dp"
-        android:background="@drawable/setup_card"
-        android:layout_below="@+id/setupText">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="30dp"
-
-        android:orientation="vertical"
-        android:id="@+id/inputContainer"
-        android:layout_marginVertical="20dp"
-        >
+        android:id="@+id/setup_container"
+        tools:ignore="UselessParent">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:fontFamily="@font/nm"
-            android:text="@string/enter_register_no"/>
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/emailLayout"
-            android:layout_width="match_parent"
-            app:boxBackgroundColor="@color/white"
-            android:layout_height="wrap_content"
-            app:boxBackgroundMode="filled"
-            app:boxStrokeColor="#00000000"
-            app:hintTextColor="@color/black">
-
-            <EditText
-                android:id="@+id/reg_no"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/eg_reg"
-                android:textColor="@color/black"
-                android:autofillHints="username"
-                android:inputType="text"/>
-        </com.google.android.material.textfield.TextInputLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:fontFamily="@font/nm"
-            android:text="@string/enter_name"/>
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/namelayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxBackgroundColor="@color/white"
-            app:boxBackgroundMode="filled"
-            app:boxStrokeColor="#00000000"
-            app:hintTextColor="@color/black">
-
-            <EditText
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/eg_name"
-                android:textColor="@color/black"
-                android:autofillHints="username"
-                android:inputType="text"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/setup_note"
-            android:textColor="@color/paleBlack"
-            android:layout_marginVertical="30dp"/>
-    </LinearLayout>
+            android:layout_centerHorizontal="true"
+            android:text="@string/digital_id_setup"
+            android:id="@+id/setupText"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/black"
+            android:textSize="28sp"
+            android:fontFamily="@font/neb"
+            />
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/finishSetupBtn"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="50dp"
-            android:background="@drawable/round_corner"
-            >
-            <TextView
-                android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="30dp"
+            android:background="@drawable/setup_card"
+            android:layout_below="@+id/setupText">
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/finish_setup"
-                android:textSize="18sp"
-                android:id="@+id/finishSetupText"
-                android:layout_marginVertical="10dp"
-                android:layout_centerInParent="true"
-                android:textColor="@color/black"
-                android:fontFamily="@font/nb"/>
+                android:paddingVertical="30dp"
 
-            <ProgressBar
-                android:id="@+id/setupprogressBar"
-                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/inputContainer"
+                android:layout_marginVertical="20dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/nm"
+                    android:text="@string/enter_register_no"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/emailLayout"
+                    android:layout_width="match_parent"
+                    app:boxBackgroundColor="@color/white"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="filled"
+                    app:boxStrokeColor="#00000000"
+                    app:hintTextColor="@color/black">
+
+                    <EditText
+                        android:id="@+id/reg_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/eg_reg"
+                        android:textColor="@color/black"
+                        android:autofillHints="username"
+                        android:inputType="text"/>
+                </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/nm"
+                    android:text="@string/enter_name"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/namelayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxBackgroundMode="filled"
+                    app:boxStrokeColor="#00000000"
+                    app:hintTextColor="@color/black">
+
+                    <EditText
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/eg_name"
+                        android:textColor="@color/black"
+                        android:autofillHints="username"
+                        android:inputType="text"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_note"
+                    android:textColor="@color/paleBlack"
+                    android:layout_marginVertical="30dp"/>
+            </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:visibility="invisible" />
+                android:id="@+id/finishSetupBtn"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="50dp"
+                android:background="@drawable/round_corner"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/finish_setup"
+                    android:textSize="18sp"
+                    android:id="@+id/finishSetupText"
+                    android:layout_marginVertical="10dp"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/nb"/>
+
+                <ProgressBar
+                    android:id="@+id/setupprogressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="invisible" />
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
+
+
 
 
 
