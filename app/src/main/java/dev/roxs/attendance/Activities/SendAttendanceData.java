@@ -46,6 +46,7 @@ import java.util.Map;
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.Helper.LocationUtils;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
+import dev.roxs.attendance.HelperActivities.PermissionInstruction;
 import dev.roxs.attendance.R;
 
 public class SendAttendanceData extends AppCompatActivity {
@@ -146,7 +147,6 @@ public class SendAttendanceData extends AppCompatActivity {
     @SuppressLint("UseCompatLoadingForDrawables")
     private void sendData(){
 
-        Log.d("UT testing 3D data", "sendData: "+latitude+longitude+altitude);
         //get Captured image
         File privateDir = getApplicationContext().getFilesDir();
         File imageFile = new File(privateDir, "captured_image.jpg");
@@ -214,7 +214,10 @@ public class SendAttendanceData extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLocation();
             } else {
-                Toast.makeText(this, "Permission is required", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getApplicationContext(), PermissionInstruction.class);
+                i.putExtra("case","LOCATION");
+                startActivity(i);
+                finish();
             }
         }
     }
