@@ -59,6 +59,7 @@ public class Setup extends AppCompatActivity {
                     finish();
                 } else {
                     Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
+                    vContainer.setVisibility(View.VISIBLE);
                 }
             });
         }
@@ -69,8 +70,7 @@ public class Setup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
-        vContainer = findViewById(R.id.setup_container);
-        vContainer.setVisibility(View.VISIBLE);
+
         //hooks
         vReg_no = findViewById(R.id.reg_no);
         vName = findViewById(R.id.name);
