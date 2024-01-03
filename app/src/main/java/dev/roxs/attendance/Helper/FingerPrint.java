@@ -21,9 +21,7 @@ public class FingerPrint {
     public void isFingerprintAvailable(FirebaseFirestore db, String fingerprint, FingerprintAvailabilityListener listener) {
 
             db.collection("users").get().addOnCompleteListener(task -> {
-                if(task.getException()==null){
-                    listener.onFingerprintAvailability(true,false, null);
-                }
+
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                         if (documentSnapshot.getId().equals(fingerprint)) {
@@ -36,7 +34,7 @@ public class FingerPrint {
                 } else {
                     // Handle failure
                     Toast.makeText(mContext, "Task unsuccessful", Toast.LENGTH_SHORT).show();
-                    listener.onFingerprintAvailability(true,false, null);
+                    listener.onFingerprintAvailability(false,false, null);
                 }
             });
 
