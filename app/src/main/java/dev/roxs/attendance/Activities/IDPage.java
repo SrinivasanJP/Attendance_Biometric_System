@@ -1,6 +1,7 @@
 package dev.roxs.attendance.Activities;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -19,11 +20,34 @@ import android.widget.TextView;
 import java.io.File;
 
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
+import dev.roxs.attendance.HelperActivities.PermissionInstruction;
 import dev.roxs.attendance.R;
 
 public class IDPage extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 200;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 300;
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Intent i = new Intent(getApplicationContext(), PermissionInstruction.class);
+                i.putExtra("case","CAMERA");
+                startActivity(i);
+                finish();
+            }
+        }
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Intent i = new Intent(getApplicationContext(), PermissionInstruction.class);
+                i.putExtra("case","LOCATION");
+                startActivity(i);
+                finish();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +79,12 @@ public class IDPage extends AppCompatActivity {
                     new String[]{Manifest.permission.CAMERA},
                     CAMERA_PERMISSION_REQUEST_CODE);
         }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
+
         //hooks
         RelativeLayout markAttendanceBtn = findViewById(R.id.markAttendanceBtn);
         markAttendanceBtn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), QRReader.class)));
