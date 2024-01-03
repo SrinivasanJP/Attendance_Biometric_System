@@ -18,4 +18,5 @@
     <string name="doneSymbol">doneSymbol</string>
     <string name="vit_logo">Vit logo</string>
     <string name="getting_location_info">Getting Location info</string>
+    <string name="no_network">no network</string>
 </resources>
