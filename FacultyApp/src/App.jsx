@@ -69,7 +69,17 @@ function App() {
       <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl' onClick={sessionCreateHandle}>Create New Session</button>
       </div>
     </div>
+    <div className='flex  justify-center items-center'>
     <p className=' text-center text-red-500'>Note: Don't refresh page once you created session</p>
+    <button className=' bg-slate-400 px-5 py-2 rounded-xl text-white font-bold mx-10' onClick={()=>{
+      if(sessionID!='NA'){
+      deleteSession();
+      setFragment("default");
+      }
+    }}>Click here to delete session</button>
+    </div>
+   
+
       
       {renderFragment()}
     </>
