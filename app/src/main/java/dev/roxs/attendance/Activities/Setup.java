@@ -22,7 +22,6 @@ import java.util.Objects;
 
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
-import dev.roxs.attendance.HelperActivities.NoNetwork;
 import dev.roxs.attendance.R;
 
 
@@ -37,6 +36,7 @@ public class Setup extends AppCompatActivity {
     private FingerPrint fp;
     private SharedpreferenceHelper sp;
     private RelativeLayout vContainer;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -47,21 +47,22 @@ public class Setup extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), IDPage.class));
             finish();
         }else{
-            fp = new FingerPrint(Setup.this);
-            fp.isFingerprintAvailable(db,fp.getFingerPrint(), (networkError,isAvailable, documentSnapshot) -> {
-                if(networkError){
-                    startActivity(new Intent(getApplicationContext(), NoNetwork.class));
-                    finish();
-                }
-                if (isAvailable) {
-                    sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
-                    startActivity(new Intent(getApplicationContext(), IDPage.class));
-                    finish();
-                } else {
-                    Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
-                    vContainer.setVisibility(View.VISIBLE);
-                }
-            });
+                fp = new FingerPrint(Setup.this);
+                fp.isFingerprintAvailable(db, fp.getFingerPrint(), (networkError,isAvailable, documentSnapshot) -> {
+                    if(!networkError){
+                    if (isAvailable) {
+                        sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
+                        startActivity(new Intent(getApplicationContext(), IDPage.class));
+                        finish();
+                    } else {
+                        Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
+                        vContainer.setVisibility(View.VISIBLE);
+                    }
+                    }else{
+                        Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                
         }
 
     }
@@ -93,7 +94,8 @@ public class Setup extends AppCompatActivity {
             reference.set(user).addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
                     sp.addData(fp.getFingerPrint(),sReg_no, sName);
-                    startActivity(new Intent(getApplicationContext(), IDPage.class));
+                    Intent intent = new Intent(getApplicationContext(), IDPage.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     finish();
                 }else{
                     Toast.makeText(Setup.this, "Check your internet connection", Toast.LENGTH_SHORT).show();

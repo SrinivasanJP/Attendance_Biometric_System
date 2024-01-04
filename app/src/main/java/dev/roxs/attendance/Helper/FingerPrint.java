@@ -3,6 +3,8 @@ package dev.roxs.attendance.Helper;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -18,26 +20,42 @@ public class FingerPrint {
     public interface FingerprintAvailabilityListener {
         void onFingerprintAvailability(boolean networkError,boolean isAvailable, QueryDocumentSnapshot documentSnapshot);
     }
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (connectivityManager != null) {
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+            if (capabilities != null) {
+                return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                        || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                        || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
+            }
+        }
+        return false;
+    }
     public void isFingerprintAvailable(FirebaseFirestore db, String fingerprint, FingerprintAvailabilityListener listener) {
 
+        if(isNetworkAvailable(mContext)) {
             db.collection("users").get().addOnCompleteListener(task -> {
 
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                         if (documentSnapshot.getId().equals(fingerprint)) {
                             // Fingerprint found
-                            listener.onFingerprintAvailability(false,true, documentSnapshot);
+                            listener.onFingerprintAvailability(false, true, documentSnapshot);
                             return; // Exit the loop and the method
                         }
                     }
-                    listener.onFingerprintAvailability(false,false, null);
+                    listener.onFingerprintAvailability(false, false, null);
                 } else {
                     // Handle failure
                     Toast.makeText(mContext, "Task unsuccessful", Toast.LENGTH_SHORT).show();
-                    listener.onFingerprintAvailability(false,false, null);
+                    listener.onFingerprintAvailability(false, false, null);
                 }
             });
-
+        }else{
+            listener.onFingerprintAvailability(true,false,null);
+        }
     }
 
     private final Context mContext;
