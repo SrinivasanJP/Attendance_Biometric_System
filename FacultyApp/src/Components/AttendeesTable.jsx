@@ -1,10 +1,17 @@
 
 import {calculateAttendeeFloorFromElevation, calculateAttendeeProximity} from '../helpers/locationData';
-const AttendeesTable = ({attendees, userLocation}) => {
-    if(attendees.length === 0){
+const AttendeesTable = ({attendees, userLocation, loading}) => {
+    if(loading){
       return (
         <div className='flex items-center justify-center'>
       <p className=' text-center my-10 mx-5  animate-pulse'>Hold on a sec! I just divided by zero. Let's give the universe a moment to sort itself out.</p>
+      </div>
+      )
+    }
+    if(attendees.length === 0){
+      return (
+        <div className='flex items-center justify-center'>
+      <p className=' text-center my-10 mx-5  animate-pulse'>No Attendees</p>
       </div>
       )
     }

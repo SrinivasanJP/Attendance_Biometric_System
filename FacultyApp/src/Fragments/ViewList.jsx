@@ -136,7 +136,7 @@ const ViewList = ({sessionID, courseDetails}) => {
         <button onClick={handleExport} className=' rounded-xl bg-blue-400 text-white font-semibold px-10 py-3'>Export Attendance</button>
       </div>
       <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
-      <AttendeesTable attendees={attendees} userLocation={userLocation}/>
+      <AttendeesTable attendees={attendees} userLocation={userLocation} loading={loading}/>
       
       </div>
       <h1 className=" mx-10 text-xl font-bold my-5 ">Absentees List</h1>
