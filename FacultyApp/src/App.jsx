@@ -68,8 +68,8 @@ function App() {
       <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl mx-3' onClick={handleRegister}>Register Course</button>
       <button className=' bg-blue-400 rounded-xl px-10 py-5 text-white font-bold text-xl' onClick={sessionCreateHandle}>Create New Session</button>
       </div>
-    
     </div>
+    <p className=' text-center text-red-500'>Note: Don't refresh page once you created session</p>
       
       {renderFragment()}
     </>
