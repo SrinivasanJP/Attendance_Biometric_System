@@ -16,9 +16,8 @@ const ViewList = ({sessionID, courseDetails}) => {
   const [registeredStudents, setRegisteredStudents] = useState(courseDetails.studentRegisters.length>0?courseDetails.studentRegisters.split(","):[]);
 
   const getAbsenteesList = (combinedData)=>{
-    const presentStudents = combinedData.map((data) => data.registerNo);
-  const absentees = registeredStudents.filter((student) => !presentStudents.includes(student));
-
+    const presentStudents = combinedData.map((data) => data.registerNo.trim());
+  const absentees = registeredStudents.filter((student) => !presentStudents.includes(student.trim()));
   // Set the list of absentees in state
   setAbsenteesList(absentees);
   }
