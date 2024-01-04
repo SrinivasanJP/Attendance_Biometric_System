@@ -6,7 +6,7 @@ import {getLocation} from '../helpers/locationData';
 import AttendeesTable from '../Components/AttendeesTable';
 import AbsenteesTable from "../Components/AbsenteesTable"
 
-const ViewList = ({sessionID, courseDetails}) => {
+const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
   console.log(courseDetails)
   const [attendees, setAttendees] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
@@ -110,6 +110,11 @@ const ViewList = ({sessionID, courseDetails}) => {
   
       // Save JSON data to local storage
       localStorage.setItem(`attendance_${new Date().toISOString()}`, JSON.stringify(attendees));
+      if(confirm("May I close this session?"))
+      {
+      deleteSession();
+      setFragment("default");
+      }
    
   };
 
