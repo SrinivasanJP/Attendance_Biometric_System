@@ -95,7 +95,7 @@ public class Setup extends AppCompatActivity {
                 if(task.isSuccessful()){
                     sp.addData(fp.getFingerPrint(),sReg_no, sName);
                     Intent intent = new Intent(getApplicationContext(), IDPage.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                     finish();
                 }else{
                     Toast.makeText(Setup.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
