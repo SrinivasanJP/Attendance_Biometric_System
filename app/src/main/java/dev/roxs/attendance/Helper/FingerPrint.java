@@ -3,6 +3,8 @@ package dev.roxs.attendance.Helper;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.Build;
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class FingerPrint {
     public interface FingerprintAvailabilityListener {
@@ -75,7 +78,14 @@ public class FingerPrint {
                 Build.MODEL + "_" +
                 Build.PRODUCT + "_" +displayWidth+"x"+displayHeight;
         @SuppressLint("HardwareIds") String androidId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        return hashString(androidId+"_"+deviceHardwareConfig);
+        SensorManager sensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+        List<Sensor> sensorList = sensorManager.getSensorList(Sensor.TYPE_ALL);
+        StringBuilder sensorDetails = new StringBuilder();
+        for (Sensor sensor : sensorList) {
+            sensorDetails.append(sensor.getName()).append(sensor.getVendor()).append("_");
+        }
+
+        return hashString(androidId+"_"+deviceHardwareConfig+sensorList);
     }
     private String hashString(String input) {
         try {
