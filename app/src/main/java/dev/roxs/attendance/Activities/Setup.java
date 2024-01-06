@@ -50,17 +50,18 @@ public class Setup extends AppCompatActivity {
                 fp = new FingerPrint(Setup.this);
                 fp.isFingerprintAvailable(db, fp.getFingerPrint(), (networkError,isAvailable, documentSnapshot) -> {
                     if(!networkError){
-                    if (isAvailable) {
-                        sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
-                        startActivity(new Intent(getApplicationContext(), IDPage.class));
-                        finish();
-                    } else {
-                        Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
-                        vContainer.setVisibility(View.VISIBLE);
-                    }
-                    }else{
-                        Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
-                    }
+                        if (isAvailable) {
+                            //TODO: add PIN verification here
+                            sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
+                            startActivity(new Intent(getApplicationContext(), IDPage.class));
+                            finish();
+                        } else {
+                            Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
+                            vContainer.setVisibility(View.VISIBLE);
+                        }
+                        }else{
+                            Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
+                        }
                 });
                 
         }
