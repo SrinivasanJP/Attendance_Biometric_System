@@ -5,8 +5,6 @@ package dev.roxs.attendance.Activities;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -65,16 +63,27 @@ public class Setup extends AppCompatActivity {
                             alertDialog.setView(view);
                             PinView pinView = view.findViewById(R.id.pinInput);
                             Button button = view.findViewById(R.id.enter);
-                            button.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-
+                            button.setOnClickListener(v -> {
+                                String sPinView = Objects.requireNonNull(pinView.getText()).toString();
+                                if(!sPinView.isEmpty()){
+                                    if(Objects.requireNonNull(documentSnapshot.get("pin")).toString().equals(sPinView)){
+                                        Toast.makeText(Setup.this, Objects.requireNonNull(documentSnapshot.get("pin")).toString(), Toast.LENGTH_SHORT).show();
+                                    }else{
+                                        Toast.makeText(Setup.this, "Invalid PIN", Toast.LENGTH_SHORT).show();
+                                        pinView.setError("Invalid PIN");
+                                        pinView.setLineColor(getColor(R.color.red));
+                                    }
+                                }else{
+                                    Toast.makeText(Setup.this, "PIN is required", Toast.LENGTH_SHORT).show();
+                                    pinView.setError("PIN is required");
+                                    pinView.setLineColor(getColor(R.color.red));
                                 }
+
                             });
                             alertDialog.create().show();
-                            sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
-                            startActivity(new Intent(getApplicationContext(), IDPage.class));
-                            finish();
+//                            sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
+//                            startActivity(new Intent(getApplicationContext(), IDPage.class));
+//                            finish();
                         } else {
                             Toast.makeText(Setup.this, "Fingerprint not available", Toast.LENGTH_SHORT).show();
                             vContainer.setVisibility(View.VISIBLE);
