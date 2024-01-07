@@ -19,4 +19,6 @@
     <string name="vit_logo">Vit logo</string>
     <string name="getting_location_info">Getting Location info</string>
     <string name="no_network">no network</string>
+    <string name="password">password</string>
+    <string name="create_pin">Create PIN</string>
 </resources>

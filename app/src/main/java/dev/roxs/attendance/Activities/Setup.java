@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -13,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chaos.view.PinView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -36,6 +38,7 @@ public class Setup extends AppCompatActivity {
     private FingerPrint fp;
     private SharedpreferenceHelper sp;
     private RelativeLayout vContainer;
+    private PinView vPin;
 
     @Override
     protected void onStart() {
@@ -76,6 +79,9 @@ public class Setup extends AppCompatActivity {
         //hooks
         vReg_no = findViewById(R.id.reg_no);
         vName = findViewById(R.id.name);
+        vPin = findViewById(R.id.pinInput);
+        vPin.setAnimationEnable(true);
+        vPin.setPasswordHidden(true);
         vSetupProgress = findViewById(R.id.setupprogressBar);
         vFinishSetup = findViewById(R.id.finishSetupText);
         RelativeLayout finishSetupBtn = findViewById(R.id.finishSetupBtn);
@@ -86,24 +92,41 @@ public class Setup extends AppCompatActivity {
             vSetupProgress.setVisibility(View.VISIBLE);
             String sReg_no = vReg_no.getText().toString();
             String sName = vName.getText().toString();
+            String sPin = Objects.requireNonNull(vPin.getText()).toString();
             //document reference
             reference = db.collection("users").document(fp.getFingerPrint());
 
-            Map<String, String> user = new HashMap<>();
-            user.put("name", sName);
-            user.put("registerNo", sReg_no);
-            reference.set(user).addOnCompleteListener(task -> {
-                if(task.isSuccessful()){
-                    sp.addData(fp.getFingerPrint(),sReg_no, sName);
-                    Intent intent = new Intent(getApplicationContext(), IDPage.class);
-                    startActivity(intent);
-                    finish();
+            if(!sReg_no.isEmpty()){
+                if(!sName.isEmpty()){
+                    if(!sPin.isEmpty()){
+                        Map<String, String> user = new HashMap<>();
+                        user.put("name", sName);
+                        user.put("registerNo", sReg_no);
+                        user.put("pin",sPin);
+                        reference.set(user).addOnCompleteListener(task -> {
+                            if(task.isSuccessful()){
+                                sp.addData(fp.getFingerPrint(),sReg_no, sName);
+                                Intent intent = new Intent(getApplicationContext(), IDPage.class);
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Log.d("UT error", "onCreate: "+task.getException());
+                                Toast.makeText(Setup.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                                vSetupProgress.setVisibility(View.INVISIBLE);
+                                vFinishSetup.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    }else{
+                        vPin.setError("pin is required");
+                    }
                 }else{
-                    Toast.makeText(Setup.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
-                    vSetupProgress.setVisibility(View.INVISIBLE);
-                    vFinishSetup.setVisibility(View.VISIBLE);
+                    vName.setError("Name is required");
                 }
-            });
+            }else{
+                vReg_no.setError("Register number is required");
+            }
+            vSetupProgress.setVisibility(View.INVISIBLE);
+            vFinishSetup.setVisibility(View.VISIBLE);
         });
 
     }
