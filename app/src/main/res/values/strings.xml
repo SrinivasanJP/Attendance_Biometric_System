@@ -21,4 +21,6 @@
     <string name="no_network">no network</string>
     <string name="password">password</string>
     <string name="create_pin">Create PIN</string>
+    <string name="enter_id_pin">Enter ID PIN</string>
+    <string name="enter">Enter</string>
 </resources>
