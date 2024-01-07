@@ -10,7 +10,6 @@ import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
-import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -51,8 +50,6 @@ public class FingerPrint {
                     }
                     listener.onFingerprintAvailability(false, false, null);
                 } else {
-                    // Handle failure
-                    Toast.makeText(mContext, "Task unsuccessful", Toast.LENGTH_SHORT).show();
                     listener.onFingerprintAvailability(false, false, null);
                 }
             });
