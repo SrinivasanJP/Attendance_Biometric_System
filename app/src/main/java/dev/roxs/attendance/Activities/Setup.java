@@ -2,12 +2,17 @@ package dev.roxs.attendance.Activities;
 
 
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -54,7 +59,19 @@ public class Setup extends AppCompatActivity {
                 fp.isFingerprintAvailable(db, fp.getFingerPrint(), (networkError,isAvailable, documentSnapshot) -> {
                     if(!networkError){
                         if (isAvailable) {
-                            //TODO: add PIN verification here
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+                            LayoutInflater inflater = this.getLayoutInflater();
+                            View view = inflater.inflate(R.layout.pin_get_layout,null);
+                            alertDialog.setView(view);
+                            PinView pinView = view.findViewById(R.id.pinInput);
+                            Button button = view.findViewById(R.id.enter);
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            });
+                            alertDialog.create().show();
                             sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
                             startActivity(new Intent(getApplicationContext(), IDPage.class));
                             finish();
