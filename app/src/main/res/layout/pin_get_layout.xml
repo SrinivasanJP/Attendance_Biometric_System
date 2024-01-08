@@ -24,6 +24,7 @@
                 android:id="@+id/pinInput"
                 style="@style/PinWidget.PinView"
                 android:layout_width="wrap_content"
+                android:imeOptions="actionDone"
                 android:layout_height="wrap_content"
                 android:cursorVisible="true"
                 android:hint="@string/password"
