@@ -1,9 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:padding="30dp"
+    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".HelperActivities.PermissionInstruction">
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/permission_instruction"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:fontFamily="@font/neb"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/step1"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:layout_margin="10dp"
+            android:fontFamily="@font/nb"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/step_2"
+            android:textColor="@color/black"
+            android:layout_margin="10dp"
+            android:textSize="18sp"
+            android:fontFamily="@font/nb"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/step_3"
+            android:textColor="@color/black"
+            android:layout_margin="10dp"
+            android:textSize="18sp"
+            android:fontFamily="@font/nb"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/step_4"
+            android:textColor="@color/black"
+            android:layout_margin="10dp"
+            android:textSize="18sp"
+            android:fontFamily="@font/nb"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/step_5"
+            android:textColor="@color/black"
+            android:layout_margin="10dp"
+            android:textSize="18sp"
+            android:fontFamily="@font/nb"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/step_6_"
+            android:textColor="@color/black"
+            android:layout_margin="10dp"
+            android:textSize="18sp"
+            android:fontFamily="@font/nb"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:text="@string/open_settings"
+            android:layout_gravity="center"
+            android:layout_margin="30dp"
+            android:backgroundTint="@color/black"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:paddingHorizontal="50dp"
+            android:paddingVertical="10dp"
+            android:id="@+id/openSettings"/>
+    </LinearLayout>

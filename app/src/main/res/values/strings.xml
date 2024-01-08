@@ -23,4 +23,12 @@
     <string name="create_pin">Create PIN</string>
     <string name="enter_id_pin">Enter ID PIN</string>
     <string name="enter">Enter</string>
+    <string name="permission_instruction">All the permission is required to mark you present</string>
+    <string name="step1">Step 1: Click the below button to open settings or open manually</string>
+    <string name="step_2">Step 2: Click the Camera permission</string>
+    <string name="step_3">Step 3: Check the Allow button</string>
+    <string name="step_4">Step 4: Then come back and click the Location permission</string>
+    <string name="step_5">Step 5: Check the Location permission</string>
+    <string name="step_6_">Step 6: Turn on \'Use precise location\'</string>
+    <string name="open_settings">Open Settings</string>
 </resources>
