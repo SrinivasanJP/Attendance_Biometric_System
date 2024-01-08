@@ -6,6 +6,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -46,6 +48,7 @@ public class Setup extends AppCompatActivity {
     private SharedpreferenceHelper sp;
     private RelativeLayout vContainer;
     private PinView vPin,pinView;
+    private ProgressBar vPageProgress;
 
     private void handlePin(DocumentSnapshot documentSnapshot){
         String sPinView = Objects.requireNonNull(pinView.getText()).toString();
@@ -70,6 +73,8 @@ public class Setup extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         sp = new SharedpreferenceHelper(this);
+        vPageProgress = findViewById(R.id.page_progress);
+        vPageProgress.setVisibility(View.VISIBLE);
         vContainer = findViewById(R.id.setup_container);
         vContainer.setVisibility(View.INVISIBLE);
         if(sp.isDataAvailable()){
@@ -87,7 +92,10 @@ public class Setup extends AppCompatActivity {
                             pinView = view.findViewById(R.id.pinInput);
                             button = view.findViewById(R.id.enter);
                             button.setOnClickListener(v -> handlePin(documentSnapshot));
-                            alertDialog.create().show();
+                            alertDialog.setCancelable(false);
+                            AlertDialog dialog = alertDialog.create();
+                            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialog.show();
                             pinView.setOnEditorActionListener((v, actionId, event) -> {
                                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
                                     handlePin(documentSnapshot);
@@ -96,6 +104,7 @@ public class Setup extends AppCompatActivity {
                             });
 
                         } else {
+                            vPageProgress.setVisibility(View.INVISIBLE);
                             vContainer.setVisibility(View.VISIBLE);
                         }
                         }else{
