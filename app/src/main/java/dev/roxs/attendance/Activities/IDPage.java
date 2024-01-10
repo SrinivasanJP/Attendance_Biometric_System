@@ -12,13 +12,16 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.File;
 
+import dev.roxs.attendance.Helper.LocationUtils;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.HelperActivities.PermissionInstruction;
 import dev.roxs.attendance.R;
@@ -71,7 +74,18 @@ public class IDPage extends AppCompatActivity {
 
         //hooks
         RelativeLayout markAttendanceBtn = findViewById(R.id.markAttendanceBtn);
-        markAttendanceBtn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), QRReader.class)));
+        markAttendanceBtn.setOnClickListener(v -> {
+            boolean isLocationEnabled = LocationUtils.isLocationEnabled(this);
+            if (isLocationEnabled) {
+                startActivity(new Intent(getApplicationContext(), QRReader.class));
+            } else {
+                Toast.makeText(this, "Turn on Location and Mobile Network", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+
+        }
+        );
 
 
     }
