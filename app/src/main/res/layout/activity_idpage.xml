@@ -65,6 +65,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/neb"
                         android:text="@string/name_placeholder"
+                        android:textAlignment="center"
                         android:textColor="@color/black"
                         android:textSize="32sp" />
 
