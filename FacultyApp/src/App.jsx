@@ -77,6 +77,9 @@ function App() {
       }
     }}>Click here to delete session</button>
     </div>
+    {/* TODO: 1. Register page change 
+              2. Optimize the Faculty app make user friendly 
+              3. rewrap the Finger printing */}
    
 
       
