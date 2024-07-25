@@ -51,6 +51,7 @@ export const getLocation = () => {
       parseFloat(attendee.latitude),
       parseFloat(attendee.longitude)
     );
+    console.log(distance*100)
     const maxProximity = 1; // Maximum proximity distance (in km)
     const proximityPercentage = ((maxProximity - distance) / maxProximity) * 100;
     return proximityPercentage.toFixed(2)>0? proximityPercentage.toFixed(2)+ '%':"0%";

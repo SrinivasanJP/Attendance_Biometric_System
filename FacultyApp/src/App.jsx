@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Default from './Fragments/Default'
 import QRfragment from './Fragments/QRfragment'
 import { generateSessionID } from './helpers/generateSessionID'
@@ -48,6 +48,7 @@ function App() {
     await deleteDoc(sessionRef).then(()=>{
       console.log("Document deleted!");
       setSessionID("NA")
+      setFragment("default");
     }).catch((err)=>{
       console.error("error removing document: " +err);
     });
@@ -59,7 +60,6 @@ function App() {
     
       <div>
       <h1 className=' font-semibold  text-2xl cursor-pointer'  onClick={()=>{
-        setFragment("default");
         deleteSession();
         }}>VAttendance</h1>
       <h2 className=' font-semibold'>Session ID : <span className=' font-mono'>{sessionID}</span></h2>
@@ -74,7 +74,6 @@ function App() {
     <button className=' bg-slate-400 px-5 py-2 rounded-xl text-white font-bold mx-10' onClick={()=>{
       if(sessionID!='NA'){
       deleteSession();
-      setFragment("default");
       }
     }}>Click here to delete session</button>
     </div>

@@ -28,6 +28,7 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
     const fetchLocation = async () => {
       try {
         const locationData = await getLocation(); // Get user's current location
+        console.log(locationData)
         setUserLocation(locationData); // Update user's location in state
       } catch (error) {
         console.error('Error fetching location:', error);
