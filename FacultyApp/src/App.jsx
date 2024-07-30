@@ -61,9 +61,13 @@ function App() {
   return (
     <>
     <div className='flex justify-between m-4 rounded-2xl bg-gray-200 py-5 px-10 items-center'>
-      {loadState && <div className='absolute top-0 right-0 backdrop-blur-md w-full h-full flex justify-center items-center'>
+      {loadState && <div className='absolute top-0 right-0 backdrop-blur-md w-full h-full flex justify-center bg-gradient-to-tr from-cyan-300/70 to-sky-300/30  items-center flex-col gap-5'>
         <div className=' border-sky-600 border-x-8 w-10 h-10 bg-transparent rounded-full border-t-8 border-b-8  border-b-white animate-spin '></div>
-      </div>}
+  <p className=' font-semibold text-2xl   text-sky-800 bg-white px-8 py-2 rounded-3xl animate-pulse'>Hold for a while</p>
+      </div>
+  
+      
+      }
     
       <div>
       <h1 className=' font-semibold  text-2xl cursor-pointer'  onClick={()=>{
