@@ -10,6 +10,7 @@ import CourseRegister from './Fragments/CourseRegister'
 function App() {
   const [fragment, setFragment] = useState("");
   const [sessionID, setSessionID] = useState("NA");
+  const [loadState,setLoadState] = useState(false);
   const [courseDetails, setCourseDetails] = useState({});
   const sessionCreateHandle = async()=>{
     if(confirm("Do you want to create new session?")){
@@ -44,19 +45,25 @@ function App() {
     }
   }
   const deleteSession = async ()=>{
+    setLoadState(true);
     const sessionRef = doc(db, "Attendance", sessionID);
     await deleteDoc(sessionRef).then(()=>{
       console.log("Document deleted!");
       setSessionID("NA")
       setFragment("default");
+      setLoadState(false);
     }).catch((err)=>{
       console.error("error removing document: " +err);
+      setLoadState(false);
     });
   }
   
   return (
     <>
     <div className='flex justify-between m-4 rounded-2xl bg-gray-200 py-5 px-10 items-center'>
+      {loadState && <div className='absolute top-0 right-0 backdrop-blur-md w-full h-full flex justify-center items-center'>
+        <div className=' border-sky-600 border-x-8 w-10 h-10 bg-transparent rounded-full border-t-8 border-b-8  border-b-white animate-spin '></div>
+      </div>}
     
       <div>
       <h1 className=' font-semibold  text-2xl cursor-pointer'  onClick={()=>{
