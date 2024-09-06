@@ -102,7 +102,7 @@ public class CaptureImage extends AppCompatActivity {
                  // Change the angle as needed
                 File privateDir = getApplicationContext().getFilesDir();
                 File imageFile = new File(privateDir, "captured_image.jpg");
-
+                //IMAGE COMPRESSED TO QUALITY LEVEL 8
                 try (FileOutputStream outputStream = new FileOutputStream(imageFile)) {
                     bitmapImage.compress(Bitmap.CompressFormat.JPEG, 8, outputStream);
                     Intent sendData = new Intent(getApplicationContext(), SendAttendanceData.class);

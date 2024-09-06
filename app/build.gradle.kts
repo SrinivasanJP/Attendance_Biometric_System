@@ -59,4 +59,5 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:21.0.1")
 
     implementation ("io.github.chaosleung:pinview:1.4.4")
+    implementation("org.opencv:opencv:4.10.0-kleidicv")
 }
