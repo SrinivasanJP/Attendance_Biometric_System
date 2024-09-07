@@ -111,7 +111,7 @@ public class Setup extends AppCompatActivity {
                             Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
                         }
                 });
-                
+
         }
 
     }
@@ -151,7 +151,7 @@ public class Setup extends AppCompatActivity {
                         reference.set(user).addOnCompleteListener(task -> {
                             if(task.isSuccessful()){
                                 sp.addData(fp.getFingerPrint(),sReg_no, sName);
-                                Intent intent = new Intent(getApplicationContext(), IDPage.class);
+                                Intent intent = new Intent(getApplicationContext(), FaceCapture.class);
                                 startActivity(intent);
                                 finish();
                             }else{
