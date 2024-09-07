@@ -42,6 +42,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation ("com.google.android.gms:play-services-vision:20.1.3")
     implementation("com.google.firebase:firebase-storage:20.3.0")
+    implementation("androidx.activity:activity:1.8.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -59,4 +60,17 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:21.0.1")
 
     implementation ("io.github.chaosleung:pinview:1.4.4")
+
+    //TensorFlow Lite libraries (To recognize faces)
+    implementation ("org.tensorflow:tensorflow-lite-task-vision:0.3.0")
+    implementation  ("org.tensorflow:tensorflow-lite-support:0.3.0")
+    implementation ("org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT")
+    //ML Kit (To detect faces)
+    implementation ("com.google.mlkit:face-detection:16.1.5")
+    implementation ("com.google.android.gms:play-services-mlkit-face-detection:17.0.1")
+    //GSON (Conversion of String to Map & Vice-Versa)
+    implementation ("com.google.code.gson:gson:2.8.9")
+
+    //Lottie-files (Splash-screen Animation)
+    implementation ("com.airbnb.android:lottie:4.2.2")
 }
