@@ -4,18 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Rect;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.TextView;
@@ -26,45 +21,59 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfDMatch;
+import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.core.RotatedRect;
 import org.opencv.core.Size;
+import org.opencv.features2d.BFMatcher;
+import org.opencv.features2d.ORB;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.calib3d.Calib3d;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import dev.roxs.attendance.R;
-
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.MatOfDMatch;
+import org.opencv.core.KeyPoint;
+import org.opencv.features2d.ORB;
+import org.opencv.features2d.DescriptorMatcher;
+import org.opencv.features2d.Features2d;
 public class QRReader extends AppCompatActivity {
     SurfaceView surfaceView;
     TextView txtBarcodeValue;
     private CameraSource cameraSource;
     private static final int REQUEST_CAMERA_PERMISSION = 201;
 
+    // ORB detector
+    private ORB orb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrreader);
+
         txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
         surfaceView = findViewById(R.id.surfaceView);
-        // Load OpenCV
+
+        // Initialize OpenCV
         if (!OpenCVLoader.initDebug()) {
-            Toast.makeText(getApplicationContext(), "OpenCV not loaded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "OpenCV initialization failed", Toast.LENGTH_SHORT).show();
+        } else {
+            orb = ORB.create();
         }
     }
-    private void initialiseDetectorsAndSources() {
 
+    private void initialiseDetectorsAndSources() {
         Toast.makeText(getApplicationContext(), "Barcode scanner started", Toast.LENGTH_SHORT).show();
 
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(this)
@@ -73,7 +82,7 @@ public class QRReader extends AppCompatActivity {
 
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
                 .setRequestedPreviewSize(1920, 1080)
-                .setAutoFocusEnabled(true) //you should add this feature
+                .setAutoFocusEnabled(true)
                 .build();
 
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
@@ -86,7 +95,6 @@ public class QRReader extends AppCompatActivity {
                         ActivityCompat.requestPermissions(QRReader.this, new
                                 String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
                     }
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -102,165 +110,147 @@ public class QRReader extends AppCompatActivity {
             }
         });
 
-
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
                 Toast.makeText(getApplicationContext(), "Barcode reader stopped", Toast.LENGTH_SHORT).show();
             }
 
-            @SuppressLint("ResourceAsColor")
+
             @Override
             public void receiveDetections(@NonNull Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() != 0) {
                     txtBarcodeValue.post(() -> {
-                        Toast.makeText(QRReader.this, barcodes.valueAt(0).displayValue, Toast.LENGTH_SHORT).show();
-                        // Process QR code detection
-                        Barcode qrCode = barcodes.valueAt(0);
-                        Toast.makeText(QRReader.this, qrCode.displayValue, Toast.LENGTH_SHORT).show();
-                        Log.d("TESTING", "receiveDetections: running");
-                        // Convert to OpenCV Mat
-                        Mat qrCodeImage = convertFrameToMat(qrCode);
-                        double qrCodeAngle = getQRCodeAngle(qrCodeImage);
-                        double personAngle = calculatePersonAngleRelativeToQRCode(qrCodeAngle);
-                        Log.d("ANGLE", "QR Code Angle: " + qrCodeAngle);
-                        Log.d("PERSON_ANGLE", "Person Angle Relative to QR Code: " + personAngle);
+                        String qrCodeValue = barcodes.valueAt(0).displayValue;
+                        Toast.makeText(QRReader.this, qrCodeValue, Toast.LENGTH_SHORT).show();
 
+//                        // Pass the QR code value to the next activity
 //                        Intent captureImage = new Intent(QRReader.this, CaptureImage.class);
-//                        captureImage.putExtra("sessionID", barcodes.valueAt(0).displayValue);
+//                        captureImage.putExtra("sessionID", qrCodeValue);
 //                        startActivity(captureImage);
-//                        finish();
 
+                        // Capture the current frame from SurfaceView
+                        Bitmap bitmap = captureFrameFromSurface();
+                        if (bitmap != null) {
+                            Mat capturedImage = new Mat();
+                            Utils.bitmapToMat(bitmap, capturedImage);
+                            Imgproc.cvtColor(capturedImage, capturedImage, Imgproc.COLOR_RGBA2GRAY);
+
+                            // Estimate the camera angle
+                            estimateCameraAngle(capturedImage, qrCodeValue);
+                        } else {
+                            Toast.makeText(QRReader.this, "Failed to capture image", Toast.LENGTH_SHORT).show();
+                        }
+
+                        finish();
                     });
                 }
             }
         });
     }
-    private Mat convertFrameToMat(Barcode qrCode) {
-        // Get the bounding box of the detected QR code
-        android.graphics.Rect boundingBox = qrCode.getBoundingBox();
 
-        // Validate bounding box dimensions
-        if (boundingBox == null || boundingBox.width() <= 0 || boundingBox.height() <= 0) {
-            Log.e("convertFrameToMat", "Invalid bounding box dimensions");
-            return new Mat(); // Return an empty Mat
-        }
-
-        // Get the camera frame as a Bitmap
-        Bitmap frameBitmap = getCameraFrameBitmap();
-
-        // Ensure the Bitmap is not null and has valid dimensions
-        if (frameBitmap == null || frameBitmap.getWidth() <= 0 || frameBitmap.getHeight() <= 0) {
-            Log.e("convertFrameToMat", "Invalid Bitmap dimensions");
-            return new Mat(); // Return an empty Mat
-        }
-
-        // Ensure the bounding box is within the bounds of the Bitmap
-        int x = Math.max(0, boundingBox.left);
-        int y = Math.max(0, boundingBox.top);
-        int width = Math.min(boundingBox.width(), frameBitmap.getWidth() - x);
-        int height = Math.min(boundingBox.height(), frameBitmap.getHeight() - y);
-
-        // Create a cropped Bitmap of the QR code region
-        Bitmap qrCodeBitmap = Bitmap.createBitmap(frameBitmap, x, y, width, height);
-
-        // Convert the Bitmap to OpenCV Mat
-        Mat qrCodeMat = new Mat();
-        org.opencv.android.Utils.bitmapToMat(qrCodeBitmap, qrCodeMat);
-
-        return qrCodeMat;
-    }
-
-
-    private double getQRCodeAngle(Mat qrCodeImage) {
-        if (qrCodeImage.empty()) {
-            Log.e("getQRCodeAngle", "Input Mat is empty");
-            return 0;
-        }
-
-        Mat gray = new Mat();
-        Imgproc.cvtColor(qrCodeImage, gray, Imgproc.COLOR_BGR2GRAY);
-
-        Mat blurred = new Mat();
-        Imgproc.GaussianBlur(gray, blurred, new Size(5, 5), 0);
-
-        Mat binary = new Mat();
-        Imgproc.adaptiveThreshold(blurred, binary, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
-                Imgproc.THRESH_BINARY, 11, 2);
-
-        List<MatOfPoint> contours = new ArrayList<>();
-        Imgproc.findContours(binary, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        if (contours.isEmpty()) {
-            Log.e("getQRCodeAngle", "No contours found");
-            return 0;
-        }
-
-        MatOfPoint largestContour = contours.get(0);
-        double maxArea = Imgproc.contourArea(largestContour);
-        for (MatOfPoint contour : contours) {
-            double area = Imgproc.contourArea(contour);
-            if (area > maxArea) {
-                maxArea = area;
-                largestContour = contour;
-            }
-        }
-
-        MatOfPoint2f contour2f = new MatOfPoint2f(largestContour.toArray());
-        RotatedRect rotatedRect = Imgproc.minAreaRect(contour2f);
-
-        double angle = rotatedRect.angle;
-        if (rotatedRect.size.width < rotatedRect.size.height) {
-            angle = 90 + angle;
-        }
-
-        // Normalize the angle
-        if (angle < 0) {
-            angle += 360;
-        }
-
-        return angle;
-    }
-
-    private Bitmap getCameraFrameBitmap() {
-        // Get the SurfaceView where the camera preview is being displayed
-        SurfaceView cameraPreview = surfaceView; // Assuming surfaceView is your SurfaceView instance
-
-        // Get the Surface from the SurfaceView
-        Surface surface = cameraPreview.getHolder().getSurface();
-
-        // Create a Bitmap with the same size as the SurfaceView
-        Bitmap bitmap = Bitmap.createBitmap(cameraPreview.getWidth(), cameraPreview.getHeight(), Bitmap.Config.ARGB_8888);
-
-        // Use a Canvas to draw the SurfaceView onto the Bitmap
-        Canvas canvas = new Canvas(bitmap);
-        if (surface != null && surface.isValid()) {
-            try {
-                cameraPreview.draw(canvas);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            Log.e("QRReader", "Surface is null or not valid");
-        }
-
+    private Bitmap captureFrameFromSurface() {
+        // Capture a frame from the SurfaceView
+        surfaceView.setDrawingCacheEnabled(true);
+        surfaceView.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(surfaceView.getDrawingCache());
+        surfaceView.setDrawingCacheEnabled(false);
         return bitmap;
     }
-    private double calculatePersonAngleRelativeToQRCode(double qrCodeAngle) {
-        // Normalize the angle to be in the range [0, 360)
-        double normalizedQRCodeAngle = (qrCodeAngle + 360) % 360;
-        // Assuming the ideal QR code angle is 0 degrees, the person’s angle is the same as the QR code angle
-        // Adjust this if necessary depending on how your system is set up
-        return normalizedQRCodeAngle;
+
+    private void estimateCameraAngle(Mat capturedImage, String qrCodeValue) {
+        // Load reference image based on QR code value (you should have a predefined reference image)
+        Mat refImage = new Mat();
+
+        // Load image from resources
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.qr_ref);  // Replace with your actual image resource
+
+        // Convert the Bitmap to Mat
+        Utils.bitmapToMat(bitmap, refImage);
+
+        // Convert to grayscale if needed
+        Imgproc.cvtColor(refImage, refImage, Imgproc.COLOR_RGBA2GRAY);
+
+        if (refImage.empty()) {
+            Toast.makeText(this, "Reference image not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Detect keypoints and descriptors
+        MatOfKeyPoint refKeypoints = new MatOfKeyPoint();
+        MatOfKeyPoint capturedKeypoints = new MatOfKeyPoint();
+        Mat refDescriptors = new Mat();
+        Mat capturedDescriptors = new Mat();
+
+        orb.detectAndCompute(refImage, new Mat(), refKeypoints, refDescriptors);
+        orb.detectAndCompute(capturedImage, new Mat(), capturedKeypoints, capturedDescriptors);
+
+        // Match descriptors using BFMatcher
+        BFMatcher matcher = BFMatcher.create(BFMatcher.BRUTEFORCE_HAMMING, true);
+        MatOfDMatch matches = new MatOfDMatch();
+        matcher.match(refDescriptors, capturedDescriptors, matches);
+
+        // Calculate homography matrix
+        Mat homography = calculateHomography(refKeypoints, capturedKeypoints, matches);
+        if (homography != null) {
+            // Decompose homography matrix to get rotation and translation vectors
+            Mat rotation = new Mat();
+            Mat translation = new Mat();
+            Mat normals = new Mat();
+
+            List<Mat> rotations = new ArrayList<>();
+            List<Mat> translations = new ArrayList<>();
+            List<Mat> normalsList = new ArrayList<>();
+
+            Calib3d.decomposeHomographyMat(homography, new Mat(), rotations, translations, normalsList);
+
+            if (!rotations.isEmpty()) {
+                rotation = rotations.get(0);
+                translation = translations.get(0);
+                normals = normalsList.get(0);
+
+                // Use the rotation and translation matrices for further processing
+                Toast.makeText(this, "Camera angle estimated", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Failed to estimate camera angle", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Failed to compute homography", Toast.LENGTH_SHORT).show();
+        }
     }
 
+    private Mat calculateHomography(MatOfKeyPoint refKeypoints, MatOfKeyPoint capturedKeypoints, MatOfDMatch matches) {
+        List<Point> refPoints = new ArrayList<>();
+        List<Point> capturedPoints = new ArrayList<>();
 
+        List<org.opencv.core.DMatch> matchesList = matches.toList();
+        List<KeyPoint> refKeyPointsList = refKeypoints.toList();
+        List<KeyPoint> capturedKeyPointsList = capturedKeypoints.toList();
+
+        for (int i = 0; i < matchesList.size(); i++) {
+            refPoints.add(refKeyPointsList.get(matchesList.get(i).queryIdx).pt);
+            capturedPoints.add(capturedKeyPointsList.get(matchesList.get(i).trainIdx).pt);
+        }
+
+        MatOfPoint2f refMatOfPoint2f = new MatOfPoint2f();
+        refMatOfPoint2f.fromList(refPoints);
+        MatOfPoint2f capturedMatOfPoint2f = new MatOfPoint2f();
+        capturedMatOfPoint2f.fromList(capturedPoints);
+
+        if (refPoints.size() >= 4 && capturedPoints.size() >= 4) {
+            return Calib3d.findHomography(refMatOfPoint2f, capturedMatOfPoint2f, Calib3d.RANSAC, 5);
+        } else {
+            return null;
+        }
+    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        cameraSource.release();
+        if (cameraSource != null) {
+            cameraSource.release();
+        }
     }
 
     @Override
