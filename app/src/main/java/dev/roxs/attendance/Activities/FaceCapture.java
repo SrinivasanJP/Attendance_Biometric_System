@@ -113,7 +113,7 @@ public class FaceCapture extends AppCompatActivity {
     float distance= 1.0f;
     boolean start=true,flipX=false;
     Context context=FaceCapture.this;
-    int cam_face=CameraSelector.LENS_FACING_FRONT; //Default Back Camera
+    int cam_face=CameraSelector.LENS_FACING_FRONT;
 
     int[] intValues;
     int inputSize=112;  //Input size for model
@@ -129,6 +129,7 @@ public class FaceCapture extends AppCompatActivity {
     String modelFile="mobile_face_net.tflite"; //model name
 
     private HashMap<String, CLassifierInterface.Recognition> registered = new HashMap<>();
+    private CLassifierInterface.Recognition classificationData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
