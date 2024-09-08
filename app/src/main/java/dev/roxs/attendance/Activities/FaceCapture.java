@@ -63,6 +63,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 import android.os.ParcelFileDescriptor;
 import android.text.InputType;
+import android.util.Log;
 import android.util.Pair;
 import android.util.Size;
 import android.view.View;
@@ -276,7 +277,9 @@ public class FaceCapture extends AppCompatActivity {
         //Load model
         try {
             tfLite=new Interpreter(loadModelFile(FaceCapture.this,modelFile));
+            Log.d("MODEL", "onCreate: Model loaded successfully");
         } catch (IOException e) {
+            Log.d("MODEL", "onCreate: Model load unsuccessfully");
             e.printStackTrace();
         }
         //Initialize Face Detector
