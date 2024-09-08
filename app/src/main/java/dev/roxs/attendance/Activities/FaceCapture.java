@@ -141,7 +141,7 @@ public class FaceCapture extends AppCompatActivity {
             return insets;
         });
 
-        Intent intent = new Intent();
+        Intent intent = getIntent();
         name = intent.getStringExtra("name");
         regNo = intent.getStringExtra("registerNo");
         pin = intent.getStringExtra("pin");
