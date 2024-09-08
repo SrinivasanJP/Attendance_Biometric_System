@@ -307,14 +307,10 @@ public class FaceCapture extends AppCompatActivity {
     }
     private void addFace() {
             start=false;
-            //Create and Initialize new object with Face embeddings and Name.
-//            CLassifierInterface.Recognition result = new CLassifierInterface.Recognition(name, regNo, pin, -1f);
-//            result.setExtra(embeedings);
-//            registered.put( input.getText().toString(),result);
             recognitionData = new CLassifierInterface.Recognition(name, regNo, pin, -1f);
             recognitionData.setExtra(embeedings);
-        Log.d("Face Capture", "addFace: "+recognitionData.toString());
-        Toast.makeText(this, recognitionData.toString(), Toast.LENGTH_SHORT).show();
+        Log.d("Face Capture", "addFace: "+recognitionData.toString()+" "+embeedings.toString());
+        Toast.makeText(this, recognitionData.toString()+" "+embeedings.toString(), Toast.LENGTH_SHORT).show();
             start=true;
     }
     @Override
