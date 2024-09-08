@@ -624,40 +624,35 @@ public class FaceCapture extends AppCompatActivity {
                                                 if(faces.size()!=0) {
 
                                                     Face face = faces.get(0); //Get first face from detected faces
-//                                                    System.out.println(face);
-
-                                                    //mediaImage to Bitmap
                                                     Bitmap frame_bmp = toBitmap(mediaImage);
-
                                                     int rot = imageProxy.getImageInfo().getRotationDegrees();
-
                                                     //Adjust orientation of Face
                                                     Bitmap frame_bmp1 = rotateBitmap(frame_bmp, rot, false, false);
-
-
-
                                                     //Get bounding box of face
                                                     RectF boundingBox = new RectF(face.getBoundingBox());
-
                                                     //Crop out bounding box from whole Bitmap(image)
                                                     Bitmap cropped_face = getCropBitmapByCPU(frame_bmp1, boundingBox);
-
                                                     if(flipX)
                                                         cropped_face = rotateBitmap(cropped_face, 0, flipX, false);
                                                     //Scale the acquired Face to 112*112 which is required input for model
                                                     Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
-
-                                                    if(start)
+                                                    if(start) {
+                                                        face_preview.setVisibility(View.VISIBLE);
+                                                        textNote.setVisibility(View.INVISIBLE);
+                                                        captureButton.setVisibility(View.VISIBLE);
                                                         recognizeImage(scaled); //Send scaled bitmap to create face embeddings.
 //                                                    System.out.println(boundingBox);
-
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    if(registered.isEmpty())
-                                                        reco_name.setText("Add Face");
-                                                    else
-                                                        reco_name.setText("No Face Detected!");
+//                                                    if(registered.isEmpty())
+//                                                        reco_name.setText("Add Face");
+//                                                    else
+//                                                        reco_name.setText("No Face Detected!");
+                                                    face_preview.setVisibility(View.INVISIBLE);
+                                                    captureButton.setVisibility(View.INVISIBLE);
+                                                    textNote.setVisibility(View.VISIBLE);
                                                 }
 
                                             }
@@ -739,39 +734,41 @@ public class FaceCapture extends AppCompatActivity {
         float distance_local = Float.MAX_VALUE;
         String id = "0";
         String label = "?";
+        Log.d("Embeedings", "recognizeImage: "+embeedings);
+        Toast.makeText(getApplicationContext(), "Embeedings got", Toast.LENGTH_SHORT).show();
 
         //Compare new face with saved Faces.
-        if (registered.size() > 0) {
-
-            final List<Pair<String, Float>> nearest = findNearest(embeedings[0]);//Find 2 closest matching face
-
-            if (nearest.get(0) != null) {
-
-                final String name = nearest.get(0).first; //get name and distance of closest matching face
-                // label = name;
-                distance_local = nearest.get(0).second;
-                if (developerMode)
-                {
-                    if(distance_local<distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
-                        reco_name.setText("Nearest: "+name +"\nDist: "+ String.format("%.3f",distance_local)+"\n2nd Nearest: "+nearest.get(1).first +"\nDist: "+ String.format("%.3f",nearest.get(1).second));
-                    else
-                        reco_name.setText("Unknown "+"\nDist: "+String.format("%.3f",distance_local)+"\nNearest: "+name +"\nDist: "+ String.format("%.3f",distance_local)+"\n2nd Nearest: "+nearest.get(1).first +"\nDist: "+ String.format("%.3f",nearest.get(1).second));
-
-//                    System.out.println("nearest: " + name + " - distance: " + distance_local);
-                }
-                else
-                {
-                    if(distance_local<distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
-                        reco_name.setText(name);
-                    else
-                        reco_name.setText("Unknown");
-//                    System.out.println("nearest: " + name + " - distance: " + distance_local);
-                }
-
-
-
-            }
-        }
+//        if (registered.size() > 0) {
+//
+//            final List<Pair<String, Float>> nearest = findNearest(embeedings[0]);//Find 2 closest matching face
+//
+////            if (nearest.get(0) != null) {
+////
+////                final String name = nearest.get(0).first; //get name and distance of closest matching face
+////                // label = name;
+////                distance_local = nearest.get(0).second;
+////                if (developerMode)
+////                {
+////                    if(distance_local<distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
+////                        reco_name.setText("Nearest: "+name +"\nDist: "+ String.format("%.3f",distance_local)+"\n2nd Nearest: "+nearest.get(1).first +"\nDist: "+ String.format("%.3f",nearest.get(1).second));
+////                    else
+////                        reco_name.setText("Unknown "+"\nDist: "+String.format("%.3f",distance_local)+"\nNearest: "+name +"\nDist: "+ String.format("%.3f",distance_local)+"\n2nd Nearest: "+nearest.get(1).first +"\nDist: "+ String.format("%.3f",nearest.get(1).second));
+////
+//////                    System.out.println("nearest: " + name + " - distance: " + distance_local);
+////                }
+////                else
+////                {
+////                    if(distance_local<distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
+////                        reco_name.setText(name);
+////                    else
+////                        reco_name.setText("Unknown");
+//////                    System.out.println("nearest: " + name + " - distance: " + distance_local);
+////                }
+////
+////
+////
+////            }
+//        }
 
 
 //            final int numDetectionsOutput = 1;
