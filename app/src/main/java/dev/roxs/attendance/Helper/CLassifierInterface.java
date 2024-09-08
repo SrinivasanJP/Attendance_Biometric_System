@@ -2,13 +2,15 @@ package dev.roxs.attendance.Helper;
 
 public interface CLassifierInterface {
     class Recognition {
-        private final String id;
-        private final String title;
+        private final String name;
+        private final String regNo;
+        private final String pin;
         private final Float distance;
         private Object extra;
-        public Recognition(final String id, final String title, final Float distance) {
-            this.id = id;
-            this.title = title;
+        public Recognition(final String name, final String regNo, final  String pin, final Float distance) {
+            this.name = name;
+            this.regNo = regNo;
+            this.pin = pin;
             this.distance = distance;
             this.extra = null;
         }
@@ -21,14 +23,16 @@ public interface CLassifierInterface {
         @Override
         public String toString() {
             String resultString = "";
-            if (id != null) {
-                resultString += "[" + id + "] ";
+            if (name != null) {
+                resultString += "[" + name + "] ";
             }
 
-            if (title != null) {
-                resultString += title + " ";
+            if (regNo != null) {
+                resultString += regNo + " ";
             }
-
+            if(pin != null){
+                resultString += pin +" ";
+            }
             if (distance != null) {
                 resultString += String.format("(%.1f%%) ", distance * 100.0f);
             }
