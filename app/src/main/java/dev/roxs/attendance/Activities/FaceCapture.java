@@ -106,15 +106,12 @@ public class FaceCapture extends AppCompatActivity {
     PreviewView previewView;
     ImageView face_preview;
     Interpreter tfLite;
-    TextView reco_name,preview_info,textAbove_preview, textNote;
-    Button recognize,camera_switch, actions;
-    ImageButton add_face;
+    TextView textNote;
     CameraSelector cameraSelector;
     RelativeLayout captureButton;
-    boolean developerMode=false;
+
     float distance= 1.0f;
     boolean start=true,flipX=false;
-    Context context=FaceCapture.this;
     int cam_face=CameraSelector.LENS_FACING_FRONT;
 
     int[] intValues;
@@ -124,14 +121,15 @@ public class FaceCapture extends AppCompatActivity {
     float IMAGE_MEAN = 128.0f;
     float IMAGE_STD = 128.0f;
     int OUTPUT_SIZE=192; //Output size of model
-    private static int SELECT_PICTURE = 1;
     ProcessCameraProvider cameraProvider;
     private static final int MY_CAMERA_REQUEST_CODE = 100;
+
+    String name, regNo, pin;
 
     String modelFile="mobile_face_net.tflite"; //model name
 
     private HashMap<String, CLassifierInterface.Recognition> registered = new HashMap<>();
-    private CLassifierInterface.Recognition classificationData;
+    private CLassifierInterface.Recognition recognitionData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +140,14 @@ public class FaceCapture extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        Intent intent = new Intent();
+        name = intent.getStringExtra("name");
+        regNo = intent.getStringExtra("registerNo");
+        pin = intent.getStringExtra("pin");
+
+        Log.d("INTENT LOGS", "onCreate: Intent data: "+name+" "+regNo+" "+pin);
+
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
         }
@@ -299,244 +305,18 @@ public class FaceCapture extends AppCompatActivity {
 
 
     }
-//    private void testHyperparameter()
-//    {
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//        builder.setTitle("Select Hyperparameter:");
-//
-//        // add a checkbox list
-//        String[] names= {"Maximum Nearest Neighbour Distance"};
-//
-//        builder.setItems(names, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//                switch (which)
-//                {
-//                    case 0:
-////                        Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
-//                        hyperparameters();
-//                        break;
-//
-//                }
-//
-//            }
-//
-//        });
-//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//            }
-//        });
-//        builder.setNegativeButton("Cancel", null);
-//
-//        // create and show the alert dialog
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//    }
-//    private void developerMode()
-//    {
-//        if (developerMode) {
-//            developerMode = false;
-//            Toast.makeText(context, "Developer Mode OFF", Toast.LENGTH_SHORT).show();
-//        }
-//        else {
-//            developerMode = true;
-//            Toast.makeText(context, "Developer Mode ON", Toast.LENGTH_SHORT).show();
-//        }
-//    }
     private void addFace() {
             start=false;
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Enter Name");
-
-            // Set up the input
-            final EditText input = new EditText(context);
-
-            input.setInputType(InputType.TYPE_CLASS_TEXT );
-            builder.setView(input);
-
-            // Set up the buttons
-            builder.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //Toast.makeText(context, input.getText().toString(), Toast.LENGTH_SHORT).show();
-
-                    //Create and Initialize new object with Face embeddings and Name.
-                    CLassifierInterface.Recognition result = new CLassifierInterface.Recognition("0", "", -1f);
-                    result.setExtra(embeedings);
-
-                    registered.put( input.getText().toString(),result);
-                    start=true;
-
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    start=true;
-                    dialog.cancel();
-                }
-            });
-
-            builder.show();
+            //Create and Initialize new object with Face embeddings and Name.
+//            CLassifierInterface.Recognition result = new CLassifierInterface.Recognition(name, regNo, pin, -1f);
+//            result.setExtra(embeedings);
+//            registered.put( input.getText().toString(),result);
+            recognitionData = new CLassifierInterface.Recognition(name, regNo, pin, -1f);
+            recognitionData.setExtra(embeedings);
+        Log.d("Face Capture", "addFace: "+recognitionData.toString());
+        Toast.makeText(this, recognitionData.toString(), Toast.LENGTH_SHORT).show();
+            start=true;
     }
-//    private  void clearnameList()
-//    {
-//        AlertDialog.Builder builder =new AlertDialog.Builder(context);
-//        builder.setTitle("Do you want to delete all Recognitions?");
-//        builder.setPositiveButton("Delete All", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                registered.clear();
-//                Toast.makeText(context, "Recognitions Cleared", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-////        insertToSP(registered,1);
-//        builder.setNegativeButton("Cancel",null);
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//    }
-//    private void updatenameListview()
-//    {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//        if(registered.isEmpty()) {
-//            builder.setTitle("No Faces Added!!");
-//            builder.setPositiveButton("OK",null);
-//        }
-//        else{
-//            builder.setTitle("Select Recognition to delete:");
-//
-//            // add a checkbox list
-//            String[] names= new String[registered.size()];
-//            boolean[] checkedItems = new boolean[registered.size()];
-//            int i=0;
-//            for (Map.Entry<String, CLassifierInterface.Recognition> entry : registered.entrySet())
-//            {
-//                //System.out.println("NAME"+entry.getKey());
-//                names[i]=entry.getKey();
-//                checkedItems[i]=false;
-//                i=i+1;
-//
-//            }
-//
-//            builder.setMultiChoiceItems(names, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-//                    // user checked or unchecked a box
-//                    //Toast.makeText(MainActivity.this, names[which], Toast.LENGTH_SHORT).show();
-//                    checkedItems[which]=isChecked;
-//
-//                }
-//            });
-//
-//
-//            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//
-//                    // System.out.println("status:"+ Arrays.toString(checkedItems));
-//                    for(int i=0;i<checkedItems.length;i++)
-//                    {
-//                        //System.out.println("status:"+checkedItems[i]);
-//                        if(checkedItems[i])
-//                        {
-////                                Toast.makeText(MainActivity.this, names[i], Toast.LENGTH_SHORT).show();
-//                            registered.remove(names[i]);
-//                        }
-//
-//                    }
-////                    insertToSP(registered,2); //mode: 0:save all, 1:clear all, 2:update all
-//                    Toast.makeText(context, "Recognitions Updated", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//            builder.setNegativeButton("Cancel", null);
-//
-//            // create and show the alert dialog
-//            AlertDialog dialog = builder.create();
-//            dialog.show();
-//        }
-//    }
-//    private void hyperparameters() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//        builder.setTitle("Euclidean Distance");
-//        builder.setMessage("0.00 -> Perfect Match\n1.00 -> Default\nTurn On Developer Mode to find optimum value\n\nCurrent Value:");
-//        // Set up the input
-//        final EditText input = new EditText(context);
-//
-//        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-//        builder.setView(input);
-//        SharedPreferences sharedPref = getSharedPreferences("Distance",Context.MODE_PRIVATE);
-//        distance = sharedPref.getFloat("distance",1.00f);
-//        input.setText(String.valueOf(distance));
-//        // Set up the buttons
-//        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                //Toast.makeText(context, input.getText().toString(), Toast.LENGTH_SHORT).show();
-//
-//                distance= Float.parseFloat(input.getText().toString());
-//
-//
-//                SharedPreferences sharedPref = getSharedPreferences("Distance",Context.MODE_PRIVATE);
-//                SharedPreferences.Editor editor = sharedPref.edit();
-//                editor.putFloat("distance", distance);
-//                editor.apply();
-//
-//            }
-//        });
-//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//                dialog.cancel();
-//            }
-//        });
-//
-//        builder.show();
-//    }
-//
-
-//    private void displaynameListview() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//        // System.out.println("Registered"+registered);
-//        if(registered.isEmpty())
-//            builder.setTitle("No Faces Added!!");
-//        else
-//            builder.setTitle("Recognitions:");
-//
-//        // add a checkbox list
-//        String[] names= new String[registered.size()];
-//        boolean[] checkedItems = new boolean[registered.size()];
-//        int i=0;
-//        for (Map.Entry<String, CLassifierInterface.Recognition> entry : registered.entrySet())
-//        {
-//            //System.out.println("NAME"+entry.getKey());
-//            names[i]=entry.getKey();
-//            checkedItems[i]=false;
-//            i=i+1;
-//
-//        }
-//        builder.setItems(names,null);
-//
-//
-//
-//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//            }
-//        });
-//
-//        // create and show the alert dialog
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//    }
-//
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -641,15 +421,10 @@ public class FaceCapture extends AppCompatActivity {
                                                         textNote.setVisibility(View.INVISIBLE);
                                                         captureButton.setVisibility(View.VISIBLE);
                                                         recognizeImage(scaled); //Send scaled bitmap to create face embeddings.
-//                                                    System.out.println(boundingBox);
                                                     }
                                                 }
                                                 else
                                                 {
-//                                                    if(registered.isEmpty())
-//                                                        reco_name.setText("Add Face");
-//                                                    else
-//                                                        reco_name.setText("No Face Detected!");
                                                     face_preview.setVisibility(View.INVISIBLE);
                                                     captureButton.setVisibility(View.INVISIBLE);
                                                     textNote.setVisibility(View.VISIBLE);
@@ -734,42 +509,29 @@ public class FaceCapture extends AppCompatActivity {
         float distance_local = Float.MAX_VALUE;
         String id = "0";
         String label = "?";
-        Log.d("Embeedings", "recognizeImage: "+embeedings);
-        Toast.makeText(getApplicationContext(), "Embeedings got", Toast.LENGTH_SHORT).show();
+        Log.d("Embeedings", "recognizeImage: "+outputMap.toString());
+//        Toast.makeText(getApplicationContext(), "Embeedings got", Toast.LENGTH_SHORT).show();
 
         //Compare new face with saved Faces.
 //        if (registered.size() > 0) {
-//
 //            final List<Pair<String, Float>> nearest = findNearest(embeedings[0]);//Find 2 closest matching face
 //
-////            if (nearest.get(0) != null) {
-////
-////                final String name = nearest.get(0).first; //get name and distance of closest matching face
-////                // label = name;
-////                distance_local = nearest.get(0).second;
-////                if (developerMode)
-////                {
-////                    if(distance_local<distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
-////                        reco_name.setText("Nearest: "+name +"\nDist: "+ String.format("%.3f",distance_local)+"\n2nd Nearest: "+nearest.get(1).first +"\nDist: "+ String.format("%.3f",nearest.get(1).second));
-////                    else
-////                        reco_name.setText("Unknown "+"\nDist: "+String.format("%.3f",distance_local)+"\nNearest: "+name +"\nDist: "+ String.format("%.3f",distance_local)+"\n2nd Nearest: "+nearest.get(1).first +"\nDist: "+ String.format("%.3f",nearest.get(1).second));
-////
-//////                    System.out.println("nearest: " + name + " - distance: " + distance_local);
-////                }
-////                else
-////                {
-////                    if(distance_local<distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
-////                        reco_name.setText(name);
-////                    else
-////                        reco_name.setText("Unknown");
-//////                    System.out.println("nearest: " + name + " - distance: " + distance_local);
-////                }
-////
-////
-////
-////            }
+//            if (nearest.get(0) != null) {
+//
+//                final String name = nearest.get(0).first; //get name and distance of closest matching face
+//                // label = name;
+//                distance_local = nearest.get(0).second;
+//                if(distance_local<distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
+//                    textNote.setText("Nearest: "+name +"\nDist: "+ String.format("%.3f",distance_local)+"\n2nd Nearest: "+nearest.get(1).first +"\nDist: "+ String.format("%.3f",nearest.get(1).second));
+//                else
+//                    textNote.setText("Unknown "+"\nDist: "+String.format("%.3f",distance_local)+"\nNearest: "+name +"\nDist: "+ String.format("%.3f",distance_local)+"\n2nd Nearest: "+nearest.get(1).first +"\nDist: "+ String.format("%.3f",nearest.get(1).second));
+//
+////                    System.out.println("nearest: " + name + " - distance: " + distance_local);
+//
+//
+//            }
 //        }
-
+//
 
 //            final int numDetectionsOutput = 1;
 //            final ArrayList<CLassifierInterface.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
@@ -781,9 +543,6 @@ public class FaceCapture extends AppCompatActivity {
 //            recognitions.add( rec );
 
     }
-//    public void register(String name, CLassifierInterface.Recognition rec) {
-//        registered.put(name, rec);
-//    }
 
     //Compare Faces by distance between face embeddings
     private List<Pair<String, Float>> findNearest(float[] emb) {
@@ -965,142 +724,6 @@ public class FaceCapture extends AppCompatActivity {
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
-    //Save Faces to Shared Preferences.Conversion of Recognition objects to json string
-//    private void insertToSP(HashMap<String, CLassifierInterface.Recognition> jsonMap,int mode) {
-//        if(mode==1)  //mode: 0:save all, 1:clear all, 2:update all
-//            jsonMap.clear();
-//        else if (mode==0)
-//            jsonMap.putAll(readFromSP());
-//        String jsonString = new Gson().toJson(jsonMap);
-////        for (Map.Entry<String, CLassifierInterface.Recognition> entry : jsonMap.entrySet())
-////        {
-////            System.out.println("Entry Input "+entry.getKey()+" "+  entry.getValue().getExtra());
-////        }
-//        SharedPreferences sharedPreferences = getSharedPreferences("HashMap", MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.putString("map", jsonString);
-//        //System.out.println("Input josn"+jsonString.toString());
-//        editor.apply();
-//        Toast.makeText(context, "Recognitions Saved", Toast.LENGTH_SHORT).show();
-//    }
 
-    //Load Faces from Shared Preferences.Json String to Recognition object
-//    private HashMap<String, CLassifierInterface.Recognition> readFromSP(){
-//        SharedPreferences sharedPreferences = getSharedPreferences("HashMap", MODE_PRIVATE);
-//        String defValue = new Gson().toJson(new HashMap<String, CLassifierInterface.Recognition>());
-//        String json=sharedPreferences.getString("map",defValue);
-//        // System.out.println("Output json"+json.toString());
-//        TypeToken<HashMap<String,CLassifierInterface.Recognition>> token = new TypeToken<HashMap<String,CLassifierInterface.Recognition>>() {};
-//        HashMap<String,CLassifierInterface.Recognition> retrievedMap=new Gson().fromJson(json,token.getType());
-//        // System.out.println("Output map"+retrievedMap.toString());
-//
-//        //During type conversion and save/load procedure,format changes(eg float converted to double).
-//        //So embeddings need to be extracted from it in required format(eg.double to float).
-//        for (Map.Entry<String, CLassifierInterface.Recognition> entry : retrievedMap.entrySet())
-//        {
-//            float[][] output=new float[1][OUTPUT_SIZE];
-//            ArrayList arrayList= (ArrayList) entry.getValue().getExtra();
-//            arrayList = (ArrayList) arrayList.get(0);
-//            for (int counter = 0; counter < arrayList.size(); counter++) {
-//                output[0][counter]= ((Double) arrayList.get(counter)).floatValue();
-//            }
-//            entry.getValue().setExtra(output);
-//
-//            //System.out.println("Entry output "+entry.getKey()+" "+entry.getValue().getExtra() );
-//
-//        }
-////        System.out.println("OUTPUT"+ Arrays.deepToString(outut));
-//        Toast.makeText(context, "Recognitions Loaded", Toast.LENGTH_SHORT).show();
-//        return retrievedMap;
-//    }
-
-    //Load Photo from phone storage
-//    private void loadphoto()
-//    {
-//        start=false;
-//        Intent intent = new Intent();
-//        intent.setType("image/*");
-//        intent.setAction(Intent.ACTION_GET_CONTENT);
-//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
-//    }
-
-    //Similar Analyzing Procedure
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode == RESULT_OK) {
-//            if (requestCode == SELECT_PICTURE) {
-//                Uri selectedImageUri = data.getData();
-//                try {
-//                    InputImage impphoto=InputImage.fromBitmap(getBitmapFromUri(selectedImageUri),0);
-//                    detector.process(impphoto).addOnSuccessListener(new OnSuccessListener<List<Face>>() {
-//                        @Override
-//                        public void onSuccess(List<Face> faces) {
-//
-//                            if(faces.size()!=0) {
-//                                recognize.setText("Recognize");
-//                                add_face.setVisibility(View.VISIBLE);
-//                                reco_name.setVisibility(View.INVISIBLE);
-//                                face_preview.setVisibility(View.VISIBLE);
-//                                preview_info.setText("1.Bring Face in view of Camera.\n\n2.Your Face preview will appear here.\n\n3.Click Add button to save face.");
-//                                Face face = faces.get(0);
-////                                System.out.println(face);
-//
-//                                //write code to recreate bitmap from source
-//                                //Write code to show bitmap to canvas
-//
-//                                Bitmap frame_bmp= null;
-//                                try {
-//                                    frame_bmp = getBitmapFromUri(selectedImageUri);
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                Bitmap frame_bmp1 = rotateBitmap(frame_bmp, 0, flipX, false);
-//
-//                                //face_preview.setImageBitmap(frame_bmp1);
-//
-//
-//                                RectF boundingBox = new RectF(face.getBoundingBox());
-//
-//
-//                                Bitmap cropped_face = getCropBitmapByCPU(frame_bmp1, boundingBox);
-//
-//                                Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
-//                                // face_preview.setImageBitmap(scaled);
-//
-//                                recognizeImage(scaled);
-//                                addFace();
-////                                System.out.println(boundingBox);
-//                                try {
-//                                    Thread.sleep(100);
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }
-//                    }).addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            start=true;
-//                            Toast.makeText(context, "Failed to add", Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//                    face_preview.setImageBitmap(getBitmapFromUri(selectedImageUri));
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//
-//            }
-//        }
-//    }
-
-//    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-//        ParcelFileDescriptor parcelFileDescriptor =
-//                getContentResolver().openFileDescriptor(uri, "r");
-//        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-//        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-//        parcelFileDescriptor.close();
-//        return image;
-//    }
 
 }
