@@ -21,23 +21,22 @@
     <FrameLayout
         android:id="@+id/captureFrame"
         android:layout_width="297dp"
+        android:layout_height="297dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:layout_height="279dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.060000002">
+        android:background="@drawable/circle"
+        android:clipToOutline="true">
+
         <androidx.camera.view.PreviewView
             android:id="@+id/previewView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/circle"/>
 
-        </androidx.camera.view.PreviewView>
     </FrameLayout>
 
-<!--    <ImageButton-->
+
+    <!--    <ImageButton-->
 <!--        android:id="@+id/imageButton"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->
