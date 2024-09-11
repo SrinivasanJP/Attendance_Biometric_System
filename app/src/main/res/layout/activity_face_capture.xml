@@ -18,22 +18,45 @@
 <!--        app:layout_constraintTop_toBottomOf="@+id/imageView"-->
 <!--        app:layout_constraintVertical_bias="0.25" />-->
 
-    <FrameLayout
-        android:id="@+id/captureFrame"
-        android:layout_width="297dp"
-        android:layout_height="297dp"
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/circle"
-        android:clipToOutline="true">
+        android:id="@+id/camArea"
+        android:layout_marginTop="50dp">
 
-        <androidx.camera.view.PreviewView
-            android:id="@+id/previewView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/circle"/>
+        <!-- Circular ProgressBar surrounding the FrameLayout -->
+        <ProgressBar
+            android:id="@+id/circularProgressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/circular_progress_drawable"
+            android:visibility="visible" />
 
-    </FrameLayout>
+        <!-- FrameLayout that contains the camera preview -->
+        <FrameLayout
+            android:id="@+id/captureFrame"
+            android:layout_width="297dp"
+            android:layout_height="297dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/circle"
+            android:clipToOutline="true">
+
+            <androidx.camera.view.PreviewView
+                android:id="@+id/previewView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/circle"/>
+        </FrameLayout>
+
+    </RelativeLayout>
+
 
 
     <!--    <ImageButton-->
@@ -55,7 +78,7 @@
         android:layout_marginTop="50dp"
         android:background="#2C7E57C2"
         android:elevation="1dp"
-        android:layout_below="@+id/captureFrame"
+        android:layout_below="@+id/camArea"
         tools:srcCompat="@android:drawable/screen_background_light_transparent"
         android:visibility="invisible"/>
     <TextView
@@ -69,7 +92,7 @@
         android:textColor="@color/black"
         />
     <RelativeLayout
-        android:id="@+id/captureFace"
+        android:id="@+id/finishSetup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -85,7 +108,7 @@
             android:layout_centerInParent="true"
             android:fontFamily="@font/neb"
             android:padding="20dp"
-            android:text="Capture Face"
+            android:text="Finish Setup"
             android:textColor="@color/white"
             android:textSize="28sp" />
     </RelativeLayout>

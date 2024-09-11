@@ -75,6 +75,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -111,7 +112,8 @@ public class FaceCapture extends AppCompatActivity {
     Interpreter tfLite;
     TextView textNote;
     CameraSelector cameraSelector;
-    RelativeLayout captureButton;
+    RelativeLayout finishSetup;
+    ProgressBar circularProgressBar;
 
     boolean start=true,flipX=false;
     int cam_face=CameraSelector.LENS_FACING_FRONT;
@@ -157,12 +159,15 @@ public class FaceCapture extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
         }
         face_preview =findViewById(R.id.previewImage);
-        captureButton = findViewById(R.id.captureFace);
+        finishSetup = findViewById(R.id.finishSetup);
+            circularProgressBar = findViewById(R.id.circularProgressBar);
+        int procress = 0;
+
         textNote = findViewById(R.id.textNote);
-        captureButton.setVisibility(View.INVISIBLE);
+        finishSetup.setVisibility(View.INVISIBLE);
         face_preview.setVisibility(View.INVISIBLE);
 
-        captureButton.setOnClickListener((new View.OnClickListener() {
+        finishSetup.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addFace();
@@ -186,7 +191,6 @@ public class FaceCapture extends AppCompatActivity {
         FaceDetectorOptions highAccuracyOpts =
                 new FaceDetectorOptions.Builder()
                         .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)  // Accurate mode
-                        .enableTracking()  // Track multiple faces across frames
                         .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)  // Detect facial landmarks (eyes, mouth, etc.)
                         .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)    // Detect face contours
                         .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)  // Smile and eye open/close detection
@@ -221,10 +225,11 @@ public class FaceCapture extends AppCompatActivity {
         Handler handler = new Handler();
 
         // Check if the embeddings list is not full
-        if (embeddingsList.size() < 10) {
+        if (embeddingsList.size() <= 10) {
             // Add embedding after 1 second delay
             handler.postDelayed(() -> {
                 if (!embeddingsList.contains(embeedings)) {
+                    circularProgressBar.setVisibility(View.VISIBLE);
                     embeddingsList.add(embeedings);
                     vibrateDevice(VibrationEffect.EFFECT_TICK);
                     Log.d("EMB added", "addFace: Embeddings added " + embeedings);
@@ -238,8 +243,10 @@ public class FaceCapture extends AppCompatActivity {
             start = false;
             recognitionData.setExtra(embeddingsList);
             stopCamera();
+            finishSetup.setVisibility(View.VISIBLE);
             vibrateDevice(VibrationEffect.EFFECT_DOUBLE_CLICK);
         }
+        circularProgressBar.setProgress(embeddingsList.size());
     }
 
     @Override
@@ -317,8 +324,7 @@ public class FaceCapture extends AppCompatActivity {
                 if (mediaImage != null) {
                     image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
                 }
-
-
+                
                 //Process acquired image to detect faces
                 Task<List<Face>> result =
                         detector.process(image)
@@ -345,14 +351,12 @@ public class FaceCapture extends AppCompatActivity {
                                                     if(start) {
                                                         face_preview.setVisibility(View.VISIBLE);
                                                         textNote.setVisibility(View.INVISIBLE);
-                                                        captureButton.setVisibility(View.VISIBLE);
                                                         recognizeImage(scaled); //Send scaled bitmap to create face embeddings.
                                                     }
                                                 }
                                                 else
                                                 {
                                                     face_preview.setVisibility(View.INVISIBLE);
-                                                    captureButton.setVisibility(View.INVISIBLE);
                                                     textNote.setVisibility(View.VISIBLE);
                                                 }
 
