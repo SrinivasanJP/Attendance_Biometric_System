@@ -125,6 +125,8 @@ public class FaceCapture extends AppCompatActivity {
     private static final int MY_CAMERA_REQUEST_CODE = 100;
 
     String name, regNo, pin;
+    ArrayList<float[][]> embeddingsList = new ArrayList<>();
+    boolean cameraState = true;
 
     String modelFile="mobile_face_net.tflite"; //model name
 
@@ -147,6 +149,8 @@ public class FaceCapture extends AppCompatActivity {
         pin = intent.getStringExtra("pin");
 
         Log.d("INTENT LOGS", "onCreate: Intent data: "+name+" "+regNo+" "+pin);
+
+        recognitionData = new CLassifierInterface.Recognition(name, regNo, pin, -1f);
 
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
@@ -307,11 +311,23 @@ public class FaceCapture extends AppCompatActivity {
     }
     private void addFace() {
             start=false;
-            recognitionData = new CLassifierInterface.Recognition(name, regNo, pin, -1f);
-            recognitionData.setExtra(embeedings);
+            if(embeddingsList.size()<10){
+                if(!embeddingsList.contains(embeedings)){
+                    embeddingsList.add(embeedings);
+                    Log.d("EMB added", "addFace: Embeedings added "+embeedings);
+                }else{
+                    Log.d("EMB Dup", "addFace: duplicated Detected");
+                }
+                start = true;
+            }else{
+                Log.d("EMB full", "addFace: list full");
+                start = false;
+                recognitionData.setExtra(embeddingsList);
+                stopCamera();
+            }
         Log.d("Face Capture", "addFace: "+recognitionData.toString()+" "+embeedings.toString());
         Toast.makeText(this, recognitionData.toString()+" "+embeedings.toString(), Toast.LENGTH_SHORT).show();
-            start=true;
+//            start=true;
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -349,6 +365,12 @@ public class FaceCapture extends AppCompatActivity {
                 // This should never be reached.
             }
         }, ContextCompat.getMainExecutor(this));
+    }
+    private void stopCamera() {
+        cameraState = false; // Change the state to false
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll(); // Unbind to stop the camera
+        }
     }
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         Preview preview = new Preview.Builder()
@@ -506,6 +528,7 @@ public class FaceCapture extends AppCompatActivity {
         String id = "0";
         String label = "?";
         Log.d("Embeedings", "recognizeImage: "+outputMap.toString());
+        addFace();
 //        Toast.makeText(getApplicationContext(), "Embeedings got", Toast.LENGTH_SHORT).show();
 
         //Compare new face with saved Faces.
