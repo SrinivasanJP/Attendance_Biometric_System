@@ -1,12 +1,14 @@
 package dev.roxs.attendance.Helper;
 
+import java.util.ArrayList;
+
 public interface CLassifierInterface {
     class Recognition {
         private final String name;
         private final String regNo;
         private final String pin;
         private final Float distance;
-        private Object extra;
+        private ArrayList<float[][]> extra;
         public Recognition(final String name, final String regNo, final  String pin, final Float distance) {
             this.name = name;
             this.regNo = regNo;
@@ -14,7 +16,7 @@ public interface CLassifierInterface {
             this.distance = distance;
             this.extra = null;
         }
-        public void setExtra(Object extra) {
+        public void setExtra(ArrayList<float[][]> extra) {
             this.extra = extra;
         }
         public Object getExtra() {
