@@ -61,7 +61,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.LifecycleOwner;
 
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
@@ -110,7 +113,6 @@ public class FaceCapture extends AppCompatActivity {
     CameraSelector cameraSelector;
     RelativeLayout captureButton;
 
-    float distance= 1.0f;
     boolean start=true,flipX=false;
     int cam_face=CameraSelector.LENS_FACING_FRONT;
 
@@ -126,11 +128,10 @@ public class FaceCapture extends AppCompatActivity {
 
     String name, regNo, pin;
     ArrayList<float[][]> embeddingsList = new ArrayList<>();
-    boolean cameraState = true;
 
     String modelFile="mobile_face_net.tflite"; //model name
 
-    private HashMap<String, CLassifierInterface.Recognition> registered = new HashMap<>();
+//    private HashMap<String, CLassifierInterface.Recognition> registered = new HashMap<>();
     private CLassifierInterface.Recognition recognitionData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,99 +159,8 @@ public class FaceCapture extends AppCompatActivity {
         face_preview =findViewById(R.id.previewImage);
         captureButton = findViewById(R.id.captureFace);
         textNote = findViewById(R.id.textNote);
-//        reco_name =findViewById(R.id.textView);
-//        preview_info =findViewById(R.id.textView2);
-//        textAbove_preview =findViewById(R.id.textAbovePreview);
-//        add_face=findViewById(R.id.imageButton);
-//        add_face.setVisibility(View.INVISIBLE);
-
-//        SharedPreferences sharedPref = getSharedPreferences("Distance",Context.MODE_PRIVATE);
-//        distance = sharedPref.getFloat("distance",1.00f);
         captureButton.setVisibility(View.INVISIBLE);
         face_preview.setVisibility(View.INVISIBLE);
-
-//        recognize=findViewById(R.id.button3);
-//        camera_switch=findViewById(R.id.button5);
-//        actions=findViewById(R.id.button2);
-//        textAbove_preview.setText("Recognized Face:");
-
-
-        // not reviewed
-//        actions.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//                builder.setTitle("Select Action:");
-//
-//                // add a checkbox list
-//                String[] names= {"View Recognition List","Update Recognition List","Save Recognitions","Load Recognitions","Clear All Recognitions","Import Photo (Beta)","Hyperparameters","Developer Mode"};
-//
-//                builder.setItems(names, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//
-//                        switch (which)
-//                        {
-//                            case 0:
-//                                displaynameListview();
-//                                break;
-//                            case 1:
-//                                updatenameListview();
-//                                break;
-//                            case 2:
-////                                insertToSP(registered,0); //mode: 0:save all, 1:clear all, 2:update all
-//                                break;
-//                            case 3:
-////                                registered.putAll(readFromSP());
-//                                break;
-//                            case 4:
-//                                clearnameList();
-//                                break;
-//                            case 5:
-//                                loadphoto();
-//                                break;
-//                            case 6:
-//                                testHyperparameter();
-//                                break;
-//                            case 7:
-//                                developerMode();
-//                                break;
-//                        }
-//
-//                    }
-//                });
-//
-//
-//                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//
-//                    }
-//                });
-//                builder.setNegativeButton("Cancel", null);
-//
-//                // create and show the alert dialog
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-//            }
-//        });
-
-        //On-screen switch to toggle between Cameras.
-//        camera_switch.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (cam_face==CameraSelector.LENS_FACING_BACK) {
-//                    cam_face = CameraSelector.LENS_FACING_FRONT;
-//                    flipX=true;
-//                }
-//                else {
-//                    cam_face = CameraSelector.LENS_FACING_BACK;
-//                    flipX=false;
-//                }
-//                cameraProvider.unbindAll();
-//                cameraBind();
-//            }
-//        });
 
         captureButton.setOnClickListener((new View.OnClickListener() {
             @Override
@@ -258,36 +168,6 @@ public class FaceCapture extends AppCompatActivity {
                 addFace();
             }
         }));
-
-
-//        recognize.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(recognize.getText().toString().equals("Recognize"))
-//                {
-//                    start=true;
-//                    textAbove_preview.setText("Recognized Face:");
-//                    recognize.setText("Add Face");
-//                    add_face.setVisibility(View.INVISIBLE);
-//                    reco_name.setVisibility(View.VISIBLE);
-//                    face_preview.setVisibility(View.INVISIBLE);
-//                    preview_info.setText("");
-//                    //preview_info.setVisibility(View.INVISIBLE);
-//                }
-//                else
-//                {
-//                    textAbove_preview.setText("Face Preview: ");
-//                    recognize.setText("Recognize");
-//                    add_face.setVisibility(View.VISIBLE);
-//                    reco_name.setVisibility(View.INVISIBLE);
-//                    face_preview.setVisibility(View.VISIBLE);
-//                    preview_info.setText("1.Bring Face in view of Camera.\n\n2.Your Face preview will appear here.\n\n3.Click Add button to save face.");
-//
-//
-//                }
-//
-//            }
-//        });
 
         //Load model
         try {
@@ -298,37 +178,70 @@ public class FaceCapture extends AppCompatActivity {
             e.printStackTrace();
         }
         //Initialize Face Detector
+//        FaceDetectorOptions highAccuracyOpts =
+//                new FaceDetectorOptions.Builder()
+//                        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+//                        .build();
+//        detector = (FaceDetector) FaceDetection.getClient(highAccuracyOpts);
         FaceDetectorOptions highAccuracyOpts =
                 new FaceDetectorOptions.Builder()
-                        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+                        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)  // Accurate mode
+                        .enableTracking()  // Track multiple faces across frames
+                        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)  // Detect facial landmarks (eyes, mouth, etc.)
+                        .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)    // Detect face contours
+                        .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)  // Smile and eye open/close detection
                         .build();
-        detector = (FaceDetector) FaceDetection.getClient(highAccuracyOpts);
+        detector = FaceDetection.getClient(highAccuracyOpts);
+
 
         cameraBind();
 
 
 
     }
+    private void vibrateDevice(int amplitude ) {
+        // Get the system's Vibrator service
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        // Check if the device has a vibrator
+        if (vibrator != null && vibrator.hasVibrator()) {
+            // Vibrate for 500 milliseconds (0.5 seconds)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                // Use VibrationEffect for devices running Android Oreo (API 26) or higher
+                VibrationEffect effect = VibrationEffect.createOneShot(500, amplitude);
+                vibrator.vibrate(effect);
+            } else {
+                // For devices running below Android Oreo, use the deprecated vibrate method
+                vibrator.vibrate(500); // Vibrate for 500 milliseconds
+            }
+        }
+    }
     private void addFace() {
-            start=false;
-            if(embeddingsList.size()<10){
-                if(!embeddingsList.contains(embeedings)){
+        start = false;
+        Handler handler = new Handler();
+
+        // Check if the embeddings list is not full
+        if (embeddingsList.size() < 10) {
+            // Add embedding after 1 second delay
+            handler.postDelayed(() -> {
+                if (!embeddingsList.contains(embeedings)) {
                     embeddingsList.add(embeedings);
-                    Log.d("EMB added", "addFace: Embeedings added "+embeedings);
-                }else{
-                    Log.d("EMB Dup", "addFace: duplicated Detected");
+                    vibrateDevice(VibrationEffect.EFFECT_TICK);
+                    Log.d("EMB added", "addFace: Embeddings added " + embeedings);
+                } else {
+                    Log.d("EMB Dup", "addFace: Duplicated Detected");
                 }
                 start = true;
-            }else{
-                Log.d("EMB full", "addFace: list full");
-                start = false;
-                recognitionData.setExtra(embeddingsList);
-                stopCamera();
-            }
-        Log.d("Face Capture", "addFace: "+recognitionData.toString()+" "+embeedings.toString());
-        Toast.makeText(this, recognitionData.toString()+" "+embeedings.toString(), Toast.LENGTH_SHORT).show();
-//            start=true;
+            }, 1000); // 1 second delay (1000 milliseconds)
+        } else {
+            Log.d("EMB full", "addFace: list full");
+            start = false;
+            recognitionData.setExtra(embeddingsList);
+            stopCamera();
+            vibrateDevice(VibrationEffect.EFFECT_DOUBLE_CLICK);
+        }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -358,16 +271,13 @@ public class FaceCapture extends AppCompatActivity {
         cameraProviderFuture.addListener(() -> {
             try {
                 cameraProvider = cameraProviderFuture.get();
-
                 bindPreview(cameraProvider);
             } catch (ExecutionException | InterruptedException e) {
-                // No errors need to be handled for this in Future.
-                // This should never be reached.
+                Log.e("CAM Bind ", "cameraBind: "+ e.toString(),e);
             }
         }, ContextCompat.getMainExecutor(this));
     }
     private void stopCamera() {
-        cameraState = false; // Change the state to false
         if (cameraProvider != null) {
             cameraProvider.unbindAll(); // Unbind to stop the camera
         }
@@ -392,7 +302,7 @@ public class FaceCapture extends AppCompatActivity {
             @OptIn(markerClass = ExperimentalGetImage.class) @Override
             public void analyze(@NonNull ImageProxy imageProxy) {
                 try {
-                    Thread.sleep(0);  //Camera preview refreshed every 10 millisec(adjust as required)
+                    Thread.sleep(0);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -406,10 +316,8 @@ public class FaceCapture extends AppCompatActivity {
 
                 if (mediaImage != null) {
                     image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-//                    System.out.println("Rotation "+imageProxy.getImageInfo().getRotationDegrees());
                 }
 
-//                System.out.println("ANALYSIS");
 
                 //Process acquired image to detect faces
                 Task<List<Face>> result =
@@ -564,34 +472,34 @@ public class FaceCapture extends AppCompatActivity {
     }
 
     //Compare Faces by distance between face embeddings
-    private List<Pair<String, Float>> findNearest(float[] emb) {
-        List<Pair<String, Float>> neighbour_list = new ArrayList<Pair<String, Float>>();
-        Pair<String, Float> ret = null; //to get closest match
-        Pair<String, Float> prev_ret = null; //to get second closest match
-        for (Map.Entry<String, CLassifierInterface.Recognition> entry : registered.entrySet())
-        {
-
-            final String name = entry.getKey();
-            final float[] knownEmb = ((float[][]) entry.getValue().getExtra())[0];
-
-            float distance = 0;
-            for (int i = 0; i < emb.length; i++) {
-                float diff = emb[i] - knownEmb[i];
-                distance += diff*diff;
-            }
-            distance = (float) Math.sqrt(distance);
-            if (ret == null || distance < ret.second) {
-                prev_ret=ret;
-                ret = new Pair<>(name, distance);
-            }
-        }
-        if(prev_ret==null) prev_ret=ret;
-        neighbour_list.add(ret);
-        neighbour_list.add(prev_ret);
-
-        return neighbour_list;
-
-    }
+//    private List<Pair<String, Float>> findNearest(float[] emb) {
+//        List<Pair<String, Float>> neighbour_list = new ArrayList<Pair<String, Float>>();
+//        Pair<String, Float> ret = null; //to get closest match
+//        Pair<String, Float> prev_ret = null; //to get second closest match
+//        for (Map.Entry<String, CLassifierInterface.Recognition> entry : registered.entrySet())
+//        {
+//
+//            final String name = entry.getKey();
+//            final float[] knownEmb = ((float[][]) entry.getValue().getExtra())[0];
+//
+//            float distance = 0;
+//            for (int i = 0; i < emb.length; i++) {
+//                float diff = emb[i] - knownEmb[i];
+//                distance += diff*diff;
+//            }
+//            distance = (float) Math.sqrt(distance);
+//            if (ret == null || distance < ret.second) {
+//                prev_ret=ret;
+//                ret = new Pair<>(name, distance);
+//            }
+//        }
+//        if(prev_ret==null) prev_ret=ret;
+//        neighbour_list.add(ret);
+//        neighbour_list.add(prev_ret);
+//
+//        return neighbour_list;
+//
+//    }
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
