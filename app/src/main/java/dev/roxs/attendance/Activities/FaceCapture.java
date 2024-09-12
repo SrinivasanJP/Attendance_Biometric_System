@@ -45,6 +45,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.mlkit.vision.common.InputImage;
@@ -100,11 +102,17 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import dev.roxs.attendance.Helper.CLassifierInterface;
+import dev.roxs.attendance.Helper.FingerPrint;
+import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.R;
 
 public class FaceCapture extends AppCompatActivity {
 
     FaceDetector detector;
+    private DocumentReference reference;
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FingerPrint fp;
+    private SharedpreferenceHelper sp;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     PreviewView previewView;
@@ -113,7 +121,8 @@ public class FaceCapture extends AppCompatActivity {
     TextView textNote;
     CameraSelector cameraSelector;
     RelativeLayout finishSetup;
-    ProgressBar circularProgressBar;
+    private ProgressBar vSetupProgress;
+//    ProgressBar circularProgressBar;
 
     boolean start=true,flipX=false;
     int cam_face=CameraSelector.LENS_FACING_FRONT;
@@ -150,6 +159,10 @@ public class FaceCapture extends AppCompatActivity {
         name = intent.getStringExtra("name");
         regNo = intent.getStringExtra("registerNo");
         pin = intent.getStringExtra("pin");
+        fp =new FingerPrint(FaceCapture.this);
+        reference = db.collection("users").document(fp.getFingerPrint());
+        sp = new SharedpreferenceHelper(this);
+
 
         Log.d("INTENT LOGS", "onCreate: Intent data: "+name+" "+regNo+" "+pin);
 
@@ -160,8 +173,7 @@ public class FaceCapture extends AppCompatActivity {
         }
         face_preview =findViewById(R.id.previewImage);
         finishSetup = findViewById(R.id.finishSetup);
-            circularProgressBar = findViewById(R.id.circularProgressBar);
-        int procress = 0;
+        vSetupProgress =findViewById(R.id.setupprogressBar);
 
         textNote = findViewById(R.id.textNote);
         finishSetup.setVisibility(View.INVISIBLE);
@@ -170,7 +182,23 @@ public class FaceCapture extends AppCompatActivity {
         finishSetup.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addFace();
+                reference.set(recognitionData).addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        sp.addData(fp.getFingerPrint(),regNo, name);
+
+                        Intent intent = new Intent(getApplicationContext(), IDPage.class);
+                        intent.putExtra("name",name);
+                        intent.putExtra("registerNo", regNo);
+                        intent.putExtra("pin",pin);
+                        startActivity(intent);
+                        finish();
+                    }else{
+                        Log.d("UT error", "onCreate: "+task.getException());
+                        Toast.makeText(getApplicationContext(), "Check your internet connection", Toast.LENGTH_SHORT).show();
+                        vSetupProgress.setVisibility(View.INVISIBLE);
+                        finishSetup.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         }));
 
@@ -229,7 +257,7 @@ public class FaceCapture extends AppCompatActivity {
             // Add embedding after 1 second delay
             handler.postDelayed(() -> {
                 if (!embeddingsList.contains(embeedings)) {
-                    circularProgressBar.setVisibility(View.VISIBLE);
+//                    circularProgressBar.setVisibility(View.VISIBLE);
                     embeddingsList.add(embeedings);
                     vibrateDevice(VibrationEffect.EFFECT_TICK);
                     Log.d("EMB added", "addFace: Embeddings added " + embeedings);
@@ -246,7 +274,7 @@ public class FaceCapture extends AppCompatActivity {
             finishSetup.setVisibility(View.VISIBLE);
             vibrateDevice(VibrationEffect.EFFECT_DOUBLE_CLICK);
         }
-        circularProgressBar.setProgress(embeddingsList.size());
+//        circularProgressBar.setProgress(embeddingsList.size());
     }
 
     @Override
@@ -349,7 +377,7 @@ public class FaceCapture extends AppCompatActivity {
                                                     //Scale the acquired Face to 112*112 which is required input for model
                                                     Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
                                                     if(start) {
-                                                        face_preview.setVisibility(View.VISIBLE);
+//                                                        face_preview.setVisibility(View.VISIBLE);
                                                         textNote.setVisibility(View.INVISIBLE);
                                                         recognizeImage(scaled); //Send scaled bitmap to create face embeddings.
                                                     }
