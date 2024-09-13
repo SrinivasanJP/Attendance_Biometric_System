@@ -45,7 +45,9 @@ import com.google.mlkit.vision.face.FaceDetectorOptions;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -59,6 +61,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import dev.roxs.attendance.Activities.CaptureImage;
+import dev.roxs.attendance.Activities.SendAttendanceData;
+
 
 public class FaceRecognitionHelper {
     private static final String MODEL_NAME="mobile_face_net.tflite";
@@ -70,7 +75,7 @@ public class FaceRecognitionHelper {
     private TextView textNote,textProgress;
     private Activity activity;
     private List<Float> storedEmbeddings;
-
+    private Bitmap sendImage;
     private ClassifierInterface.Recognition recognitionHelper;
     boolean start;
     
@@ -83,15 +88,19 @@ public class FaceRecognitionHelper {
     private static final float IMAGE_STD = 128.0f;
     private static final int OUTPUT_SIZE=192; //Output size of model
 
+    private FaceRecognitionCallback callback; // Add this line
+    public interface FaceRecognitionCallback {
+        void onDistanceCalculated(float distance);
+    }
 
-
-    public FaceRecognitionHelper(Activity activity, List<Float> storedEmbeddings) {
+    public FaceRecognitionHelper(Activity activity, List<Float> storedEmbeddings,FaceRecognitionCallback callback) {
         InitFaceDetector();
         InitInterpreter(activity);
         this.activity = activity;
         this.start = true;
         this.storedEmbeddings = storedEmbeddings;
         this.recognitionHelper = new ClassifierInterface.Recognition();
+        this.callback = callback;
         
     }
     private void InitInterpreter(Activity activity){
@@ -159,7 +168,7 @@ public class FaceRecognitionHelper {
                 } catch (InterruptedException e) {
                     Log.e("Analyzer", "analyze: ",e );
                 }
-                InputImage image = null;
+                InputImage image;
 
 
                 @SuppressLint("UnsafeExperimentalUsageError")
@@ -169,6 +178,8 @@ public class FaceRecognitionHelper {
 
                 if (mediaImage != null) {
                     image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+                } else {
+                    image = null;
                 }
 
                 //Process acquired image to detect faces
@@ -178,7 +189,7 @@ public class FaceRecognitionHelper {
                             faces -> {
 
                                 if(!faces.isEmpty()) {
-
+                                    sendImage = toBitmap(mediaImage);
                                     Face face = faces.get(0); //Get first face from detected faces
                                     Bitmap frame_bmp = toBitmap(mediaImage);
                                     int rot = imageProxy.getImageInfo().getRotationDegrees();
@@ -267,6 +278,23 @@ public class FaceRecognitionHelper {
         float distance = calculateDistance();
         textProgress.setText("Distance is "+distance);
         textProgress.setVisibility(View.VISIBLE);
+        if(distance<0.8){
+           stopCamera();
+           saveToInternalStorage(sendImage);
+            Toast.makeText(activity, "reached outer", Toast.LENGTH_SHORT).show();
+            Log.d("UT", "recognizeImage: outer");
+            if (callback != null) {
+                Toast.makeText(activity, "reached not eq", Toast.LENGTH_SHORT).show();
+                Log.d("UT", "recognizeImage: inner");
+
+                callback.onDistanceCalculated(distance);
+            }else{
+                Toast.makeText(activity, "reached eq", Toast.LENGTH_SHORT).show();
+                Log.d("UT", "recognizeImage: outer eq");
+
+
+            }
+        }
 
 
     }
@@ -441,5 +469,25 @@ public class FaceRecognitionHelper {
         // Return the Euclidean distance
         return (float) Math.sqrt(distance);
     }
+    private void saveToInternalStorage(Bitmap bitmapImage) {
+        // Change the angle as needed
+
+            File privateDir = activity.getApplicationContext().getFilesDir();
+            File imageFile = new File(privateDir, "captured_image.jpg");
+
+            try (FileOutputStream outputStream = new FileOutputStream(imageFile)) {
+                bitmapImage.compress(Bitmap.CompressFormat.JPEG, 8, outputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    private void stopCamera() {
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll(); // Unbind to stop the camera
+        }
+    }
+
 
 }
