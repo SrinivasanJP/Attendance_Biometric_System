@@ -18,6 +18,8 @@ import android.graphics.YuvImage;
 import android.media.Image;
 import android.util.Log;
 import android.util.Size;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -65,6 +67,7 @@ public class FaceRecognitionHelper {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ProcessCameraProvider cameraProvider;
     private PreviewView previewView;
+    private TextView textNote,textProgress;
     private Activity activity;
     private List<Float> storedEmbeddings;
 
@@ -124,8 +127,10 @@ public class FaceRecognitionHelper {
         return mappedByteBuffer;
     }
 
-    public void cameraBind(Context context,PreviewView previewView) {
+    public void cameraBind(Context context,PreviewView previewView, TextView textNote, TextView textProgress) {
         this.previewView = previewView;
+        this.textNote = textNote;
+        this.textProgress =textProgress;
         cameraProviderFuture = ProcessCameraProvider.getInstance(context);
         cameraProviderFuture.addListener(() -> {
             try {
@@ -259,7 +264,11 @@ public class FaceRecognitionHelper {
         outputMap.put(0, embeddings);
 
         tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
-//        calculateDistance();
+        float distance = calculateDistance();
+        textProgress.setText("Distance is "+distance);
+        textProgress.setVisibility(View.VISIBLE);
+
+
     }
 
     private static Bitmap getResizedBitmap(Bitmap bm) {

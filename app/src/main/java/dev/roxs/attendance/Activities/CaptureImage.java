@@ -19,6 +19,7 @@ import android.graphics.Matrix;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -37,6 +38,7 @@ public class CaptureImage extends AppCompatActivity {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
+    private TextView textNote, textProgress;
     private Intent preIntent;
     private FaceRecognitionHelper faceRecognitionHelper;
     private SharedpreferenceHelper sp;
@@ -48,11 +50,13 @@ public class CaptureImage extends AppCompatActivity {
         setContentView(R.layout.activity_capture_image);
         preIntent = getIntent();
         previewView = findViewById(R.id.previewView);
-//        sp = new SharedpreferenceHelper(getApplicationContext());
-//
-//        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-//        faceRecognitionHelper = new FaceRecognitionHelper(CaptureImage.this,sp.getStoredEmbeddings());
-//        faceRecognitionHelper.cameraBind(getApplicationContext(), previewView);
+        textProgress = findViewById(R.id.textProgress);
+        textNote = findViewById(R.id.textNote);
+        sp = new SharedpreferenceHelper(getApplicationContext());
+
+        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        faceRecognitionHelper = new FaceRecognitionHelper(CaptureImage.this,sp.getStoredEmbeddings());
+        faceRecognitionHelper.cameraBind(getApplicationContext(), previewView,textNote,textProgress);
 //        cameraProviderFuture.addListener(() -> {
 //            try {
 //                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
