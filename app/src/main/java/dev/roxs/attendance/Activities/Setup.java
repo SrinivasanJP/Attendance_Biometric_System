@@ -28,9 +28,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import dev.roxs.attendance.Helper.ClassifierInterface;
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.R;
@@ -55,7 +57,12 @@ public class Setup extends AppCompatActivity {
         String sPinView = Objects.requireNonNull(pinView.getText()).toString();
         if(!sPinView.isEmpty()){
             if(Objects.requireNonNull(documentSnapshot.get("pin")).toString().equals(sPinView)){
-                sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("regNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
+// Retrieve the 'extra' field and map it to ClassifierInterface.Recognition
+//                ClassifierInterface.Recognition recognitionData = documentSnapshot.toObject(ClassifierInterface.Recognition.class);
+//                assert recognitionData != null;
+//                Log.d("EXTRA", "handlePin: "+documentSnapshot.getId()+" "++" "+" "+documentSnapshot.get("extra"));
+                sp.addData(documentSnapshot.getId(), (String) documentSnapshot.get("registerNo"), (String) documentSnapshot.get("name"), (List<Double>) documentSnapshot.get("extra"));
+                Log.d("Firebase data", "handlePin: "+sp.getStoredEmbeddings());
                 startActivity(new Intent(getApplicationContext(), IDPage.class));
                 finish();
             }else{
