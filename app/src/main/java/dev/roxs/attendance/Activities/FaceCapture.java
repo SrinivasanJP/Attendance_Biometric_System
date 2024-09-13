@@ -56,7 +56,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.LifecycleOwner;
 
-import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
@@ -82,12 +81,11 @@ import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import dev.roxs.attendance.Helper.CLassifierInterface;
+import dev.roxs.attendance.Helper.ClassifierInterface;
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.R;
@@ -117,7 +115,7 @@ public class FaceCapture extends AppCompatActivity {
     int inputSize=112;  //Input size for model
     boolean isModelQuantized=false;
     float[][] embeedings;
-    List<Float> flattenEmbeddings;
+    List<Double> flattenEmbeddings;
     float IMAGE_MEAN = 128.0f;
     float IMAGE_STD = 128.0f;
     int OUTPUT_SIZE=192; //Output size of model
@@ -129,8 +127,8 @@ public class FaceCapture extends AppCompatActivity {
 
     String modelFile="mobile_face_net.tflite"; //model name
 
-//    private HashMap<String, CLassifierInterface.Recognition> registered = new HashMap<>();
-    private CLassifierInterface.Recognition recognitionData;
+//    private HashMap<String, ClassifierInterface.Recognition> registered = new HashMap<>();
+    private ClassifierInterface.Recognition recognitionData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,8 +167,14 @@ public class FaceCapture extends AppCompatActivity {
         finishSetup.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reference.set(recognitionData, SetOptions.merge()).addOnCompleteListener(task -> {
+                Map<String, List<Double>> user = new HashMap<>();
+                user.put("extra", flattenEmbeddings);
+                reference.set(user, SetOptions.merge()).addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
+                        if(!flattenEmbeddings.isEmpty())
+                            sp.addEmbeddings(flattenEmbeddings);
+                        else
+                            Toast.makeText(FaceCapture.this, "FlattenEmbeddings empty", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(), IDPage.class);
                         intent.putExtra("name",name);
                         intent.putExtra("registerNo", regNo);
@@ -238,7 +242,8 @@ public class FaceCapture extends AppCompatActivity {
         stopCamera();
         finishSetup.setVisibility(View.VISIBLE);
         vibrateDevice(VibrationEffect.EFFECT_TICK);
-        recognitionData = new CLassifierInterface.Recognition( -1f);
+        recognitionData = new ClassifierInterface.Recognition( -1f);
+        flattenEmbeddings = recognitionData.flatten2DArray(embeedings);
         recognitionData.setExtra(recognitionData.flatten2DArray(embeedings));
         Toast.makeText(this, recognitionData.toString(), Toast.LENGTH_SHORT).show();
         Log.d("Firebase data:", "addFace: "+recognitionData.toString());
@@ -460,8 +465,8 @@ public class FaceCapture extends AppCompatActivity {
 //
 
 //            final int numDetectionsOutput = 1;
-//            final ArrayList<CLassifierInterface.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
-//            CLassifierInterface.Recognition rec = new CLassifierInterface.Recognition(
+//            final ArrayList<ClassifierInterface.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
+//            ClassifierInterface.Recognition rec = new ClassifierInterface.Recognition(
 //                    id,
 //                    label,
 //                    distance);
@@ -475,7 +480,7 @@ public class FaceCapture extends AppCompatActivity {
 //        List<Pair<String, Float>> neighbour_list = new ArrayList<Pair<String, Float>>();
 //        Pair<String, Float> ret = null; //to get closest match
 //        Pair<String, Float> prev_ret = null; //to get second closest match
-//        for (Map.Entry<String, CLassifierInterface.Recognition> entry : registered.entrySet())
+//        for (Map.Entry<String, ClassifierInterface.Recognition> entry : registered.entrySet())
 //        {
 //
 //            final String name = entry.getKey();
