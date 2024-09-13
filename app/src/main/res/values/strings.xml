@@ -31,4 +31,6 @@
     <string name="step_5">Step 5: Check the Location permission</string>
     <string name="step_6_">Step 6: Turn on \'Use precise location\'</string>
     <string name="open_settings">Open Settings</string>
+    <string name="face_align">Align your face to the center of the camera to detect your face</string>
+    <string name="progress_text">Your face not Matches our record</string>
 </resources>

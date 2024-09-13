@@ -3,12 +3,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Activities.CaptureImage">
 
-    <androidx.camera.view.PreviewView
-        android:id="@+id/previewView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <FrameLayout
+        android:id="@+id/captureFrame"
+        android:layout_width="297dp"
+        android:layout_height="297dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/circle"
+        android:clipToOutline="true"
+        tools:targetApi="s">
 
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle"/>
+    </FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/textNote"
+        android:layout_height="wrap_content"
+        android:text="@string/face_align"
+        android:layout_below="@+id/captureFrame"
+        android:paddingHorizontal="50dp"
+        android:textAlignment="center"
+        android:layout_marginTop="100dp"
+        android:visibility="invisible"
+        android:textColor="@color/black"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/textProgress"
+        android:layout_height="wrap_content"
+        android:text="@string/progress_text"
+        android:layout_below="@+id/textNote"
+        android:paddingHorizontal="50dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:textAlignment="center"
+        android:layout_marginTop="50dp"
+        android:textColor="@color/black"
+        />
 
 </RelativeLayout>
