@@ -5,9 +5,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
@@ -21,16 +19,12 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.YuvImage;
 import android.media.Image;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 
 import androidx.annotation.OptIn;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ExperimentalGetImage;
 import androidx.camera.core.ImageAnalysis;
@@ -47,8 +41,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.firebase.firestore.SetOptions;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
@@ -64,18 +57,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import android.os.Handler;
-import android.os.ParcelFileDescriptor;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.text.InputType;
 import android.util.Log;
-import android.util.Pair;
 import android.util.Size;
 import android.view.View;
 
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -85,7 +72,6 @@ import android.widget.Toast;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -93,10 +79,10 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.ReadOnlyBufferException;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -131,6 +117,7 @@ public class FaceCapture extends AppCompatActivity {
     int inputSize=112;  //Input size for model
     boolean isModelQuantized=false;
     float[][] embeedings;
+    List<Float> flattenEmbeddings;
     float IMAGE_MEAN = 128.0f;
     float IMAGE_STD = 128.0f;
     int OUTPUT_SIZE=192; //Output size of model
@@ -138,7 +125,7 @@ public class FaceCapture extends AppCompatActivity {
     private static final int MY_CAMERA_REQUEST_CODE = 100;
 
     String name, regNo, pin;
-    ArrayList<float[][]> embeddingsList = new ArrayList<>();
+
 
     String modelFile="mobile_face_net.tflite"; //model name
 
@@ -166,7 +153,7 @@ public class FaceCapture extends AppCompatActivity {
 
         Log.d("INTENT LOGS", "onCreate: Intent data: "+name+" "+regNo+" "+pin);
 
-        recognitionData = new CLassifierInterface.Recognition(name, regNo, pin, -1f);
+
 
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
@@ -182,10 +169,8 @@ public class FaceCapture extends AppCompatActivity {
         finishSetup.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reference.set(recognitionData).addOnCompleteListener(task -> {
+                reference.set(recognitionData, SetOptions.merge()).addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-                        sp.addData(fp.getFingerPrint(),regNo, name);
-
                         Intent intent = new Intent(getApplicationContext(), IDPage.class);
                         intent.putExtra("name",name);
                         intent.putExtra("registerNo", regNo);
@@ -250,31 +235,13 @@ public class FaceCapture extends AppCompatActivity {
     }
     private void addFace() {
         start = false;
-        Handler handler = new Handler();
-
-        // Check if the embeddings list is not full
-        if (embeddingsList.size() <= 10) {
-            // Add embedding after 1 second delay
-            handler.postDelayed(() -> {
-                if (!embeddingsList.contains(embeedings)) {
-//                    circularProgressBar.setVisibility(View.VISIBLE);
-                    embeddingsList.add(embeedings);
-                    vibrateDevice(VibrationEffect.EFFECT_TICK);
-                    Log.d("EMB added", "addFace: Embeddings added " + embeedings);
-                } else {
-                    Log.d("EMB Dup", "addFace: Duplicated Detected");
-                }
-                start = true;
-            }, 1000); // 1 second delay (1000 milliseconds)
-        } else {
-            Log.d("EMB full", "addFace: list full");
-            start = false;
-            recognitionData.setExtra(embeddingsList);
-            stopCamera();
-            finishSetup.setVisibility(View.VISIBLE);
-            vibrateDevice(VibrationEffect.EFFECT_DOUBLE_CLICK);
-        }
-//        circularProgressBar.setProgress(embeddingsList.size());
+        stopCamera();
+        finishSetup.setVisibility(View.VISIBLE);
+        vibrateDevice(VibrationEffect.EFFECT_TICK);
+        recognitionData = new CLassifierInterface.Recognition( -1f);
+        recognitionData.setExtra(recognitionData.flatten2DArray(embeedings));
+        Toast.makeText(this, recognitionData.toString(), Toast.LENGTH_SHORT).show();
+        Log.d("Firebase data:", "addFace: "+recognitionData.toString());
     }
 
     @Override
