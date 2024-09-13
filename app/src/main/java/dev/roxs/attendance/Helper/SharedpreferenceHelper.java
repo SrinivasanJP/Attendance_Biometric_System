@@ -21,7 +21,7 @@ public class SharedpreferenceHelper {
     }
 
     // Add data including embedding
-    public void addData(String fingerprint, String reg_no, String name, List<Double> emb) {
+    public void addData(String fingerprint, String reg_no, String name, List<Float> emb) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(FINGERPRINT, fingerprint);
         editor.putString(REG_NO, reg_no);
@@ -39,11 +39,11 @@ public class SharedpreferenceHelper {
     }
 
     // Get stored embeddings as a List<Float>
-    public List<Double> getStoredEmbeddings() {
+    public List<Float> getStoredEmbeddings() {
         String embString = sharedPreferences.getString(STORED_EMBEDDINGS, "");
         return stringToList(embString);
     }
-    public void addEmbeddings(List<Double> emb){
+    public void addEmbeddings(List<Float> emb){
         @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(STORED_EMBEDDINGS,listToString(emb));
     }
@@ -65,9 +65,9 @@ public class SharedpreferenceHelper {
     }
 
     // Helper function to convert List<Float> to a comma-separated String
-    private String listToString(List<Double> list) {
+    private String listToString(List<Float> list) {
         StringBuilder sb = new StringBuilder();
-        for (Double f : list) {
+        for (Float f : list) {
             if (sb.length() > 0) {
                 sb.append(","); // separate values with a comma
             }
@@ -77,11 +77,11 @@ public class SharedpreferenceHelper {
     }
 
     // Helper function to convert a comma-separated String back to List<Float>
-    private List<Double> stringToList(String str) {
-        List<Double> list = new ArrayList<>();
+    private List<Float> stringToList(String str) {
+        List<Float> list = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(str, ",");
         while (tokenizer.hasMoreTokens()) {
-            list.add(Double.parseDouble(tokenizer.nextToken()));
+            list.add(Float.parseFloat(tokenizer.nextToken()));
         }
         return list;
     }

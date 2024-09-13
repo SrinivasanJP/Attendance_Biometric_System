@@ -3,12 +3,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Activities.CaptureImage">
 
-    <androidx.camera.view.PreviewView
-        android:id="@+id/previewView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <FrameLayout
+        android:id="@+id/captureFrame"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/circle"
+        android:clipToOutline="true">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle"/>
+    </FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/textNote"
+        android:layout_height="wrap_content"
+        android:text="Align your face to the center of the camera to detect your face"
+        android:layout_below="@+id/captureFrame"
+        android:layout_marginTop="50dp"
+        android:paddingHorizontal="50dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/faceMatchNote"
+        android:layout_height="wrap_content"
+        android:text="your"
+        android:layout_below="@+id/captureFrame"
+        android:layout_marginTop="50dp"
+        android:paddingHorizontal="50dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        />
 
 
 </RelativeLayout>

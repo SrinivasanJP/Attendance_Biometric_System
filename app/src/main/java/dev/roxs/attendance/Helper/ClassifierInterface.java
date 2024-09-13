@@ -7,7 +7,7 @@ import java.util.List;
 public interface ClassifierInterface {
     class Recognition {
         private  Float distance;
-        private List<Double> extra;
+        private List<Float> extra;
         private int row=0,col=0;
 
         public Recognition() {
@@ -17,10 +17,10 @@ public interface ClassifierInterface {
             this.distance = distance;
             this.extra = null;
         }
-        public void setExtra(List<Double> extra) {
+        public void setExtra(List<Float> extra) {
             this.extra = extra;
         }
-        public List<Double> getExtra() {
+        public List<Float> getExtra() {
             return this.extra;
         }
         @Override
@@ -32,22 +32,20 @@ public interface ClassifierInterface {
 
             return resultString.trim();
         }
-        public List<Double> flatten2DArray(float[][] array) {
-            List<Double> flatList = new ArrayList<>();
+        public List<Float> flatten2DArray(float[][] array) {
+            List<Float> flatList = new ArrayList<>();
             for (float[] row : array) {
-                this.row++;
-                for (double value : row) {
+                for (float value : row) {
                     flatList.add(value);
-                    this.col++;
                 }
             }
             return flatList;
         }
-        public double[][] unflattenList(List<Double> flatList) {
-            double[][] array = new double[this.row][this.col];
+        public float[][] unflattenList(List<Float> flatList) {
+            float[][] array = new float[1][192];
             int index = 0;
-            for (int i = 0; i < this.row; i++) {
-                for (int j = 0; j < this.col; j++) {
+            for (int i = 0; i < 1; i++) {
+                for (int j = 0; j < 192; j++) {
                     array[i][j] = flatList.get(index++);
                 }
             }

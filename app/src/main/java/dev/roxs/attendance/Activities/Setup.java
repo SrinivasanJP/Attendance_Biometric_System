@@ -61,7 +61,7 @@ public class Setup extends AppCompatActivity {
 //                ClassifierInterface.Recognition recognitionData = documentSnapshot.toObject(ClassifierInterface.Recognition.class);
 //                assert recognitionData != null;
 //                Log.d("EXTRA", "handlePin: "+documentSnapshot.getId()+" "++" "+" "+documentSnapshot.get("extra"));
-                sp.addData(documentSnapshot.getId(), (String) documentSnapshot.get("registerNo"), (String) documentSnapshot.get("name"), (List<Double>) documentSnapshot.get("extra"));
+                sp.addData(documentSnapshot.getId(), (String) documentSnapshot.get("registerNo"), (String) documentSnapshot.get("name"), (List<Float>) documentSnapshot.get("extra"));
                 Log.d("Firebase data", "handlePin: "+sp.getStoredEmbeddings());
                 startActivity(new Intent(getApplicationContext(), IDPage.class));
                 finish();

@@ -115,7 +115,7 @@ public class FaceCapture extends AppCompatActivity {
     int inputSize=112;  //Input size for model
     boolean isModelQuantized=false;
     float[][] embeedings;
-    List<Double> flattenEmbeddings;
+    List<Float> flattenEmbeddings;
     float IMAGE_MEAN = 128.0f;
     float IMAGE_STD = 128.0f;
     int OUTPUT_SIZE=192; //Output size of model
@@ -167,7 +167,7 @@ public class FaceCapture extends AppCompatActivity {
         finishSetup.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, List<Double>> user = new HashMap<>();
+                Map<String, List<Float>> user = new HashMap<>();
                 user.put("extra", flattenEmbeddings);
                 reference.set(user, SetOptions.merge()).addOnCompleteListener(task -> {
                     if(task.isSuccessful()){

@@ -66,7 +66,7 @@ public class FaceRecognitionHelper {
     private ProcessCameraProvider cameraProvider;
     private PreviewView previewView;
     private Activity activity;
-    private List<Double> storedEmbeddings;
+    private List<Float> storedEmbeddings;
 
     private ClassifierInterface.Recognition recognitionHelper;
     boolean start;
@@ -82,7 +82,7 @@ public class FaceRecognitionHelper {
 
 
 
-    public FaceRecognitionHelper(Activity activity, List<Double> storedEmbeddings) {
+    public FaceRecognitionHelper(Activity activity, List<Float> storedEmbeddings) {
         InitFaceDetector();
         InitInterpreter(activity);
         this.activity = activity;
@@ -259,7 +259,7 @@ public class FaceRecognitionHelper {
         outputMap.put(0, embeddings);
 
         tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
-        calculateDistance();
+//        calculateDistance();
     }
 
     private static Bitmap getResizedBitmap(Bitmap bm) {
@@ -411,9 +411,11 @@ public class FaceRecognitionHelper {
     }
 
     public float calculateDistance() {
-        Log.d("store check", "calculateDistance: "+this.storedEmbeddings+",  "+embeddings);
-        double[][] storedEmbeddings = this.recognitionHelper.unflattenList(this.storedEmbeddings);
-        Log.d("store check 2", "calculateDistance: "+storedEmbeddings);
+        ClassifierInterface.Recognition recognition2 = new ClassifierInterface.Recognition();
+        Log.d("store check", "calculateDistance: "+this.storedEmbeddings);
+        float[][] storedEmbeddings = this.recognitionHelper.unflattenList(this.storedEmbeddings);
+        Log.d("store check 2", "calculateDistance: "+storedEmbeddings[0]);
+        Log.d("store check 3", "calculateDistance: "+embeddings[0]);
 
 
         if (storedEmbeddings[0].length != embeddings[0].length) {
