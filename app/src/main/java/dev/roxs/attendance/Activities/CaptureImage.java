@@ -28,7 +28,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import dev.roxs.attendance.Helper.FaceRecognitionHelper;
 import dev.roxs.attendance.Helper.ImageUtils;
+import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.R;
 
 public class CaptureImage extends AppCompatActivity {
@@ -36,6 +38,8 @@ public class CaptureImage extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
     private Intent preIntent;
+    private FaceRecognitionHelper faceRecognitionHelper;
+    private SharedpreferenceHelper sp;
 
 
     @Override
@@ -44,16 +48,20 @@ public class CaptureImage extends AppCompatActivity {
         setContentView(R.layout.activity_capture_image);
         preIntent = getIntent();
         previewView = findViewById(R.id.previewView);
+        sp = new SharedpreferenceHelper(getApplicationContext());
 
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-        cameraProviderFuture.addListener(() -> {
-            try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                bindPreview(cameraProvider);
-            } catch (ExecutionException | InterruptedException e) {
-                // Handle exceptions
-            }
-        }, ContextCompat.getMainExecutor(this));
+        Log.d("Stored embeddings", "onCreate: "+sp.getStoredEmbeddings());
+        faceRecognitionHelper = new FaceRecognitionHelper(CaptureImage.this,sp.getStoredEmbeddings());
+        faceRecognitionHelper.cameraBind(getApplicationContext(), previewView);
+//        cameraProviderFuture.addListener(() -> {
+//            try {
+//                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+//                bindPreview(cameraProvider);
+//            } catch (ExecutionException | InterruptedException e) {
+//                // Handle exceptions
+//            }
+//        }, ContextCompat.getMainExecutor(this));
     }
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
