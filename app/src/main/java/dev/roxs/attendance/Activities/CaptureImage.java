@@ -48,12 +48,11 @@ public class CaptureImage extends AppCompatActivity {
         setContentView(R.layout.activity_capture_image);
         preIntent = getIntent();
         previewView = findViewById(R.id.previewView);
-        sp = new SharedpreferenceHelper(getApplicationContext());
-
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-        Log.d("Stored embeddings", "onCreate: "+sp.getStoredEmbeddings());
-        faceRecognitionHelper = new FaceRecognitionHelper(CaptureImage.this,sp.getStoredEmbeddings());
-        faceRecognitionHelper.cameraBind(getApplicationContext(), previewView);
+//        sp = new SharedpreferenceHelper(getApplicationContext());
+//
+//        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+//        faceRecognitionHelper = new FaceRecognitionHelper(CaptureImage.this,sp.getStoredEmbeddings());
+//        faceRecognitionHelper.cameraBind(getApplicationContext(), previewView);
 //        cameraProviderFuture.addListener(() -> {
 //            try {
 //                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
