@@ -1,20 +1,26 @@
 export const getLocation = () => {
-    return new Promise((resolve, reject) => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude, altitude } = position.coords;
-            resolve({ latitude, longitude, altitude });
-          },
-          (error) => {
-            reject(error);
-          }
-        );
-      } else {
-        reject(new Error('Geolocation is not supported.'));
-      }
-    });
-  };
+  return new Promise((resolve, reject) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude, altitude } = position.coords;
+          resolve({ latitude, longitude, altitude });
+        },
+        (error) => {
+          reject(error);
+        },
+        {
+          enableHighAccuracy: true, // Enable GPS for higher accuracy
+          timeout: 10000, // Timeout after 10 seconds
+          maximumAge: 0 // No cache, request a new position every time
+        }
+      );
+    } else {
+      reject(new Error('Geolocation is not supported.'));
+    }
+  });
+};
+
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Radius of the earth in km
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -44,16 +50,28 @@ export const getLocation = () => {
     }
   };
   export const calculateAttendeeProximity = (attendee, userLocation) => {
-    if(!userLocation){return "0%"}
+    if (!userLocation) {
+      return "location not available";
+    }
+    
     const distance = calculateDistance(
       userLocation.latitude,
       userLocation.longitude,
       parseFloat(attendee.latitude),
       parseFloat(attendee.longitude)
     );
-    console.log(distance*100)
-    const maxProximity = 1; // Maximum proximity distance (in km)
-    const proximityPercentage = ((maxProximity - distance) / maxProximity) * 100;
-    return proximityPercentage.toFixed(2)>0? proximityPercentage.toFixed(2)+ '%':"0%";
+  
+    console.log("Calculated distance: ", distance);
+  
+    const maxProximity = 10; // Increase max proximity to 10 km for better granularity
+  
+    // Ensure the proximity percentage does not go negative
+    const proximityPercentage = Math.max(((maxProximity - distance) / maxProximity) * 100, 0);
+  
+    console.log("Proximity percentage: ", proximityPercentage);
+  
+    return proximityPercentage.toFixed(2) + '%';
   };
+  
+  
   
