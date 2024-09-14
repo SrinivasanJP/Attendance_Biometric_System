@@ -1,13 +1,18 @@
 package dev.roxs.attendance.Helper;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface CLassifierInterface {
+public interface ClassifierInterface {
     class Recognition {
-        private final Float distance;
+        private  Float distance;
         private List<Float> extra;
         private int row=0,col=0;
+
+        public Recognition() {
+        }
+
         public Recognition(final Float distance) {
             this.distance = distance;
             this.extra = null;
@@ -15,7 +20,7 @@ public interface CLassifierInterface {
         public void setExtra(List<Float> extra) {
             this.extra = extra;
         }
-        public Object getExtra() {
+        public List<Float> getExtra() {
             return this.extra;
         }
         @Override
@@ -30,19 +35,17 @@ public interface CLassifierInterface {
         public List<Float> flatten2DArray(float[][] array) {
             List<Float> flatList = new ArrayList<>();
             for (float[] row : array) {
-                this.row++;
                 for (float value : row) {
                     flatList.add(value);
-                    this.col++;
                 }
             }
             return flatList;
         }
         public float[][] unflattenList(List<Float> flatList) {
-            float[][] array = new float[this.row][this.col];
+            float[][] array = new float[1][192];
             int index = 0;
-            for (int i = 0; i < this.row; i++) {
-                for (int j = 0; j < this.col; j++) {
+            for (int i = 0; i < 1; i++) {
+                for (int j = 0; j < 192; j++) {
                     array[i][j] = flatList.get(index++);
                 }
             }
