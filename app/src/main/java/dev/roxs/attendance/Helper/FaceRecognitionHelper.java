@@ -20,7 +20,6 @@ import android.util.Log;
 import android.util.Size;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -60,9 +59,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import dev.roxs.attendance.Activities.CaptureImage;
-import dev.roxs.attendance.Activities.SendAttendanceData;
+import dev.roxs.attendance.R;
 
 
 public class FaceRecognitionHelper {
@@ -73,11 +70,12 @@ public class FaceRecognitionHelper {
     private ProcessCameraProvider cameraProvider;
     private PreviewView previewView;
     private TextView textNote,textProgress;
-    private Activity activity;
-    private List<Float> storedEmbeddings;
+    private final Activity activity;
+    private final List<Float> storedEmbeddings;
     private Bitmap sendImage;
-    private ClassifierInterface.Recognition recognitionHelper;
+    private final ClassifierInterface.Recognition recognitionHelper;
     boolean start;
+    private int bufferCount = 0;
     
     //recognize data
     int[] intValues;
@@ -88,7 +86,7 @@ public class FaceRecognitionHelper {
     private static final float IMAGE_STD = 128.0f;
     private static final int OUTPUT_SIZE=192; //Output size of model
 
-    private FaceRecognitionCallback callback; // Add this line
+    private final FaceRecognitionCallback callback; // Add this line
     public interface FaceRecognitionCallback {
         void onDistanceCalculated(float distance);
     }
@@ -106,11 +104,9 @@ public class FaceRecognitionHelper {
     private void InitInterpreter(Activity activity){
         try {
             tfLite=new Interpreter(loadModelFile(activity));
-            Toast.makeText(activity, "model loaded", Toast.LENGTH_SHORT).show();
             Log.d("MODEL", "onCreate: Model loaded successfully");
         } catch (IOException e) {
             Log.e("MODEL", "onCreate: Model load unsuccessfully",e);
-            Toast.makeText(activity, "Model not loaded", Toast.LENGTH_SHORT).show();
         }
     }
     private void InitFaceDetector(){
@@ -202,13 +198,14 @@ public class FaceRecognitionHelper {
                                     cropped_face = rotateBitmap(cropped_face, 0, true);
                                     //Scale the acquired Face to 112*112 which is required input for model
                                     Bitmap scaled = getResizedBitmap(cropped_face);
-
                                     if(start){
                                         recognizeImage(scaled);
                                     }
                                 }
                                 else
                                 {
+                                    textNote.setText(R.string.face_align);
+                                    textNote.setVisibility(View.VISIBLE);
                                     Log.d("Face Detector", "onSuccess: No face detected");
                                 }
 
@@ -230,6 +227,7 @@ public class FaceRecognitionHelper {
 
     }
     
+    @SuppressLint("SetTextI18n")
     private void recognizeImage(final Bitmap bitmap) {
 
         // set Face to Preview
@@ -276,23 +274,23 @@ public class FaceRecognitionHelper {
 
         tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
         float distance = calculateDistance();
-        textProgress.setText("Distance is "+distance);
-        textProgress.setVisibility(View.VISIBLE);
-        if(distance<0.8){
+
+        if(distance<1){
+            textProgress.setText("Distance is "+distance);
+            textProgress.setVisibility(View.VISIBLE);
+            textNote.setVisibility(View.INVISIBLE);
            stopCamera();
            saveToInternalStorage(sendImage);
-            Toast.makeText(activity, "reached outer", Toast.LENGTH_SHORT).show();
-            Log.d("UT", "recognizeImage: outer");
             if (callback != null) {
-                Toast.makeText(activity, "reached not eq", Toast.LENGTH_SHORT).show();
-                Log.d("UT", "recognizeImage: inner");
-
                 callback.onDistanceCalculated(distance);
-            }else{
-                Toast.makeText(activity, "reached eq", Toast.LENGTH_SHORT).show();
-                Log.d("UT", "recognizeImage: outer eq");
-
-
+            }
+        }else{
+            if(bufferCount>100) {
+                textNote.setText("Your face does not matches our record");
+                textNote.setVisibility(View.VISIBLE);
+            }
+            else{
+                bufferCount++;
             }
         }
 
@@ -448,41 +446,31 @@ public class FaceRecognitionHelper {
     }
 
     public float calculateDistance() {
-        ClassifierInterface.Recognition recognition2 = new ClassifierInterface.Recognition();
-        Log.d("store check", "calculateDistance: "+this.storedEmbeddings);
         float[][] storedEmbeddings = this.recognitionHelper.unflattenList(this.storedEmbeddings);
-        Log.d("store check 2", "calculateDistance: "+storedEmbeddings[0]);
-        Log.d("store check 3", "calculateDistance: "+embeddings[0]);
-
-
         if (storedEmbeddings[0].length != embeddings[0].length) {
             throw new IllegalArgumentException("Embeddings must have the same length");
         }
-
         float distance = 0;
         for (int i = 0; i < storedEmbeddings[0].length; i++) {
             double diff = storedEmbeddings[0][i] - embeddings[0][i];
-            distance += diff * diff;
+            distance += (float) (diff * diff);
         }
-
-        Toast.makeText(activity, ""+distance, Toast.LENGTH_SHORT).show();
-        // Return the Euclidean distance
         return (float) Math.sqrt(distance);
     }
-    private void saveToInternalStorage(Bitmap bitmapImage) {
-        // Change the angle as needed
 
+    private void saveToInternalStorage(Bitmap bitmapImage) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(-90); // Rotate to align with 0 degrees
+            bitmapImage = Bitmap.createBitmap(bitmapImage, 0, 0, bitmapImage.getWidth(), bitmapImage.getHeight(), matrix, true);
             File privateDir = activity.getApplicationContext().getFilesDir();
             File imageFile = new File(privateDir, "captured_image.jpg");
 
             try (FileOutputStream outputStream = new FileOutputStream(imageFile)) {
                 bitmapImage.compress(Bitmap.CompressFormat.JPEG, 8, outputStream);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("File output error", "saveToInternalStorage: ",e );
             }
         }
-
-
     private void stopCamera() {
         if (cameraProvider != null) {
             cameraProvider.unbindAll(); // Unbind to stop the camera
