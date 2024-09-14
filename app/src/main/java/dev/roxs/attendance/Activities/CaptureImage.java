@@ -62,7 +62,6 @@ public class CaptureImage extends AppCompatActivity implements FaceRecognitionHe
 
     @Override
     public void onDistanceCalculated(float distance) {
-        Toast.makeText(this, "reached here", Toast.LENGTH_SHORT).show();
         Intent sendData = new Intent(getApplicationContext(), SendAttendanceData.class);
         sendData.putExtra("sessionID",preIntent.getStringExtra("sessionID"));
         sendData.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
