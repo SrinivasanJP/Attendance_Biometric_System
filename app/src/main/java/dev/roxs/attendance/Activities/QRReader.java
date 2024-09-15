@@ -52,9 +52,7 @@ public class QRReader extends AppCompatActivity {
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
-
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
-                .setRequestedPreviewSize(1920, 1080)
                 .setAutoFocusEnabled(true)
                 .build();
 
@@ -85,7 +83,7 @@ public class QRReader extends AppCompatActivity {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-                Toast.makeText(getApplicationContext(), "Barcode reader stopped", Toast.LENGTH_SHORT).show();
+                Log.d("UT QR started", "release: qr started");
             }
 
             @SuppressLint({"ResourceAsColor", "SetTextI18n"})
@@ -112,6 +110,8 @@ public class QRReader extends AppCompatActivity {
 
                         }
                     });
+                }else{
+                    txtBarcodeValue.post(()-> txtBarcodeValue.setText("No QR Code detected"));
                 }
             }
         });
@@ -137,7 +137,7 @@ public class QRReader extends AppCompatActivity {
     // Function to check if the angle is within the allowed range
     private boolean isAngleAllowed(double angle) {
         // Block angles between 0-30 degrees and 100-120 degrees for pitch
-        return (angle>30);
+        return (angle>35);
     }
 
     @Override
