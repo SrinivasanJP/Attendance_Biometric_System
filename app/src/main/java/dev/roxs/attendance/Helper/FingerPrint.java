@@ -62,6 +62,7 @@ public class FingerPrint {
     public FingerPrint(Context context) {
         mContext = context;
     }
+    //FINGER PRINT GENERATOR
     public String getFingerPrint(){
 
         DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
@@ -84,6 +85,7 @@ public class FingerPrint {
 
         return hashString(androidId+"_"+deviceHardwareConfig+sensorList);
     }
+    //ENCRYPTING WITH SHA256
     private String hashString(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
