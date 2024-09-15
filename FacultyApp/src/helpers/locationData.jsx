@@ -11,7 +11,7 @@ export const getLocation = () => {
         },
         {
           enableHighAccuracy: true, // Enable GPS for higher accuracy
-          timeout: 10000, // Timeout after 10 seconds
+          timeout: 30000, // Increased timeout to allow GPS more time
           maximumAge: 0 // No cache, request a new position every time
         }
       );
@@ -60,6 +60,11 @@ export const getLocation = () => {
       parseFloat(attendee.latitude),
       parseFloat(attendee.longitude)
     );
+    console.log(userLocation.latitude,
+      userLocation.longitude,
+      parseFloat(attendee.latitude),
+      parseFloat(attendee.longitude));
+    
   
     console.log("Calculated distance: ", distance);
   
