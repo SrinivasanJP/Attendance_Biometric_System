@@ -92,8 +92,8 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
         return
       }
       // Create CSV content
-      const csvContent = "Name,Register No,Image URL,Latitude,Longitude,Altitude\n" + attendees.map(a =>
-        `${a.userName},${a.registerNo},${a.imageURL},${a.latitude},${a.longitude},${a.altitude}`
+      const csvContent = "Name,Register No,Image URL,Latitude,Longitude,Altitude,Device Signature\n" + attendees.map(a =>
+        `${a.userName},${a.registerNo},${a.imageURL},${a.latitude},${a.longitude},${a.altitude},${a.fingerprint}`
       ).join("\n");
   
       // Create a Blob with the CSV content

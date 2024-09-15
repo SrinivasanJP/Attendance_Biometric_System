@@ -1,6 +1,7 @@
 package dev.roxs.attendance.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -12,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -103,26 +105,33 @@ public class SendAttendanceData extends AppCompatActivity {
 
         boolean isLocationEnabled = LocationUtils.isLocationEnabled(this);
         if (isLocationEnabled) {
-            requestNewLocationData();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                requestNewLocationData();
+            }
         } else {
             Toast.makeText(this, "Turn on Location and Mobile Network", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(intent);
         }
     }
-
+    @RequiresApi(api = Build.VERSION_CODES.S)
     private void requestNewLocationData() {
 
         LocationRequest.Builder lr = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY);
-
+        lr.setWaitForAccurateLocation(true)
+                .setIntervalMillis(10000)
+                .setMaxUpdateAgeMillis(20000);
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
             return;
         }
-        fusedLocationClient.requestLocationUpdates(lr.setWaitForAccurateLocation(true).build(), mLocationCallback, Looper.myLooper());
+
+        fusedLocationClient.requestLocationUpdates(lr.build(), mLocationCallback, Looper.myLooper());
     }
+
     private boolean isSent = false;
     private final LocationCallback mLocationCallback = new LocationCallback() {
 

@@ -25,11 +25,14 @@ import com.chaos.view.PinView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import dev.roxs.attendance.Helper.ClassifierInterface;
 import dev.roxs.attendance.Helper.FingerPrint;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
 import dev.roxs.attendance.R;
@@ -54,7 +57,12 @@ public class Setup extends AppCompatActivity {
         String sPinView = Objects.requireNonNull(pinView.getText()).toString();
         if(!sPinView.isEmpty()){
             if(Objects.requireNonNull(documentSnapshot.get("pin")).toString().equals(sPinView)){
-                sp.addData(documentSnapshot.getId(), Objects.requireNonNull(documentSnapshot.get("registerNo")).toString(), Objects.requireNonNull(documentSnapshot.get("name")).toString());
+// Retrieve the 'extra' field and map it to ClassifierInterface.Recognition
+//                ClassifierInterface.Recognition recognitionData = documentSnapshot.toObject(ClassifierInterface.Recognition.class);
+//                assert recognitionData != null;
+//                Log.d("EXTRA", "handlePin: "+documentSnapshot.getId()+" "++" "+" "+documentSnapshot.get("extra"));
+                sp.addData(documentSnapshot.getId(), (String) documentSnapshot.get("registerNo"), (String) documentSnapshot.get("name"), (List<Float>) documentSnapshot.get("extra"));
+                Log.d("Firebase data", "handlePin: "+sp.getStoredEmbeddings());
                 startActivity(new Intent(getApplicationContext(), IDPage.class));
                 finish();
             }else{
@@ -85,6 +93,7 @@ public class Setup extends AppCompatActivity {
                 fp.isFingerprintAvailable(db, fp.getFingerPrint(), (networkError,isAvailable, documentSnapshot) -> {
                     if(!networkError){
                         if (isAvailable) {
+                            Log.d("Firebase Data", "onStart: "+documentSnapshot.getString("name"));
                             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
                             LayoutInflater inflater = this.getLayoutInflater();
                             View view = inflater.inflate(R.layout.pin_get_layout,null);
@@ -104,6 +113,7 @@ public class Setup extends AppCompatActivity {
                             });
 
                         } else {
+                            Log.d("Firebase Data", "onStart: data not available");
                             vPageProgress.setVisibility(View.INVISIBLE);
                             vContainer.setVisibility(View.VISIBLE);
                         }
@@ -111,16 +121,17 @@ public class Setup extends AppCompatActivity {
                             Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
                         }
                 });
-                
+
         }
 
     }
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
 
+        sp = new SharedpreferenceHelper(this);
+        fp =new FingerPrint(Setup.this);
         //hooks
         vReg_no = findViewById(R.id.reg_no);
         vName = findViewById(R.id.name);
@@ -151,7 +162,10 @@ public class Setup extends AppCompatActivity {
                         reference.set(user).addOnCompleteListener(task -> {
                             if(task.isSuccessful()){
                                 sp.addData(fp.getFingerPrint(),sReg_no, sName);
-                                Intent intent = new Intent(getApplicationContext(), IDPage.class);
+                                Intent intent = new Intent(getApplicationContext(), FaceCapture.class);
+                                intent.putExtra("name",sName);
+                                intent.putExtra("registerNo", sReg_no);
+                                intent.putExtra("pin",sPin);
                                 startActivity(intent);
                                 finish();
                             }else{
