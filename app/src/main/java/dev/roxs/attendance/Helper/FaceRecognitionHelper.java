@@ -230,6 +230,7 @@ public class FaceRecognitionHelper {
     @SuppressLint("SetTextI18n")
     private void recognizeImage(final Bitmap bitmap) {
 
+        textNote.setVisibility(View.INVISIBLE);
         // set Face to Preview
 //        face_preview.setImageBitmap(bitmap);
 
@@ -275,7 +276,8 @@ public class FaceRecognitionHelper {
         tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
         float distance = calculateDistance();
 
-        if(distance<1){
+
+        if(distance<.6){
             textProgress.setText("Distance is "+distance);
             textProgress.setVisibility(View.VISIBLE);
             textNote.setVisibility(View.INVISIBLE);
@@ -285,7 +287,9 @@ public class FaceRecognitionHelper {
                 callback.onDistanceCalculated(distance);
             }
         }else{
-            if(bufferCount>100) {
+            textNote.setText("Face matches : "+distance);
+            textNote.setVisibility(View.VISIBLE);
+            if(bufferCount>10000000) {
                 textNote.setText("Your face does not matches our record");
                 textNote.setVisibility(View.VISIBLE);
             }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.view.PreviewView;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import dev.roxs.attendance.Helper.FaceRecognitionHelper;
 import dev.roxs.attendance.Helper.SharedpreferenceHelper;
