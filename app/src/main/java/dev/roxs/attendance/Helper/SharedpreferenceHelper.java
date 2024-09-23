@@ -21,7 +21,7 @@ public class SharedpreferenceHelper {
     }
 
     // Add data including embedding
-    public void addData(String fingerprint, String reg_no, String name, List<Float> emb) {
+    public void addData(String fingerprint, String reg_no, String name, List<Double> emb) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(FINGERPRINT, fingerprint);
         editor.putString(REG_NO, reg_no);
@@ -45,7 +45,7 @@ public class SharedpreferenceHelper {
     }
     public void addEmbeddings(List<Float> emb){
         @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(STORED_EMBEDDINGS,listToString(emb));
+        editor.putString(STORED_EMBEDDINGS,FlistToString(emb));
     }
 
     public String getFingerprint() {
@@ -65,7 +65,17 @@ public class SharedpreferenceHelper {
     }
 
     // Helper function to convert List<Float> to a comma-separated String
-    private String listToString(List<Float> list) {
+    private String listToString(List<Double> list) {
+        StringBuilder sb = new StringBuilder();
+        for (Double f : list) {
+            if (sb.length() > 0) {
+                sb.append(","); // separate values with a comma
+            }
+            sb.append(String.valueOf(f.floatValue()));
+        }
+        return sb.toString();
+    }
+    private String FlistToString(List<Float> list) {
         StringBuilder sb = new StringBuilder();
         for (Float f : list) {
             if (sb.length() > 0) {
