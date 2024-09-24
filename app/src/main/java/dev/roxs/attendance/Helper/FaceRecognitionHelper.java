@@ -277,7 +277,7 @@ public class FaceRecognitionHelper {
         float distance = calculateDistance();
 
 
-        if(distance<.6){
+        if(distance<.9){
             textProgress.setText("Distance is "+distance);
             textProgress.setVisibility(View.VISIBLE);
             textNote.setVisibility(View.INVISIBLE);
@@ -289,7 +289,7 @@ public class FaceRecognitionHelper {
         }else{
             textNote.setText("Face matches : "+distance);
             textNote.setVisibility(View.VISIBLE);
-            if(bufferCount>10000000) {
+            if(bufferCount>100) {
                 textNote.setText("Your face does not matches our record");
                 textNote.setVisibility(View.VISIBLE);
             }
