@@ -46,6 +46,7 @@ public class SharedpreferenceHelper {
     public void addEmbeddings(List<Float> emb){
         @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(STORED_EMBEDDINGS,FlistToString(emb));
+        editor.apply();
     }
 
     public String getFingerprint() {
