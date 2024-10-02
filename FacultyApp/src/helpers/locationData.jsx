@@ -68,7 +68,7 @@ export const getLocation = () => {
   
     console.log("Calculated distance: ", distance);
   
-    const maxProximity = .5; // Increase max proximity to 10 km for better granularity
+    const maxProximity = 2; // Increase max proximity to 10 km for better granularity
   
     // Ensure the proximity percentage does not go negative
     const proximityPercentage = Math.max(((maxProximity - distance) / maxProximity) * 100, 0);
