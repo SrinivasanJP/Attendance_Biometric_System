@@ -6,6 +6,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -53,6 +55,8 @@ public class Setup extends AppCompatActivity {
     private PinView vPin,pinView;
     private ProgressBar vPageProgress;
 
+
+
     private void handlePin(DocumentSnapshot documentSnapshot){
         String sPinView = Objects.requireNonNull(pinView.getText()).toString();
         if(!sPinView.isEmpty()){
@@ -77,6 +81,10 @@ public class Setup extends AppCompatActivity {
             pinView.setLineColor(getColor(R.color.red));
         }
     }
+
+    private String CURRENT_VERSION;
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -85,47 +93,84 @@ public class Setup extends AppCompatActivity {
         vPageProgress.setVisibility(View.VISIBLE);
         vContainer = findViewById(R.id.setup_container);
         vContainer.setVisibility(View.INVISIBLE);
+        try {
+            PackageManager packageManager = getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
+            CURRENT_VERSION = packageInfo.versionName; // Retrieve the version name
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            CURRENT_VERSION = "Unknown"; // Fallback in case of an error
+        }
+
+
+        checkAppVersion(); // Call the version check before proceeding
+    }
+
+    private void checkAppVersion() {
+        // Assuming the version is stored under a collection "app_info" and document "version"
+        db.collection("app_info").document("version").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String latestVersion = task.getResult().getString("latest_version");
+                Log.d("UT Update", "checkAppVersion: "+latestVersion+"---"+CURRENT_VERSION);
+                if (latestVersion != null && !latestVersion.equals(CURRENT_VERSION)) {
+                    // If version mismatch, go to the update screen
+                    startActivity(new Intent(Setup.this, UpdateScreenActivity.class));
+                    finish(); // Close the current activity
+                } else {
+                    // Proceed with your original logic if versions match
+                    proceedWithSetup();
+                }
+            } else {
+                // Handle errors like no internet connection
+                Log.d("Version Check", "Failed to retrieve version info");
+                Toast.makeText(Setup.this, "Unable to check for updates", Toast.LENGTH_SHORT).show();
+                proceedWithSetup(); // Optionally proceed even if there's a failure
+            }
+        });
+    }
+
+    private void proceedWithSetup() {
+        // Your existing onStart logic to continue with the setup
         if(sp.isDataAvailable()){
             startActivity(new Intent(getApplicationContext(), IDPage.class));
             finish();
-        }else{
-                fp = new FingerPrint(Setup.this);
-                fp.isFingerprintAvailable(db, fp.getFingerPrint(), (networkError,isAvailable, documentSnapshot) -> {
-                    if(!networkError){
-                        if (isAvailable) {
-                            Log.d("Firebase Data", "onStart: "+documentSnapshot.getString("name"));
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-                            LayoutInflater inflater = this.getLayoutInflater();
-                            View view = inflater.inflate(R.layout.pin_get_layout,null);
-                            alertDialog.setView(view);
-                            pinView = view.findViewById(R.id.pinInput);
-                            button = view.findViewById(R.id.enter);
-                            button.setOnClickListener(v -> handlePin(documentSnapshot));
-                            alertDialog.setCancelable(false);
-                            AlertDialog dialog = alertDialog.create();
-                            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                            dialog.show();
-                            pinView.setOnEditorActionListener((v, actionId, event) -> {
-                                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
-                                    handlePin(documentSnapshot);
-                                }
-                                return false;
-                            });
-
-                        } else {
-                            Log.d("Firebase Data", "onStart: data not available");
-                            vPageProgress.setVisibility(View.INVISIBLE);
-                            vContainer.setVisibility(View.VISIBLE);
-                        }
-                        }else{
-                            Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
-                        }
-                });
-
+        } else {
+            fp = new FingerPrint(Setup.this);
+            fp.isFingerprintAvailable(db, fp.getFingerPrint(), (networkError,isAvailable, documentSnapshot) -> {
+                if (!networkError) {
+                    if (isAvailable) {
+                        handlePinPrompt(documentSnapshot);
+                    } else {
+                        vPageProgress.setVisibility(View.INVISIBLE);
+                        vContainer.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
-
     }
 
+    private void handlePinPrompt(DocumentSnapshot documentSnapshot) {
+        Log.d("Firebase Data", "onStart: "+documentSnapshot.getString("name"));
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View view = inflater.inflate(R.layout.pin_get_layout,null);
+        alertDialog.setView(view);
+        pinView = view.findViewById(R.id.pinInput);
+        button = view.findViewById(R.id.enter);
+        button.setOnClickListener(v -> handlePin(documentSnapshot));
+        alertDialog.setCancelable(false);
+        AlertDialog dialog = alertDialog.create();
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+        pinView.setOnEditorActionListener((v, actionId, event) -> {
+            if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                handlePin(documentSnapshot);
+            }
+            return false;
+        });
+    }
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
