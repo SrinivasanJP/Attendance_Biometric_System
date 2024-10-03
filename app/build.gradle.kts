@@ -20,7 +20,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -70,7 +71,4 @@ dependencies {
     implementation ("com.google.android.gms:play-services-mlkit-face-detection:17.0.1")
     //GSON (Conversion of String to Map & Vice-Versa)
     implementation ("com.google.code.gson:gson:2.8.9")
-
-    //Lottie-files (Splash-screen Animation)
-    implementation ("com.airbnb.android:lottie:4.2.2")
 }
