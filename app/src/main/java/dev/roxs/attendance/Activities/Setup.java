@@ -97,9 +97,11 @@ public class Setup extends AppCompatActivity {
             PackageManager packageManager = getPackageManager();
             PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
             CURRENT_VERSION = packageInfo.versionName; // Retrieve the version name
+            Log.d("VersionInfo", "App Version: " + CURRENT_VERSION);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
             CURRENT_VERSION = "Unknown"; // Fallback in case of an error
+            Log.d("VersionInfo", "Error retrieving version, set to: " + CURRENT_VERSION);
         }
 
 
@@ -109,7 +111,7 @@ public class Setup extends AppCompatActivity {
     private void checkAppVersion() {
         // Assuming the version is stored under a collection "app_info" and document "version"
         db.collection("app_info").document("version").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
+            if (task.isSuccessful() ) {
                 String latestVersion = task.getResult().getString("latest_version");
                 Log.d("UT Update", "checkAppVersion: "+latestVersion+"---"+CURRENT_VERSION);
                 if (latestVersion != null && !latestVersion.equals(CURRENT_VERSION)) {
