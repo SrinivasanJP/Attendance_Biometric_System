@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -21,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Attendance"
         tools:targetApi="31">
+        <meta-data
+            android:name="android:versionName"
+            android:value="2.3.1" />
         <activity
             android:name=".Activities.UpdateScreenActivity"
             android:exported="false" />
@@ -29,9 +33,6 @@
             android:exported="false" />
         <activity
             android:name=".HelperActivities.PermissionInstruction"
-            android:exported="false" />
-        <activity
-            android:name=".HelperActivities.NoNetwork"
             android:exported="false" />
         <activity
             android:name=".Activities.SendAttendanceData"
