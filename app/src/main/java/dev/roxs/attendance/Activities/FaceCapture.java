@@ -42,6 +42,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
@@ -123,6 +126,7 @@ public class FaceCapture extends AppCompatActivity {
     private static final int MY_CAMERA_REQUEST_CODE = 100;
 
     String name, regNo, pin;
+    Bitmap scaled;
 
 
     String modelFile="mobile_face_net.tflite"; //model name
@@ -167,27 +171,71 @@ public class FaceCapture extends AppCompatActivity {
         finishSetup.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, List<Float>> user = new HashMap<>();
-                user.put("extra", flattenEmbeddings);
-                reference.set(user, SetOptions.merge()).addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        if(!flattenEmbeddings.isEmpty())
-                            sp.addEmbeddings(flattenEmbeddings);
-                        else
-                            Toast.makeText(FaceCapture.this, "FlattenEmbeddings empty", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), IDPage.class);
-                        intent.putExtra("name",name);
-                        intent.putExtra("registerNo", regNo);
-                        intent.putExtra("pin",pin);
-                        startActivity(intent);
-                        finish();
-                    }else{
-                        Log.d("UT error", "onCreate: "+task.getException());
-                        Toast.makeText(getApplicationContext(), "Check your internet connection", Toast.LENGTH_SHORT).show();
-                        vSetupProgress.setVisibility(View.INVISIBLE);
-                        finishSetup.setVisibility(View.VISIBLE);
-                    }
+                Map<String, String> user = new HashMap<>();
+//                user.put("extra", flattenEmbeddings);
+
+                // Get an instance of FirebaseStorage and reference to the storage location
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReference();
+                StorageReference imagesRef = storageRef.child("initImageCapture").child(sp.getRegNo());
+                // Convert the Bitmap to a byte array
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                scaled.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] imageData = baos.toByteArray();
+// Upload the byte array to Firebase Storage
+                UploadTask uploadTask = imagesRef.putBytes(imageData);
+// Handle upload success and failure
+                uploadTask.addOnSuccessListener(taskSnapshot -> {
+                    // Upload success, you can get the download URL here
+                    imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadUrl = uri.toString();
+                        user.put("initImageURL", downloadUrl);
+                        reference.set(user, SetOptions.merge()).addOnCompleteListener(task -> {
+                            if(task.isSuccessful()){
+                                if(!flattenEmbeddings.isEmpty())
+                                    sp.addEmbeddings(flattenEmbeddings);
+                                else
+                                    Toast.makeText(FaceCapture.this, "FlattenEmbeddings empty", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), IDPage.class);
+                                intent.putExtra("name",name);
+                                intent.putExtra("registerNo", regNo);
+                                intent.putExtra("pin",pin);
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Log.d("UT error", "onCreate: "+task.getException());
+                                Toast.makeText(getApplicationContext(), "Check your internet connection", Toast.LENGTH_SHORT).show();
+                                vSetupProgress.setVisibility(View.INVISIBLE);
+                                finishSetup.setVisibility(View.VISIBLE);
+                            }
+                        });
+
+                        // Use the downloadUrl as needed
+                    });
+                }).addOnFailureListener(e -> {
+                    // Handle any errors
+                    Log.e("Firebase", "Image upload failed", e);
                 });
+
+//                reference.set(user, SetOptions.merge()).addOnCompleteListener(task -> {
+//                    if(task.isSuccessful()){
+//                        if(!flattenEmbeddings.isEmpty())
+//                            sp.addEmbeddings(flattenEmbeddings);
+//                        else
+//                            Toast.makeText(FaceCapture.this, "FlattenEmbeddings empty", Toast.LENGTH_SHORT).show();
+//                        Intent intent = new Intent(getApplicationContext(), IDPage.class);
+//                        intent.putExtra("name",name);
+//                        intent.putExtra("registerNo", regNo);
+//                        intent.putExtra("pin",pin);
+//                        startActivity(intent);
+//                        finish();
+//                    }else{
+//                        Log.d("UT error", "onCreate: "+task.getException());
+//                        Toast.makeText(getApplicationContext(), "Check your internet connection", Toast.LENGTH_SHORT).show();
+//                        vSetupProgress.setVisibility(View.INVISIBLE);
+//                        finishSetup.setVisibility(View.VISIBLE);
+//                    }
+//                });
             }
         }));
 
@@ -347,7 +395,7 @@ public class FaceCapture extends AppCompatActivity {
                                                     if(flipX)
                                                         cropped_face = rotateBitmap(cropped_face, 0, flipX, false);
                                                     //Scale the acquired Face to 112*112 which is required input for model
-                                                    Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
+                                                    scaled = getResizedBitmap(cropped_face, 112, 112);
                                                     if(start) {
 //                                                        face_preview.setVisibility(View.VISIBLE);
                                                         textNote.setVisibility(View.INVISIBLE);
