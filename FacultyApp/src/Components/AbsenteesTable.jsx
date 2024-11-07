@@ -10,6 +10,8 @@ const AbsenteesTable = ({absenteesList, setAttendees, attendees}) => {
       userName: "Manual Add",
       registerNo: registerNo}])
   }
+  console.log(absenteesList);
+  
   return (
     <table className="min-w-full">
         <thead className=' bg-gradient-to-r from-blue-300 to-slate-100 rounded-xl '>

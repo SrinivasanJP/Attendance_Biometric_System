@@ -39,7 +39,7 @@ export const getLocation = () => {
     const averageElevationPerFloor = 7; // Assumed average elevation change per floor in degrees
 
     const absoluteAltitude = Math.abs(attendeeAltitudeDegrees);
-    console.log(absoluteAltitude)
+    // console.log(absoluteAltitude)
     
     if (!isNaN(absoluteAltitude)) {
       const estimatedFloor = Math.floor(absoluteAltitude / averageElevationPerFloor) + 1; // Adding 1 to start counting from 1st floor
@@ -60,20 +60,20 @@ export const getLocation = () => {
       parseFloat(attendee.latitude),
       parseFloat(attendee.longitude)
     );
-    console.log(userLocation.latitude,
-      userLocation.longitude,
-      parseFloat(attendee.latitude),
-      parseFloat(attendee.longitude));
+    // console.log(userLocation.latitude,
+    //   userLocation.longitude,
+    //   parseFloat(attendee.latitude),
+    //   parseFloat(attendee.longitude));
     
   
-    console.log("Calculated distance: ", distance);
+    // console.log("Calculated distance: ", distance);
   
     const maxProximity = 2; // Increase max proximity to 10 km for better granularity
   
     // Ensure the proximity percentage does not go negative
     const proximityPercentage = Math.max(((maxProximity - distance) / maxProximity) * 100, 0);
   
-    console.log("Proximity percentage: ", proximityPercentage);
+    // console.log("Proximity percentage: ", proximityPercentage);
   
     return proximityPercentage.toFixed(2) + '%';
   };

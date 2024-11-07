@@ -5,9 +5,10 @@ import { doc, getDoc } from 'firebase/firestore';
 import {getLocation} from '../helpers/locationData';
 import AttendeesTable from '../Components/AttendeesTable';
 import AbsenteesTable from "../Components/AbsenteesTable"
+import axios from 'axios';
 
 const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
-  console.log(courseDetails)
+  // console.log(courseDetails)
   const [attendees, setAttendees] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
     const presentStudents = combinedData.map((data) => data.registerNo.trim());
   const absentees = registeredStudents.filter((student) => !presentStudents.includes(student.trim()));
   // Set the list of absentees in state
-  setAbsenteesList(absentees);
+  setAbsenteesList((preAbsentees)=>[...preAbsentees,...absentees]);
   }
   useEffect(()=>{
     getAbsenteesList(attendees)
@@ -28,7 +29,7 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
     const fetchLocation = async () => {
       try {
         const locationData = await getLocation(); // Get user's current location
-        console.log(locationData)
+        // console.log(locationData)
         setUserLocation(locationData); // Update user's location in state
       } catch (error) {
         console.error('Error fetching location:', error);
@@ -37,7 +38,27 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
     fetchLocation();
   }, []);
 
+  const compareFaces = async (image1_url, image2_url) => {
+    try {
+      // Make a POST request to the FastAPI backend
+      const response = await axios.post('http://localhost:8000/compare-faces/', {
+        image1_url: image1_url,
+        image2_url: image2_url,
+        model_name: "VGG-Face" // Default model
+      });
   
+      // Handle the response from the backend
+      const { match, distance } = response.data;
+      console.log(`Match: ${match}, Distance: ${distance}`);
+  
+      // Return the result or handle it as needed
+      return { match, distance }; 
+    } catch (error) {
+      console.error("Face comparison failed:", error);
+      return null;
+    }  
+  };
+   
 
   const fetchData = async () => {
     setLoading(true);
@@ -64,8 +85,9 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
           latitude: data[1],
           longitude: data[2],
           altitude: data[3],
+          initImage: userSnap.data().initImageURL,
           userName: userSnap.data().name,
-          registerNo: userSnap.data().registerNo
+          registerNo: userSnap.data().registerNo,
         });
       } else {
         console.log("Some unknown user entered security breach");
@@ -74,6 +96,7 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
 
     // Update state with the combined array of data
     setAttendees(combinedData);
+    await fetchFaceComparisons(combinedData);
     getAbsenteesList(combinedData);
   } else {
     console.log("No document found.");
@@ -92,8 +115,8 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
         return
       }
       // Create CSV content
-      const csvContent = "Name,Register No,Image URL,Latitude,Longitude,Altitude,Device Signature\n" + attendees.map(a =>
-        `${a.userName},${a.registerNo},${a.imageURL},${a.latitude},${a.longitude},${a.altitude},${a.fingerprint}`
+      const csvContent = "Name,Register No,initImage URL,Image URL,FaceMatch,matchPercent,Latitude,Longitude,Altitude,Device Signature\n" + attendees.map(a =>
+        `${a.userName},${a.registerNo},${a.initImage},${a.imageURL},${a?.match},${1-a?.distance},${a.latitude},${a.longitude},${a.altitude},${a.fingerprint}`
       ).join("\n");
   
       // Create a Blob with the CSV content
@@ -116,8 +139,24 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
       deleteSession();
       setFragment("default");
       }
-   
+    
+  }; 
+  const fetchFaceComparisons = async (combinedData) => {
+    const updatedAttendees = await Promise.all(
+      combinedData.map(async (attendee) => {
+        // Perform face comparison for each attendee's images
+        const comparisonResult = await compareFaces(attendee.initImage, attendee.imageURL);
+        // Append the comparison result to each attendee object
+        return { ...attendee, ...comparisonResult };
+      })
+    );
+    console.log(updatedAttendees);
+    
+    // Update the attendees state with the new data that includes comparison results
+    setAttendees(updatedAttendees); 
   };
+  
+
 
 
   
@@ -141,13 +180,12 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
         
         <button onClick={handleExport} className=' rounded-xl bg-blue-400 text-white font-semibold px-10 py-3'>Export Attendance</button>
       </div>
-      <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
-      <AttendeesTable attendees={attendees} userLocation={userLocation} loading={loading}/>
+      <div className='block rounded-xl border shadow-2xl m-4 overflow-auto'>
+      <AttendeesTable attendees={attendees} userLocation={userLocation} loading={loading} setAttendees={setAttendees} setAbsenteesList={setAbsenteesList} absenteesList={absenteesList} />
       
       </div>
       <h1 className=" mx-10 text-xl font-bold my-5 ">Absentees List</h1>
       <div className='block rounded-xl border shadow-2xl m-4 overflow-hidden'>
-        {console.log(absenteesList)}
       <AbsenteesTable absenteesList={absenteesList} setAttendees={setAttendees} attendees={attendees}/>
       
       </div>
