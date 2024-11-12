@@ -127,6 +127,7 @@ public class FaceCapture extends AppCompatActivity {
 
     String name, regNo, pin;
     Bitmap scaled;
+    Bitmap sendImage;
 
 
     String modelFile="mobile_face_net.tflite"; //model name
@@ -382,7 +383,7 @@ public class FaceCapture extends AppCompatActivity {
                                             public void onSuccess(List<Face> faces) {
 
                                                 if(faces.size()!=0) {
-
+                                                    sendImage = toBitmap(mediaImage);
                                                     Face face = faces.get(0); //Get first face from detected faces
                                                     Bitmap frame_bmp = toBitmap(mediaImage);
                                                     int rot = imageProxy.getImageInfo().getRotationDegrees();

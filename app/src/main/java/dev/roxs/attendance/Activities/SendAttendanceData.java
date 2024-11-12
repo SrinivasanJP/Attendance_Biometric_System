@@ -158,12 +158,12 @@ public class SendAttendanceData extends AppCompatActivity {
 
         //get Captured image
         File privateDir = getApplicationContext().getFilesDir();
-        File imageFile = new File(privateDir, "captured_image.jpg");
+        File imageFile = new File(privateDir, "send.jpg");
 
         if (imageFile.exists()) {
             Bitmap loadedBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
             ByteArrayOutputStream imageAsByte = new ByteArrayOutputStream();
-            loadedBitmap.compress(Bitmap.CompressFormat.JPEG, 8, imageAsByte);
+            loadedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageAsByte);
             byte[] data = imageAsByte.toByteArray();
             // Get an instance of FirebaseStorage and reference to the storage location
             FirebaseStorage storage = FirebaseStorage.getInstance();

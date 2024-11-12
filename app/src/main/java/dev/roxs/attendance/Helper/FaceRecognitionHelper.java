@@ -73,6 +73,7 @@ public class FaceRecognitionHelper {
     private final Activity activity;
     private final List<Float> storedEmbeddings;
     private Bitmap sendImage;
+    private Bitmap scaled;
     private final ClassifierInterface.Recognition recognitionHelper;
     boolean start;
     private int bufferCount = 0;
@@ -197,7 +198,7 @@ public class FaceRecognitionHelper {
                                     Bitmap cropped_face = getCropBitmapByCPU(frame_bmp1, boundingBox);
                                     cropped_face = rotateBitmap(cropped_face, 0, true);
                                     //Scale the acquired Face to 112*112 which is required input for model
-                                    Bitmap scaled = getResizedBitmap(cropped_face);
+                                    scaled = getResizedBitmap(cropped_face);
                                     if(start){
                                         recognizeImage(scaled);
                                     }
@@ -468,9 +469,15 @@ public class FaceRecognitionHelper {
             bitmapImage = Bitmap.createBitmap(bitmapImage, 0, 0, bitmapImage.getWidth(), bitmapImage.getHeight(), matrix, true);
             File privateDir = activity.getApplicationContext().getFilesDir();
             File imageFile = new File(privateDir, "captured_image.jpg");
+            File sendImage = new File(privateDir, "send.jpg");
 
+            try(FileOutputStream os = new FileOutputStream(sendImage)){
+                scaled.compress(Bitmap.CompressFormat.JPEG, 100,os);
+            }catch (IOException e){
+                Log.e("File output error", "saveToInternalStorage: ",e );
+            }
             try (FileOutputStream outputStream = new FileOutputStream(imageFile)) {
-                bitmapImage.compress(Bitmap.CompressFormat.JPEG, 8, outputStream);
+                bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             } catch (IOException e) {
                 Log.e("File output error", "saveToInternalStorage: ",e );
             }
