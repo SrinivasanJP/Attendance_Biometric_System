@@ -102,6 +102,7 @@ public class QRReader extends AppCompatActivity {
                         if (isAngleAllowed(angle)) {
                             Toast.makeText(QRReader.this, barcodes.valueAt(0).displayValue, Toast.LENGTH_SHORT).show();
                             Intent captureImage = new Intent(QRReader.this, CaptureImage.class);
+                            captureImage.putExtra("angle",angle);
                             captureImage.putExtra("sessionID", barcodes.valueAt(0).displayValue);
                             startActivity(captureImage);
                             finish();

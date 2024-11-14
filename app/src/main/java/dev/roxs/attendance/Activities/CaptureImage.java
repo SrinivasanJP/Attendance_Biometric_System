@@ -44,6 +44,7 @@ public class CaptureImage extends AppCompatActivity implements FaceRecognitionHe
                 faceRecognitionHelper.saveToInternalStorage(storeImage, sendImage);
                 Intent sendData = new Intent(getApplicationContext(), SendAttendanceData.class);
                 sendData.putExtra("sessionID",preIntent.getStringExtra("sessionID"));
+                sendData.putExtra("angle",preIntent.getDoubleExtra("angle",0.0));
                 sendData.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(sendData);
                 finish();

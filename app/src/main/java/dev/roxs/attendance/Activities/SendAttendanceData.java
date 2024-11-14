@@ -62,7 +62,7 @@ public class SendAttendanceData extends AppCompatActivity {
     private RelativeLayout uploadImageBar, locationBar;
     private SharedpreferenceHelper sp;
     private String sessionID, fingerPrint;
-    private double latitude, longitude, altitude;
+    private double latitude, longitude, altitude,angle;
 
     @SuppressLint({"WrongThread", "UseCompatLoadingForDrawables"})
     @Override
@@ -91,6 +91,7 @@ public class SendAttendanceData extends AppCompatActivity {
         FingerPrint fp = new FingerPrint(this);
         //get session ID
         sessionID = getIntent().getStringExtra("sessionID");
+
         //get fingerprint
         fingerPrint = fp.getFingerPrint();
         fingerPrintBuffer.setVisibility(View.GONE);
@@ -180,7 +181,7 @@ public class SendAttendanceData extends AppCompatActivity {
                     uploadImageBuffer.setVisibility(View.GONE);
                     uploadImageDone.setVisibility(View.VISIBLE);
                     uploadImageBar.setBackground(getDrawable(R.drawable.process_done));
-                    String downloadUrl = uri.toString()+","+latitude+","+longitude+","+altitude;
+                    String downloadUrl = uri.toString()+","+latitude+","+longitude+","+altitude+","+Double.toString(getIntent().getDoubleExtra("angle",0.0));
                     assert sessionID != null;
                     sessionReference = db.collection("Attendance").document(sessionID);
                     Map<String, Object> attendanceData = new HashMap<>();
