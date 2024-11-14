@@ -51,7 +51,7 @@ const AttendeesTable = ({attendees, userLocation, loading, setAttendees, setAbse
               <td className={"px-6 py-4 whitespace-nowrap text-lg font-medium text-gray-800  border-2 text-center border-gray-200"}>{attendee.registerNo}</td>
               <td className={"px-6 py-4 text-center"}><img className='inline-block' src={attendee.initImage} alt="attendee image" width={100} /></td>
               <td className={"px-6 py-4 text-center"}><img className='inline-block' src={attendee.imageURL} alt="attendee image" width={100} /></td>
-              <td className={"px-6 py-4 text-center"}>{attendee?.match== true? <h1>Matchs {Math.ceil((1-attendee?.distance)*100)}%</h1>:"not match"}</td>
+              <td className={"px-6 py-4 text-center"}>{attendee?.match== true? <h1>Matchs</h1>:"not match"}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200 ">{calculateAttendeeProximity(attendee, userLocation)}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200" onClick={()=>handleRemoveAttendee(index)}><IoMdRemoveCircleOutline size={25} color='#fa0000' className='mx-auto '/></td>
             </tr>
