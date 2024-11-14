@@ -11,7 +11,7 @@ const QRfragment = ({setFragment, sessionID}) => {
     "Once the scan is complete, your picture will be taken for attendance.",
     "Please wait for a moment for your data to be sent."
 ];
-  const [timeLeft, setTimeLeft] = useState(20);
+  const [timeLeft, setTimeLeft] = useState(10);
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
