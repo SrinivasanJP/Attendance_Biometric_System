@@ -109,6 +109,7 @@ public class FaceCapture extends AppCompatActivity {
     CameraSelector cameraSelector;
     RelativeLayout finishSetup;
     private ProgressBar vSetupProgress;
+    RelativeLayout vRetakeBtn;
 //    ProgressBar circularProgressBar;
 
     boolean start=true,flipX=false;
@@ -164,10 +165,19 @@ public class FaceCapture extends AppCompatActivity {
         face_preview =findViewById(R.id.previewImage);
         finishSetup = findViewById(R.id.finishSetup);
         vSetupProgress =findViewById(R.id.setupprogressBar);
-
+        vRetakeBtn = findViewById(R.id.retake);
         textNote = findViewById(R.id.textNote);
+
         finishSetup.setVisibility(View.INVISIBLE);
+        vRetakeBtn.setVisibility(View.INVISIBLE);
         face_preview.setVisibility(View.INVISIBLE);
+        vRetakeBtn.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                start = true;
+//                startCamera();
+            }
+        }));
 
         finishSetup.setOnClickListener((new View.OnClickListener() {
             @Override
@@ -288,7 +298,8 @@ public class FaceCapture extends AppCompatActivity {
     }
     private void addFace() {
         start = false;
-        stopCamera();
+//        stopCamera();
+        vRetakeBtn.setVisibility(View.VISIBLE);
         finishSetup.setVisibility(View.VISIBLE);
         vibrateDevice(VibrationEffect.EFFECT_TICK);
         recognitionData = new ClassifierInterface.Recognition( -1f);
@@ -336,6 +347,28 @@ public class FaceCapture extends AppCompatActivity {
     private void stopCamera() {
         if (cameraProvider != null) {
             cameraProvider.unbindAll(); // Unbind to stop the camera
+        }
+    }
+    private void startCamera(){
+        if (cameraProvider != null) {
+            // Define the Preview
+            Preview preview = new Preview.Builder().build();
+
+            // Define the CameraSelector - choose back camera by default
+            CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+
+            // Bind the preview to the previewView
+            preview.setSurfaceProvider(previewView.getSurfaceProvider());
+
+            // Bind the camera provider with preview and camera selector
+            cameraProvider.unbindAll();
+
+            try {
+                // Bind the lifecycle to the camera provider
+                cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
@@ -398,7 +431,7 @@ public class FaceCapture extends AppCompatActivity {
                                                     //Scale the acquired Face to 112*112 which is required input for model
                                                     scaled = getResizedBitmap(cropped_face, 112, 112);
                                                     if(start) {
-//                                                        face_preview.setVisibility(View.VISIBLE);
+                                                        face_preview.setVisibility(View.VISIBLE);
                                                         textNote.setVisibility(View.INVISIBLE);
                                                         recognizeImage(scaled); //Send scaled bitmap to create face embeddings.
                                                     }
