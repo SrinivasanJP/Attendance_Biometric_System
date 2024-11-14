@@ -22,6 +22,17 @@
             android:layout_height="match_parent"
             android:background="@drawable/circle"/>
     </FrameLayout>
+    <ImageView
+        android:id="@+id/previewImage"
+        android:layout_width="203dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        android:background="#2C7E57C2"
+        android:elevation="1dp"
+        android:layout_below="@+id/captureFrame"
+        tools:srcCompat="@android:drawable/screen_background_light_transparent"
+        android:visibility="invisible"/>
     <TextView
         android:layout_width="wrap_content"
         android:id="@+id/textNote"
@@ -48,5 +59,63 @@
         android:layout_marginTop="50dp"
         android:textColor="@color/black"
         />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/finishSetup"
+        android:paddingHorizontal="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:visibility="visible"
+        android:background="@drawable/mark_attendance"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Confirm Image"
+            android:textSize="18sp"
+            android:id="@+id/finishSetupText"
+            android:layout_marginVertical="10dp"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:fontFamily="@font/nb"/>
+
+        <ProgressBar
+            android:id="@+id/setupprogressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="invisible" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/retake"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/finishSetup"
+        android:layout_marginHorizontal="20dp"
+        android:paddingHorizontal="50dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/mark_attendance"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/retakeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginVertical="10dp"
+            android:fontFamily="@font/nb"
+            android:text="Retake"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <ProgressBar
+            android:id="@+id/retakeprogressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="invisible" />
+    </RelativeLayout>
 
 </RelativeLayout>
