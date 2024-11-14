@@ -6,56 +6,56 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".Activities.FaceCapture">
-<!--    <Button-->
-<!--        android:id="@+id/button2"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="ACTIONS"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/imageView"-->
-<!--        app:layout_constraintVertical_bias="0.25" />-->
+    <!--    <Button-->
+    <!--        android:id="@+id/button2"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="ACTIONS"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/imageView"-->
+    <!--        app:layout_constraintVertical_bias="0.25" />-->
 
 
 
-        <!-- FrameLayout that contains the camera preview -->
-        <FrameLayout
-            android:id="@+id/captureFrame"
-            android:layout_width="297dp"
-            android:layout_height="297dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/circle"
-            android:clipToOutline="true">
+    <!-- FrameLayout that contains the camera preview -->
+    <FrameLayout
+        android:id="@+id/captureFrame"
+        android:layout_width="297dp"
+        android:layout_height="297dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/circle"
+        android:clipToOutline="true">
 
-            <androidx.camera.view.PreviewView
-                android:id="@+id/previewView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/circle"/>
-        </FrameLayout>
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle"/>
+    </FrameLayout>
 
 
 
 
     <!--    <ImageButton-->
-<!--        android:id="@+id/imageButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="164dp"-->
-<!--        android:layout_marginBottom="168dp"-->
-<!--        android:elevation="2dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
-<!--        app:srcCompat="@android:drawable/ic_input_add" />-->
+    <!--        android:id="@+id/imageButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="164dp"-->
+    <!--        android:layout_marginBottom="168dp"-->
+    <!--        android:elevation="2dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
+    <!--        app:srcCompat="@android:drawable/ic_input_add" />-->
 
     <ImageView
-        android:id="@+id/previewImage"
+        android:id="@+id/facePreview"
         android:layout_width="203dp"
         android:layout_centerHorizontal="true"
         android:layout_height="200dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:background="#2C7E57C2"
         android:elevation="1dp"
         android:layout_below="@+id/captureFrame"
@@ -72,74 +72,111 @@
         android:layout_marginTop="100dp"
         android:textColor="@color/black"
         />
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/finishSetup"
         android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="20dp"
-        android:visibility="visible"
-        android:background="@drawable/mark_attendance"
-        >
-        <TextView
-            android:layout_width="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/retake"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/finish_setup"
-            android:textSize="18sp"
-            android:id="@+id/finishSetupText"
-            android:layout_marginVertical="10dp"
-            android:layout_centerInParent="true"
-            android:textColor="@color/white"
-            android:fontFamily="@font/nb"/>
+            android:layout_marginHorizontal="20dp"
+            android:paddingHorizontal="50dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/mark_attendance"
+            android:visibility="visible">
 
-        <ProgressBar
-            android:id="@+id/setupprogressBar"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/retakeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginVertical="10dp"
+                android:fontFamily="@font/nb"
+                android:text="Retake"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <ProgressBar
+                android:id="@+id/retakeprogressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="invisible" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="invisible" />
-    </RelativeLayout>
+            android:id="@+id/finishSetup"
+            android:paddingHorizontal="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"
+            android:visibility="visible"
+            android:background="@drawable/mark_attendance"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/finish_setup"
+                android:textSize="18sp"
+                android:id="@+id/finishSetupText"
+                android:layout_marginVertical="10dp"
+                android:layout_centerInParent="true"
+                android:textColor="@color/white"
+                android:fontFamily="@font/nb"/>
 
-<!--    <TextView-->
-<!--        android:id="@+id/textView"-->
-<!--        android:layout_width="164dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:hint="Add Face"-->
-<!--        android:textAlignment="center"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:textSize="22sp"-->
-<!--        android:textStyle="bold"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/imageView"-->
-<!--        app:layout_constraintHorizontal_bias="0.487"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/imageView"-->
-<!--        app:layout_constraintVertical_bias="0.479" />-->
+            <ProgressBar
+                android:id="@+id/setupprogressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="invisible" />
+        </RelativeLayout>
+    </LinearLayout>
 
-<!--    <TextView-->
-<!--        android:id="@+id/textView2"-->
-<!--        android:layout_width="164dp"-->
-<!--        android:layout_height="180dp"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:textSize="15sp"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/imageView"-->
-<!--        app:layout_constraintHorizontal_bias="0.487"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/imageView"-->
-<!--        app:layout_constraintVertical_bias="0.914" />-->
 
-<!--    <TextView-->
-<!--        android:id="@+id/textAbovePreview"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textColor="#000000"-->
-<!--        android:textSize="15sp"-->
-<!--        app:layout_constraintBottom_toTopOf="@+id/imageView"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.498"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout"-->
-<!--        app:layout_constraintVertical_bias="1.0" />-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/textView"-->
+    <!--        android:layout_width="164dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:hint="Add Face"-->
+    <!--        android:textAlignment="center"-->
+    <!--        android:textColor="@color/black"-->
+    <!--        android:textSize="22sp"-->
+    <!--        android:textStyle="bold"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/imageView"-->
+    <!--        app:layout_constraintHorizontal_bias="0.487"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/imageView"-->
+    <!--        app:layout_constraintVertical_bias="0.479" />-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/textView2"-->
+    <!--        android:layout_width="164dp"-->
+    <!--        android:layout_height="180dp"-->
+    <!--        android:textColor="@color/black"-->
+    <!--        android:textSize="15sp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/imageView"-->
+    <!--        app:layout_constraintHorizontal_bias="0.487"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/imageView"-->
+    <!--        app:layout_constraintVertical_bias="0.914" />-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/textAbovePreview"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:textColor="#000000"-->
+    <!--        android:textSize="15sp"-->
+    <!--        app:layout_constraintBottom_toTopOf="@+id/imageView"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.498"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout"-->
+    <!--        app:layout_constraintVertical_bias="1.0" />-->
 </RelativeLayout>
