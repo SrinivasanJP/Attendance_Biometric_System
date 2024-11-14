@@ -89,7 +89,10 @@ public class FaceRecognitionHelper {
 
     private final FaceRecognitionCallback callback; // Add this line
     public interface FaceRecognitionCallback {
-        void onDistanceCalculated(float distance);
+        void onDistanceCalculated(float distance,Bitmap storeImage, Bitmap sendImage);
+    }
+    public void setRecognition (Boolean flag){
+        start = flag;
     }
 
     public FaceRecognitionHelper(Activity activity, List<Float> storedEmbeddings,FaceRecognitionCallback callback) {
@@ -282,10 +285,10 @@ public class FaceRecognitionHelper {
             textProgress.setText("Distance is "+distance);
             textProgress.setVisibility(View.VISIBLE);
             textNote.setVisibility(View.INVISIBLE);
-           stopCamera();
-           saveToInternalStorage(sendImage);
+//           stopCamera();
+//           saveToInternalStorage(sendImage);
             if (callback != null) {
-                callback.onDistanceCalculated(distance);
+                callback.onDistanceCalculated(distance,sendImage, scaled);
             }
         }else{
             textNote.setText("Face matches : "+distance);
@@ -463,7 +466,7 @@ public class FaceRecognitionHelper {
         return (float) Math.sqrt(distance);
     }
 
-    private void saveToInternalStorage(Bitmap bitmapImage) {
+    public void saveToInternalStorage(Bitmap bitmapImage,Bitmap scaled) {
             Matrix matrix = new Matrix();
             matrix.postRotate(-90); // Rotate to align with 0 degrees
             bitmapImage = Bitmap.createBitmap(bitmapImage, 0, 0, bitmapImage.getWidth(), bitmapImage.getHeight(), matrix, true);
