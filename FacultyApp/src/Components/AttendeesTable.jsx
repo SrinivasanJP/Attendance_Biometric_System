@@ -39,8 +39,10 @@ const AttendeesTable = ({attendees, userLocation, loading, setAttendees, setAbse
             <th className='px-6 py-3 w-[20%] uppercase text-start text-sm font-medium'>Registered Image</th>
             <th className='px-6 py-3 w-[20%] uppercase text-start text-sm font-medium'>Current Image</th>
             <th className='px-6 py-3 w-[10%] uppercase text-start text-sm font-medium'>face match</th>
+            <th className='px-6 py-3 w-[10%] uppercase text-start text-sm font-medium'>Angle of Scan</th>
             <th className='px-6 py-3 w-[10%] uppercase text-start text-sm font-medium'>Proximity</th>
             <th className='px-6 py-3 w-[10%] uppercase text-start text-sm font-medium'>Action</th>
+
           </tr>
         </thead>
         <tbody>
@@ -52,6 +54,7 @@ const AttendeesTable = ({attendees, userLocation, loading, setAttendees, setAbse
               <td className={"px-6 py-4 text-center"}><img className='inline-block' src={attendee.initImage} alt="attendee image" width={100} /></td>
               <td className={"px-6 py-4 text-center"}><img className='inline-block' src={attendee.imageURL} alt="attendee image" width={100} /></td>
               <td className={"px-6 py-4 text-center"}>{attendee?.match== true? <h1>Matchs</h1>:"not match"}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200 ">{ Math.round(attendee?.angle * 100) / 100}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200 ">{calculateAttendeeProximity(attendee, userLocation)}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800  border-2 text-center border-gray-200" onClick={()=>handleRemoveAttendee(index)}><IoMdRemoveCircleOutline size={25} color='#fa0000' className='mx-auto '/></td>
             </tr>

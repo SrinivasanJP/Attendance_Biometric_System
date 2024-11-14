@@ -66,6 +66,7 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
   const sessionSnap = await getDoc(sessionRef);
 
   if (sessionSnap.exists()) {
+    
     const dataKeys = Object.keys(sessionSnap.data());
 
     // Create an array to hold the combined data
@@ -85,6 +86,7 @@ const ViewList = ({sessionID, courseDetails, setFragment, deleteSession}) => {
           latitude: data[1],
           longitude: data[2],
           altitude: data[3],
+          angle:data[4],
           initImage: userSnap.data().initImageURL,
           userName: userSnap.data().name,
           registerNo: userSnap.data().registerNo,
