@@ -58,7 +58,7 @@ const ViewList = ({ sessionID, courseDetails, setFragment, deleteSession }) => {
 
   const fetchData = async () => {
     setLoading(true);
-    const sessionRef = doc(db, "Attendance", "ybmVEKNZPM");
+    const sessionRef = doc(db, "Attendance", sessionID);
     const sessionSnap = await getDoc(sessionRef);
 
     if (sessionSnap.exists()) {
